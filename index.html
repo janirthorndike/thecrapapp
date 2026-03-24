@@ -1,0 +1,3146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crap App — We Give A Shit</title>
+
+<!-- Favicon -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💩</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💩</text></svg>">
+
+<!-- Theme color (browser chrome on mobile) -->
+<meta name="theme-color" content="#5C3317">
+
+<!-- SEO -->
+<meta name="description" content="The world's first and finest shitting companion. Find clean bathrooms, kill time on the throne, and share your most legendary bathroom stories.">
+<meta name="keywords" content="bathroom app, restroom finder, toilet map, crap app, bathroom humor">
+
+<!-- Open Graph (Facebook, iMessage, Slack, LinkedIn) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Crap App — We Give A Shit">
+<meta property="og:description" content="Find clean bathrooms near you, read throne room content, share legendary stories, and shop premium bathroom gear. The app you never knew you needed.">
+<meta property="og:image" content="https://crapapp.netlify.app/og-image.png">
+<meta property="og:url" content="https://crapapp.netlify.app">
+<meta property="og:site_name" content="Crap App">
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Crap App — We Give A Shit">
+<meta name="twitter:description" content="Find clean bathrooms near you, read throne room content, share legendary stories, and shop premium bathroom gear.">
+<meta name="twitter:image" content="https://crapapp.netlify.app/og-image.png">
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root {
+    --brown: #5C3317;
+    --brown-mid: #7B4A24;
+    --brown-light: #A0673A;
+    --gold: #F5C518;
+    --gold-dark: #D4A017;
+    --teal: #00BFA5;
+    --teal-dark: #009688;
+    --cream: #FDF6EC;
+    --dark: #2C1A0E;
+    --white: #FFFFFF;
+    --shadow: 0 4px 24px rgba(92,51,23,0.18);
+    --shadow-lg: 0 8px 40px rgba(92,51,23,0.28);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    overflow-x: hidden;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  /* ── NAV ── */
+  .app-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--brown);
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 0 14px;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.25);
+    display: none;
+  }
+  .app-nav.visible { display: flex; }
+  .nav-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: none; border: none; cursor: pointer;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Nunito', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    transition: all 0.2s;
+    padding: 4px 12px;
+    border-radius: 12px;
+  }
+  .nav-btn .icon { font-size: 22px; line-height: 1; }
+  .nav-btn.active, .nav-btn:hover { color: var(--gold); transform: translateY(-2px); }
+  .nav-btn.active .icon { filter: drop-shadow(0 0 6px rgba(245,197,24,0.8)); }
+
+  /* ══════════════════════════════
+     HERO / LANDING
+  ══════════════════════════════ */
+  #hero {
+    background: var(--brown);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, #7B4A24 0%, #3d1f0a 60%, #1a0a04 100%);
+    z-index: 0;
+  }
+
+  .hero-dots {
+    position: absolute; inset: 0; z-index: 1;
+    background-image: radial-gradient(circle, rgba(245,197,24,0.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 60px 24px 40px;
+    text-align: center;
+  }
+
+  .hero-logo {
+    font-size: 88px; line-height: 1;
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 8px 24px rgba(245,197,24,0.5));
+    margin-bottom: 8px;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(-3deg); }
+    50% { transform: translateY(-12px) rotate(3deg); }
+  }
+
+  .hero-crown {
+    font-size: 40px;
+    margin-top: -30px;
+    filter: drop-shadow(0 4px 12px rgba(245,197,24,0.8));
+    animation: float 3s ease-in-out infinite 0.5s;
+  }
+
+  .hero-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(52px, 12vw, 80px);
+    color: var(--gold);
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-top: 16px;
+    text-shadow: 4px 4px 0 var(--brown-mid), 0 0 40px rgba(245,197,24,0.3);
+  }
+
+  .hero-tagline {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(18px, 5vw, 26px);
+    color: var(--teal);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 8px;
+    text-shadow: 0 0 20px rgba(0,191,165,0.5);
+  }
+
+  .hero-desc {
+    color: rgba(255,255,255,0.75);
+    font-size: 16px; line-height: 1.6;
+    max-width: 400px;
+    margin: 20px auto 0;
+  }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--gold);
+    color: var(--dark);
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    border: none; border-radius: 50px;
+    padding: 16px 40px;
+    cursor: pointer;
+    margin-top: 32px;
+    box-shadow: 0 6px 0 var(--gold-dark), var(--shadow);
+    transition: all 0.15s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 0 var(--gold-dark), var(--shadow-lg); }
+  .hero-cta:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--gold-dark); }
+
+  /* Feature pills */
+  .hero-features {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    margin-top: 32px; max-width: 480px;
+  }
+  .feature-pill {
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(245,197,24,0.25);
+    color: rgba(255,255,255,0.85);
+    border-radius: 50px;
+    padding: 8px 18px;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .feature-pill:hover {
+    background: rgba(245,197,24,0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  /* App preview cards */
+  .preview-section {
+    position: relative; z-index: 2;
+    padding: 0 24px 120px;
+  }
+  .preview-label {
+    text-align: center;
+    font-family: 'Boogaloo', cursive;
+    font-size: 13px; letter-spacing: 3px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .preview-cards {
+    display: flex; gap: 12px; overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .preview-cards::-webkit-scrollbar { display: none; }
+  .preview-card {
+    flex: 0 0 160px;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(245,197,24,0.2);
+    border-radius: 20px;
+    padding: 20px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .preview-card:hover {
+    background: rgba(245,197,24,0.12);
+    border-color: var(--gold);
+    transform: translateY(-4px);
+  }
+  .preview-card .pc-icon { font-size: 36px; margin-bottom: 8px; }
+  .preview-card .pc-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px; color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .preview-card .pc-desc { font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.4; }
+
+  /* ── EMAIL CAPTURE ── */
+  .email-capture {
+    position: relative; z-index: 2;
+    margin: 32px 24px 0;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(245,197,24,0.25);
+    border-radius: 24px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .email-capture-emoji { font-size: 36px; margin-bottom: 10px; }
+  .email-capture h3 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px; color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .email-capture p {
+    font-size: 13px; color: rgba(255,255,255,0.65);
+    line-height: 1.55; margin-bottom: 18px;
+    max-width: 320px; margin-left: auto; margin-right: auto;
+  }
+  .email-form {
+    display: flex; gap: 8px;
+    max-width: 380px; margin: 0 auto;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .email-input {
+    flex: 1; min-width: 200px;
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px; color: white;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .email-input::placeholder { color: rgba(255,255,255,0.4); }
+  .email-input:focus { border-color: var(--gold); }
+  .email-submit {
+    background: var(--gold);
+    color: var(--dark);
+    border: none; border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    padding: 12px 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--gold-dark);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .email-submit:hover { transform: translateY(-1px); box-shadow: 0 5px 0 var(--gold-dark); }
+  .email-submit:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--gold-dark); }
+  .email-submit.success {
+    background: var(--teal); box-shadow: 0 4px 0 var(--teal-dark);
+  }
+  .email-fine-print {
+    font-size: 10px; color: rgba(255,255,255,0.3);
+    margin-top: 12px; line-height: 1.5;
+  }
+
+  /* ── LEGAL SCREENS ── */
+  .legal-screen {
+    background: var(--cream);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+  .legal-header {
+    background: var(--brown);
+    padding: 48px 20px 20px;
+    position: sticky; top: 0; z-index: 50;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  .legal-header-inner {
+    max-width: 680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .legal-back {
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    color: white; border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px; font-weight: 800;
+    padding: 7px 16px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .legal-back:hover { background: rgba(255,255,255,0.2); }
+  .legal-header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px; color: var(--gold);
+  }
+  .legal-header p {
+    color: rgba(255,255,255,0.5);
+    font-size: 11px; margin-top: 1px;
+  }
+  .legal-body {
+    max-width: 680px; margin: 0 auto;
+    padding: 28px 24px;
+  }
+  .legal-body h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px; color: var(--brown);
+    margin: 28px 0 8px;
+  }
+  .legal-body h2:first-child { margin-top: 0; }
+  .legal-body p {
+    font-size: 13px; line-height: 1.75;
+    color: #444; margin-bottom: 10px;
+  }
+  .legal-body ul {
+    font-size: 13px; line-height: 1.75;
+    color: #444; margin: 0 0 10px 20px;
+  }
+  .legal-body ul li { margin-bottom: 4px; }
+  .legal-body a { color: var(--teal-dark); }
+  .legal-effective {
+    display: inline-block;
+    background: #f0f0f0; border-radius: 8px;
+    font-size: 11px; font-weight: 700; color: #888;
+    padding: 4px 12px; margin-bottom: 24px;
+    letter-spacing: 0.5px;
+  }
+  .legal-divider {
+    border: none; border-top: 1px solid rgba(0,0,0,0.08);
+    margin: 8px 0;
+  }
+
+  /* ── HERO FOOTER ── */
+  .hero-footer {
+    position: relative; z-index: 2;
+    padding: 24px 24px 40px;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin-top: 32px;
+  }
+  .hero-footer-links {
+    display: flex; gap: 20px; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 10px;
+  }
+  .hero-footer-links a {
+    color: rgba(255,255,255,0.4);
+    font-size: 12px; font-weight: 700;
+    text-decoration: none; letter-spacing: 0.5px;
+    transition: color 0.2s; cursor: pointer;
+  }
+  .hero-footer-links a:hover { color: rgba(255,255,255,0.8); }
+  .hero-footer-copy {
+    font-size: 11px; color: rgba(255,255,255,0.2);
+  }
+
+  /* ══════════════════════════════
+     SHARED APP STYLES
+  ══════════════════════════════ */
+
+  .screen.active { display: block; }
+  #hero.screen.active { display: block; background: var(--brown); }
+
+  .app-shell {
+    width: 100%;
+    background: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .app-nav-inner {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  /* ── Desktop: center the app shell ── */
+  @media (min-width: 600px) {
+    body { background: #1a0e06; }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #hero.screen.active { display: block; }
+
+    .app-shell {
+      max-width: 480px;
+      box-shadow: 0 0 80px rgba(0,0,0,0.5);
+      border-radius: 0;
+    }
+
+    .app-nav {
+      background: transparent !important;
+      box-shadow: none !important;
+      justify-content: center !important;
+    }
+    .app-nav-inner {
+      max-width: 480px;
+      background: var(--brown);
+      padding: 10px 0 14px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+    }
+  }
+
+  .page-header {
+    background: var(--brown);
+    padding: 48px 20px 20px;
+    position: sticky; top: 0; z-index: 50;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    width: 100%;
+  }
+  .page-header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px; color: var(--gold);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .page-header p { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 2px; }
+
+  .page-body { padding: 16px 16px 90px; width: 100%; }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--dark);
+    border: none; border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    padding: 12px 28px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--gold-dark);
+    transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 0 var(--gold-dark); }
+  .btn-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--gold-dark); }
+
+  .btn-teal {
+    background: var(--teal);
+    color: white;
+    border: none; border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    padding: 10px 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--teal-dark);
+    transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-teal:hover { transform: translateY(-1px); }
+
+  /* ══════════════════════════════
+     CRAPMAP
+  ══════════════════════════════ */
+  #crapmap .page-body { padding: 0 0 80px; }
+
+  .map-container {
+    position: relative;
+    height: 52vh;
+  }
+
+  #leaflet-map {
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+  }
+
+  /* Override Leaflet default styles to match brand */
+  .leaflet-popup-content-wrapper {
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
+    font-family: 'Nunito', sans-serif !important;
+  }
+  .leaflet-popup-tip-container { display: none; }
+  .leaflet-popup-content { margin: 14px 16px !important; }
+  .leaflet-control-zoom {
+    border: none !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15) !important;
+  }
+  .leaflet-control-zoom a {
+    font-family: 'Fredoka One', cursive !important;
+    color: var(--brown) !important;
+    font-size: 18px !important;
+  }
+
+  .code-brown-btn {
+    position: absolute; bottom: 16px; right: 16px; z-index: 1000;
+    background: #c0392b;
+    color: white;
+    border: none; border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    padding: 14px 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #922b21, 0 8px 24px rgba(192,57,43,0.5);
+    display: flex; align-items: center; gap: 8px;
+    animation: pulse-red 2s infinite;
+    transition: all 0.15s;
+  }
+  .code-brown-btn:hover { transform: scale(1.05); }
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 4px 0 #922b21, 0 0 0 0 rgba(192,57,43,0.5); }
+    50% { box-shadow: 0 4px 0 #922b21, 0 0 0 10px rgba(192,57,43,0); }
+  }
+
+  .map-legend {
+    display: flex; gap: 12px; padding: 10px 16px;
+    background: white;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .bathroom-list { padding: 12px 16px; }
+  .bathroom-card {
+    background: white;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    display: flex; gap: 14px; align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .bathroom-card:hover { border-color: var(--gold); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .bc-score {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px; color: white;
+    flex-shrink: 0;
+  }
+  .score-high { background: #4CAF50; }
+  .score-mid { background: #FFC107; color: var(--dark); }
+  .score-low { background: #F44336; }
+  .bc-info { flex: 1; }
+  .bc-name { font-weight: 800; font-size: 15px; margin-bottom: 3px; }
+  .bc-addr { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .bc-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .bc-tag {
+    font-size: 11px; font-weight: 700;
+    padding: 3px 9px; border-radius: 50px;
+    background: var(--cream);
+    color: var(--brown-mid);
+    border: 1px solid rgba(92,51,23,0.15);
+    white-space: nowrap;
+  }
+  .bc-tag.tag-vibe   { background: #FFF8E1; color: #E65100; border-color: #FFB74D; }
+  .bc-tag.tag-stall  { background: #E8F5E9; color: #2E7D32; border-color: #81C784; }
+  .bc-tag.tag-tp     { background: #E3F2FD; color: #1565C0; border-color: #90CAF9; }
+  .bc-tag.tag-tech   { background: #F3E5F5; color: #6A1B9A; border-color: #CE93D8; }
+  .bc-tag.tag-access { background: #E0F2F1; color: #00695C; border-color: #80CBC4; }
+
+  /* Tag picker in modal */
+  .tag-section { margin-bottom: 16px; }
+  .tag-section-label {
+    font-size: 11px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; color: #aaa;
+    margin-bottom: 8px;
+  }
+  .tag-picker-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag-chip {
+    font-size: 12px; font-weight: 700;
+    padding: 6px 12px; border-radius: 50px;
+    border: 1.5px solid rgba(0,0,0,0.12);
+    background: white; color: #555;
+    cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 4px;
+    position: relative;
+  }
+  .tag-chip:hover { border-color: var(--teal); color: var(--teal); transform: translateY(-1px); }
+  .tag-chip.selected { background: var(--teal); color: white; border-color: var(--teal); }
+  .tag-chip .tag-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%; transform: translateX(-50%);
+    background: var(--dark);
+    color: white;
+    font-size: 11px; font-weight: 600;
+    padding: 5px 10px; border-radius: 8px;
+    white-space: nowrap;
+    z-index: 100;
+    pointer-events: none;
+  }
+  .tag-chip:hover .tag-tooltip { display: block; }
+  .bc-dist { font-size: 12px; font-weight: 700; color: var(--teal); white-space: nowrap; }
+
+  /* ══════════════════════════════
+     THRONE ROOM
+  ══════════════════════════════ */
+  #throneroom .page-header { background: var(--dark); }
+
+  .throne-tabs {
+    display: flex; gap: 0;
+    background: rgba(0,0,0,0.15);
+    padding: 0 16px;
+    background: var(--dark);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .throne-tab {
+    padding: 10px 18px;
+    font-size: 13px; font-weight: 700;
+    color: rgba(255,255,255,0.45);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .throne-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .throne-feed { padding: 14px 16px 90px; }
+  
+  /* Article body typography */
+  .article-body { font-size: 15px; line-height: 1.7; color: #333; }
+  .article-body p { margin-bottom: 14px; }
+  .article-body h3 { font-family: 'Fredoka One', cursive; font-size: 18px; color: var(--dark); margin: 20px 0 10px; }
+  .article-body strong { font-weight: 800; color: var(--dark); }
+  .article-body em { font-style: italic; color: #666; }
+  .throne-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+    cursor: pointer;
+  }
+  .throne-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .tc-banner {
+    height: 8px;
+    display: block;
+  }
+  .tc-body { padding: 16px; }
+  .tc-category {
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .tc-title { font-family: 'Fredoka One', cursive; font-size: 19px; line-height: 1.25; margin-bottom: 8px; color: var(--dark); }
+  .tc-preview { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 12px; }
+  .tc-footer { display: flex; justify-content: space-between; align-items: center; }
+  .tc-time { font-size: 11px; color: #aaa; font-weight: 700; }
+  .tc-actions { display: flex; gap: 10px; }
+  .tc-action { background: none; border: none; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; color: #aaa; font-weight: 700; transition: color 0.15s; }
+  .tc-action:hover { color: var(--brown); }
+
+  .trivia-card {
+    background: linear-gradient(135deg, var(--brown) 0%, var(--dark) 100%);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 14px;
+    color: white;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .trivia-card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 100px; height: 100px;
+    background: rgba(245,197,24,0.1);
+    border-radius: 50%;
+  }
+  .trivia-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); font-weight: 800; margin-bottom: 8px; }
+  .trivia-q { font-family: 'Fredoka One', cursive; font-size: 18px; line-height: 1.3; margin-bottom: 14px; }
+  .trivia-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .trivia-opt {
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 13px; font-weight: 700; color: white;
+    cursor: pointer; text-align: center;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .trivia-opt:hover { background: rgba(245,197,24,0.2); border-color: var(--gold); }
+  .trivia-opt.correct {
+    background: rgba(76,175,80,0.35);
+    border-color: #4CAF50;
+    border-width: 2px;
+    box-shadow: 0 0 12px rgba(76,175,80,0.4);
+  }
+  .trivia-opt.correct::after {
+    content: '✓ CORRECT!';
+    display: block;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: #81C784;
+    margin-top: 4px;
+    font-weight: 800;
+  }
+  .trivia-opt.wrong {
+    background: rgba(244,67,54,0.25);
+    border-color: #F44336;
+    border-width: 2px;
+    color: rgba(255,255,255,0.5);
+    text-decoration: line-through;
+  }
+  .trivia-wrong-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: rgba(198,40,40,0.55);
+    border-radius: 10px;
+    pointer-events: none;
+  }
+  .trivia-wrong-overlay .wrong-x {
+    font-size: 28px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    animation: pop-in 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .trivia-wrong-overlay .wrong-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: white;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    animation: pop-in 0.25s cubic-bezier(0.34,1.56,0.64,1) 0.05s both;
+  }
+  @keyframes pop-in {
+    from { transform: scale(0.4); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* ══════════════════════════════
+     FLUSH & TELL
+  ══════════════════════════════ */
+
+  .ft-compose {
+    background: #1a3a4a;
+    padding: 0 16px 16px;
+  }
+  .ft-compose-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px dashed rgba(0,191,165,0.4);
+    border-radius: 14px;
+    padding: 14px;
+    color: rgba(255,255,255,0.4);
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ft-compose-btn:hover { background: rgba(0,191,165,0.1); border-color: var(--teal); color: rgba(255,255,255,0.7); }
+
+  .ft-filters { display: flex; gap: 8px; padding: 14px 16px 4px; overflow-x: auto; scrollbar-width: none; }
+  .ft-filters::-webkit-scrollbar { display: none; }
+  .ft-filter {
+    flex: 0 0 auto;
+    background: white;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    border-radius: 50px;
+    padding: 7px 16px;
+    font-size: 12px; font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .ft-filter.active { background: var(--teal); color: white; border-color: var(--teal); }
+
+  .ft-reactions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+  .reaction-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: white;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    border-radius: 50px;
+    padding: 6px 12px;
+    font-size: 13px; font-weight: 700; color: #666;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .reaction-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,0.12); }
+  .reaction-btn.reacted { font-weight: 800; }
+
+  /* Badge tier styling */
+  .badge-tier-label {
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 50px;
+    margin-bottom: 8px; display: inline-block;
+  }
+  .tier-1 { background: #E3F2FD; color: #1565C0; }
+  .tier-2 { background: #E8F5E9; color: #2E7D32; }
+  .tier-3 { background: #FFF8E1; color: #E65100; }
+  .tier-4 { background: linear-gradient(135deg,#FFD700,#FFA500); color: white; }
+
+  .badge-item.tier-4 { border: 1.5px solid rgba(255,165,0,0.4); background: linear-gradient(135deg,#fffdf0,#fff8e1); }
+
+  /* Badge unlock toast */
+  .badge-unlock-toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-200px);
+    background: linear-gradient(135deg, var(--brown), var(--dark));
+    color: white; border: 2px solid var(--gold);
+    padding: 14px 24px; border-radius: 20px;
+    font-family: 'Fredoka One', cursive;
+    z-index: 400; transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    text-align: center; min-width: 220px;
+    box-shadow: var(--shadow-lg);
+    pointer-events: none;
+  }
+  .badge-unlock-toast.show { transform: translateX(-50%) translateY(0); pointer-events: all; }
+  .but-emoji { font-size: 36px; display: block; margin-bottom: 4px; }
+  .but-label { font-size: 11px; color: var(--gold); letter-spacing: 1px; margin-bottom: 2px; }
+  .but-name { font-size: 18px; }
+  .ft-post {
+    background: white;
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .ft-post:hover { border-color: var(--teal); transform: translateY(-1px); }
+  .ft-post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .ft-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .ft-user { flex: 1; }
+  .ft-username { font-weight: 800; font-size: 13px; color: var(--dark); }
+  .ft-time { font-size: 11px; color: #aaa; font-weight: 700; }
+  .ft-flair {
+    font-size: 10px; font-weight: 800; letter-spacing: 1px;
+    padding: 3px 9px; border-radius: 50px;
+    text-transform: uppercase;
+  }
+  .ft-title { font-family: 'Fredoka One', cursive; font-size: 17px; line-height: 1.3; margin-bottom: 8px; color: var(--dark); }
+  .ft-body { font-size: 13px; color: #555; line-height: 1.55; margin-bottom: 4px; }
+  .ft-footer { display: flex; gap: 14px; align-items: center; }
+  .ft-comments-count { font-size: 12px; color: #aaa; font-weight: 700; margin-left: auto; }
+  .ft-posts { padding: 10px 16px 90px; }
+
+  /* modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    display: none; align-items: flex-end;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    width: 100%; max-height: 90vh;
+    border-radius: 28px 28px 0 0;
+    padding: 24px 20px 40px;
+    overflow-y: auto;
+    animation: slide-up 0.3s ease;
+  }
+  @keyframes slide-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 20px; }
+  .modal h2 { font-family: 'Fredoka One', cursive; font-size: 22px; margin-bottom: 16px; color: var(--dark); }
+  .modal textarea {
+    width: 100%;
+    border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 14px;
+    padding: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    resize: none;
+    height: 120px;
+    margin-bottom: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .modal textarea:focus { border-color: var(--teal); }
+  .modal input[type=text] {
+    width: 100%;
+    border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 14px;
+    padding: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    margin-bottom: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .modal input[type=text]:focus { border-color: var(--teal); }
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+  .btn-ghost { background: none; border: 2px solid rgba(0,0,0,0.1); border-radius: 50px; padding: 10px 22px; font-family: 'Fredoka One', cursive; font-size: 15px; cursor: pointer; color: #888; transition: all 0.15s; }
+  .btn-ghost:hover { border-color: #999; color: var(--dark); }
+
+  /* ══════════════════════════════
+     THRONE CARD / PROFILE
+  ══════════════════════════════ */
+  .throne-card-hero {
+    background: linear-gradient(135deg, var(--brown) 0%, var(--dark) 100%);
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .throne-card-hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(245,197,24,0.08);
+    border-radius: 50%;
+  }
+  .throne-card-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -20px;
+    width: 200px; height: 200px;
+    background: rgba(0,191,165,0.06);
+    border-radius: 50%;
+  }
+  .tc-hero-top { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; position: relative; z-index: 1; }
+  .tc-avatar-big {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 3px solid rgba(245,197,24,0.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    flex-shrink: 0;
+  }
+  .tc-name { font-family: 'Fredoka One', cursive; font-size: 22px; color: white; line-height: 1.1; }
+  .tc-since { font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 700; margin-top: 2px; }
+  .tc-tagline { font-size: 13px; color: rgba(255,255,255,0.6); font-style: italic; }
+
+  .tc-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: rgba(255,255,255,0.1);
+    border-radius: 14px; overflow: hidden;
+    position: relative; z-index: 1;
+  }
+  .tc-stat {
+    background: rgba(0,0,0,0.2);
+    padding: 12px 8px; text-align: center;
+  }
+  .tc-stat-num { font-family: 'Fredoka One', cursive; font-size: 24px; color: var(--gold); line-height: 1; }
+  .tc-stat-label { font-size: 10px; color: rgba(255,255,255,0.45); font-weight: 700; letter-spacing: 0.5px; margin-top: 3px; }
+
+  .badge-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+  .badge-item {
+    background: white;
+    border-radius: 16px;
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    flex: 1; min-width: 140px;
+  }
+  .badge-item.locked { opacity: 0.4; filter: grayscale(1); }
+  .badge-emoji { font-size: 28px; flex-shrink: 0; }
+  .badge-info { flex: 1; }
+  .badge-name { font-weight: 800; font-size: 13px; color: var(--dark); }
+  .badge-desc { font-size: 11px; color: #999; margin-top: 1px; }
+
+  .profile-section-title {
+    font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+    text-transform: uppercase; color: #aaa;
+    margin: 20px 0 10px;
+  }
+
+  .profile-post {
+    background: white; border-radius: 14px; padding: 14px;
+    margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--teal);
+  }
+  .profile-post-title { font-weight: 800; font-size: 14px; color: var(--dark); margin-bottom: 4px; }
+  .profile-post-meta { font-size: 11px; color: #aaa; font-weight: 700; }
+
+  .edit-profile-btn {
+    position: absolute; top: 16px; right: 16px; z-index: 2;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-size: 12px; font-weight: 800; color: white;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .edit-profile-btn:hover { background: rgba(255,255,255,0.25); }
+  #crapstore .page-header { background: #2d1b4e; }
+
+  .store-banner {
+    background: linear-gradient(135deg, var(--gold) 0%, #e6a800 100%);
+    margin: 12px 16px;
+    border-radius: 18px;
+    padding: 16px 20px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 4px 16px rgba(245,197,24,0.4);
+  }
+  .store-banner .sb-text h3 { font-family: 'Fredoka One', cursive; font-size: 18px; color: var(--dark); }
+  .store-banner .sb-text p { font-size: 12px; color: rgba(44,26,14,0.7); font-weight: 700; }
+  .store-banner .sb-emoji { font-size: 48px; }
+
+  .store-cats { display: flex; gap: 8px; padding: 8px 16px; overflow-x: auto; scrollbar-width: none; }
+  .store-cats::-webkit-scrollbar { display: none; }
+  .store-cat {
+    flex: 0 0 auto;
+    background: white;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    border-radius: 50px;
+    padding: 8px 18px;
+    font-size: 12px; font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .store-cat.active { background: #2d1b4e; color: white; border-color: #2d1b4e; }
+
+  .store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 16px 90px; }
+  .product-card {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .product-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--gold); }
+  .product-thumb {
+    height: 130px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .product-thumb::before {
+    content: '';
+    position: absolute; inset: 0;
+    opacity: 0.12;
+  }
+  .product-badge {
+    position: absolute; top: 8px; right: 8px;
+    color: white;
+    font-size: 10px; font-weight: 800;
+    padding: 3px 7px; border-radius: 50px;
+    letter-spacing: 0.5px;
+  }
+  .product-badge.badge-gift { background: var(--teal); }
+  .product-badge.badge-default { background: #F44336; }
+  .product-info { padding: 12px; }
+  .product-name { font-weight: 800; font-size: 14px; line-height: 1.3; margin-bottom: 6px; color: var(--dark); }
+  .product-stars { font-size: 11px; color: var(--gold-dark); margin-bottom: 6px; }
+  .product-price {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px; color: var(--brown);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .add-to-cart {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--gold);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 0 var(--gold-dark);
+    transition: all 0.15s;
+  }
+  .add-to-cart:hover { transform: scale(1.15); }
+
+  .free-shipping-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #E8F5E9; color: #2E7D32;
+    font-size: 10px; font-weight: 800;
+    padding: 3px 8px; border-radius: 50px;
+    letter-spacing: 0.3px; margin-top: 5px;
+    border: 1px solid #A5D6A7;
+  }
+  .drawer-free-shipping {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: #E8F5E9; color: #2E7D32;
+    font-size: 12px; font-weight: 800;
+    padding: 5px 12px; border-radius: 50px;
+    border: 1px solid #A5D6A7;
+    margin-bottom: 14px;
+  }
+  .drawer-shop-btn {
+    background: var(--teal);
+    color: white;
+    border: none; border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    padding: 12px 22px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--teal-dark);
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 7px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .drawer-shop-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 0 var(--teal-dark); }
+  .drawer-shop-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--teal-dark); }
+  .add-to-cart.added { background: var(--teal); box-shadow: 0 2px 0 var(--teal-dark); }
+
+  /* ── PRODUCT DETAIL DRAWER ── */
+  .drawer-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0);
+    pointer-events: none;
+    transition: background 0.3s ease;
+  }
+  .drawer-overlay.open {
+    background: rgba(0,0,0,0.55);
+    pointer-events: all;
+  }
+  .product-drawer {
+    position: fixed; bottom: 0; left: 50%; z-index: 201;
+    transform: translateX(-50%) translateY(110%);
+    width: 100%; max-width: 480px;
+    background: var(--cream);
+    border-radius: 28px 28px 0 0;
+    padding: 0 0 100px;
+    transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .product-drawer::-webkit-scrollbar { display: none; }
+  .product-drawer.open { transform: translateX(-50%) translateY(0); }
+
+  .drawer-handle {
+    width: 40px; height: 4px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 50px;
+    margin: 12px auto 0;
+  }
+
+  .drawer-hero {
+    height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 96px;
+    position: relative;
+    border-radius: 20px 20px 0 0;
+    margin: 0;
+  }
+  .drawer-hero-badge {
+    position: absolute; top: 14px; right: 14px;
+    background: #F44336;
+    color: white;
+    font-size: 11px; font-weight: 800;
+    padding: 4px 10px; border-radius: 50px;
+    letter-spacing: 0.5px;
+  }
+  .drawer-close {
+    position: absolute; top: 14px; left: 14px;
+    width: 32px; height: 32px;
+    background: rgba(0,0,0,0.2);
+    border: none; border-radius: 50%;
+    color: white; font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .drawer-body { padding: 16px 20px 0; }
+
+  .drawer-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px; color: var(--dark);
+    line-height: 1.2; margin-bottom: 4px;
+  }
+  .drawer-stars {
+    font-size: 13px; color: var(--gold-dark);
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 12px;
+  }
+  .drawer-stars span { color: #aaa; font-size: 12px; }
+  .drawer-price-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .drawer-price {
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px; color: var(--brown);
+  }
+  .drawer-add-btn {
+    background: #FF9900;
+    color: #111;
+    border: none; border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    padding: 12px 22px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #c47d00;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 7px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .drawer-add-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 0 #c47d00; }
+  .drawer-add-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #c47d00; }
+  .drawer-affiliate-note {
+    font-size: 10px; color: #aaa; text-align: center;
+    margin-top: 8px; font-style: italic;
+  }
+
+  .drawer-desc {
+    background: white;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 13px; line-height: 1.65;
+    color: #555;
+    margin-bottom: 16px;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  .drawer-desc-label {
+    font-size: 10px; font-weight: 800;
+    letter-spacing: 1.5px; color: #aaa;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .drawer-reviews { margin-bottom: 8px; }
+  .drawer-reviews-label {
+    font-size: 10px; font-weight: 800;
+    letter-spacing: 1.5px; color: #aaa;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .review-card {
+    background: white;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  .review-top {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .review-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    background: var(--cream);
+  }
+  .review-meta { flex: 1; }
+  .review-name { font-weight: 800; font-size: 12px; color: var(--dark); }
+  .review-stars { font-size: 10px; color: var(--gold-dark); }
+  .review-verified {
+    font-size: 9px; font-weight: 700;
+    color: var(--teal-dark); letter-spacing: 0.5px;
+  }
+  .review-text { font-size: 12px; line-height: 1.55; color: #555; }
+
+  /* Cart badge */
+  .cart-badge {
+    position: absolute; top: -4px; right: -4px;
+    background: var(--teal);
+    color: white;
+    width: 18px; height: 18px; border-radius: 50%;
+    font-size: 10px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    display: none;
+  }
+  .cart-wrap { position: relative; display: inline-block; }
+
+  /* Toast */
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: var(--dark);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 700; font-size: 14px;
+    z-index: 300;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+    box-shadow: var(--shadow-lg);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Code Brown Alert */
+  .code-brown-alert {
+    position: fixed; inset: 0;
+    background: rgba(192,57,43,0.95);
+    z-index: 500;
+    display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 40px;
+    animation: alert-flash 0.5s;
+  }
+  @keyframes alert-flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+  .code-brown-alert.open { display: flex; }
+  .cba-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 42px; color: white;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+    margin-bottom: 8px;
+  }
+  .cba-sub { color: rgba(255,255,255,0.8); font-size: 16px; margin-bottom: 24px; }
+  .cba-nearest {
+    background: white;
+    border-radius: 20px;
+    padding: 20px 30px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-lg);
+  }
+  .cba-nearest h3 { font-family: 'Fredoka One', cursive; font-size: 22px; color: var(--dark); margin-bottom: 4px; }
+  .cba-nearest p { font-size: 14px; color: #555; margin-bottom: 8px; }
+  .cba-nearest .cba-dist { font-family: 'Fredoka One', cursive; font-size: 28px; color: #4CAF50; }
+  .cba-dismiss { background: white; border: none; border-radius: 50px; padding: 14px 32px; font-family: 'Fredoka One', cursive; font-size: 18px; color: #c0392b; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
+
+</style>
+</head>
+<body>
+
+<!-- ════ HERO ════ -->
+<div id="hero" class="screen active">
+  <div class="hero-bg"></div>
+  <div class="hero-dots"></div>
+
+  <div class="hero-content">
+    <div class="hero-logo">💩</div>
+    <div class="hero-crown">👑</div>
+    <div class="hero-title">Crap App</div>
+    <div class="hero-tagline">We Give A Shit</div>
+    <p class="hero-desc">The world's first and finest shitting companion. Find clean bathrooms, kill time on the throne, and share your most legendary bathroom stories.</p>
+
+    <button class="hero-cta" onclick="enterApp()">
+      🚽 Enter the App
+    </button>
+
+    <div class="hero-features">
+      <div class="feature-pill" onclick="goTo('crapmap')">🗺️ CrapMap</div>
+      <div class="feature-pill" onclick="goTo('throneroom')">👑 Throne Room</div>
+      <div class="feature-pill" onclick="goTo('flushandtell')">💬 Flush & Tell</div>
+      <div class="feature-pill" onclick="goTo('crapstore')">🛒 Crap Store</div>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <div class="preview-label">↓ Scroll or tap to explore ↓</div>
+    <div class="preview-cards">
+      <div class="preview-card" onclick="goTo('crapmap')">
+        <div class="pc-icon">🗺️</div>
+        <div class="pc-title">CrapMap</div>
+        <div class="pc-desc">Find rated bathrooms near you. Code Brown button included.</div>
+      </div>
+      <div class="preview-card" onclick="goTo('throneroom')">
+        <div class="pc-icon">👑</div>
+        <div class="pc-title">Throne Room</div>
+        <div class="pc-desc">Curated content for your 5-10 minute sessions.</div>
+      </div>
+      <div class="preview-card" onclick="goTo('flushandtell')">
+        <div class="pc-icon">💬</div>
+        <div class="pc-title">Flush & Tell</div>
+        <div class="pc-desc">Anonymous confessions & legendary bathroom stories.</div>
+      </div>
+      <div class="preview-card" onclick="goTo('crapstore')">
+        <div class="pc-icon">🛒</div>
+        <div class="pc-title">Crap Store</div>
+        <div class="pc-desc">Premium bidets, merch, and bathroom essentials.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Capture -->
+  <div class="email-capture">
+    <div class="email-capture-emoji">📬</div>
+    <h3>The App Is Coming. Be First.</h3>
+    <p>Drop your email and we'll let you know the moment CrapApp hits the App Store. No spam. Just one very important message about bathroom technology.</p>
+    <div class="email-form">
+      <input class="email-input" id="email-input" type="email" placeholder="your@email.com" />
+      <button class="email-submit" id="email-submit" onclick="submitEmail()">Notify Me 💩</button>
+    </div>
+    <div class="email-fine-print">We respect your privacy. Unsubscribe anytime. Read our <a href="#" onclick="showLegal('privacy')" style="color:rgba(255,255,255,0.4);text-decoration:underline;">Privacy Policy</a>.</div>
+  </div>
+</div>
+
+  <!-- Hero Footer -->
+  <div class="hero-footer">
+    <div class="hero-footer-links">
+      <a onclick="showLegal('privacy')">Privacy Policy</a>
+      <a onclick="showLegal('terms')">Terms of Service</a>
+      <a href="mailto:maximollc2531@gmail.com">maximollc2531@gmail.com</a>
+    </div>
+    <div class="hero-footer-copy">© 2025 CrapApp. We give a shit.</div>
+  </div>
+</div>
+
+<!-- ════ PRIVACY POLICY ════ -->
+<div id="privacy" class="screen">
+  <div class="legal-screen">
+    <div class="legal-header">
+      <div class="legal-header-inner">
+        <button class="legal-back" onclick="hideLegal()">← Back</button>
+        <div>
+          <h1>🔒 Privacy Policy</h1>
+          <p>How we handle your data</p>
+        </div>
+      </div>
+    </div>
+    <div class="legal-body">
+      <span class="legal-effective">Effective: January 1, 2025</span>
+
+      <p>CrapApp ("we," "us," or "our") operates this web application. This Privacy Policy explains how we collect, use, and protect your information when you use CrapApp. By using the app, you agree to the practices described here.</p>
+
+      <h2>Information We Collect</h2>
+      <p>We collect only what we need to operate and improve the app:</p>
+      <ul>
+        <li><strong>Email address</strong> — if you voluntarily sign up for launch notifications. We use this only to send you product updates. You can unsubscribe at any time.</li>
+        <li><strong>Usage data</strong> — anonymous, aggregated information about how the app is used (which features are tapped, general engagement). This does not identify you personally.</li>
+        <li><strong>Location data</strong> — CrapMap may request access to your device location to show nearby bathrooms. We do not store or transmit your location to our servers. Location access is optional and can be denied without affecting other app features.</li>
+        <li><strong>User-submitted content</strong> — stories or posts you submit through Flush & Tell. These are anonymous by default.</li>
+      </ul>
+
+      <h2>How We Use Your Information</h2>
+      <ul>
+        <li>To send launch and product update notifications (email only, with your consent)</li>
+        <li>To improve the app experience based on anonymous usage patterns</li>
+        <li>To display relevant bathroom locations on CrapMap</li>
+        <li>To publish anonymous user stories in Flush & Tell</li>
+      </ul>
+      <p>We do not sell, rent, or share your personal information with third parties for their marketing purposes. Ever.</p>
+
+      <h2>Affiliate Links & Disclosures</h2>
+      <p>The Crap Store contains affiliate links, primarily to Amazon. When you click a product link and make a purchase, we may earn a small commission at no additional cost to you. This helps support the app. All affiliate relationships are disclosed at the point of sale within the app.</p>
+
+      <h2>Cookies & Local Storage</h2>
+      <p>CrapApp uses your browser's local storage (not traditional cookies) to save your preferences, profile data, and app state between sessions. This data stays on your device and is not transmitted to us. You can clear it at any time through your browser settings or using the "Reset" option within the app.</p>
+
+      <h2>Third-Party Services</h2>
+      <p>CrapApp may use the following third-party services, each with their own privacy policies:</p>
+      <ul>
+        <li><strong>OpenStreetMap</strong> — for map tiles in CrapMap</li>
+        <li><strong>Google Fonts</strong> — for typography</li>
+        <li><strong>Amazon Associates</strong> — for affiliate product links</li>
+        <li><strong>Email service provider</strong> (e.g. Mailchimp) — for launch notification emails</li>
+      </ul>
+
+      <h2>Children's Privacy</h2>
+      <p>CrapApp is intended for users 13 years of age and older. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us and we will delete it promptly.</p>
+
+      <h2>Data Retention & Deletion</h2>
+      <p>Email addresses collected for launch notifications are retained until you unsubscribe or request deletion. To request removal of your data, email us at <a href="mailto:maximollc2531@gmail.com">maximollc2531@gmail.com</a> and we will respond within 30 days.</p>
+
+      <h2>Changes to This Policy</h2>
+      <p>We may update this Privacy Policy from time to time. When we do, we'll update the effective date above. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
+
+      <h2>Contact</h2>
+      <p>Questions about this Privacy Policy? Reach us at <a href="mailto:maximollc2531@gmail.com">maximollc2531@gmail.com</a>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TERMS OF SERVICE ════ -->
+<div id="terms" class="screen">
+  <div class="legal-screen">
+    <div class="legal-header">
+      <div class="legal-header-inner">
+        <button class="legal-back" onclick="hideLegal()">← Back</button>
+        <div>
+          <h1>📋 Terms of Service</h1>
+          <p>The rules of the throne</p>
+        </div>
+      </div>
+    </div>
+    <div class="legal-body">
+      <span class="legal-effective">Effective: January 1, 2025</span>
+
+      <p>Welcome to CrapApp. By accessing or using this application, you agree to be bound by these Terms of Service. If you do not agree, please do not use the app.</p>
+
+      <h2>1. Use of the App</h2>
+      <p>CrapApp is a humor-driven bathroom utility and community app. You agree to use it only for lawful purposes and in a manner consistent with these Terms. You must be at least 13 years old to use CrapApp.</p>
+
+      <h2>2. User-Submitted Content</h2>
+      <p>CrapApp allows users to submit anonymous stories, bathroom ratings, and other content ("User Content"). By submitting content, you:</p>
+      <ul>
+        <li>Confirm you have the right to share it</li>
+        <li>Grant CrapApp a non-exclusive, royalty-free license to display and distribute it within the app</li>
+        <li>Agree not to submit content that is illegal, defamatory, harassing, obscene, or that violates the rights of others</li>
+        <li>Understand that submitted content may be visible to other users</li>
+      </ul>
+      <p>We reserve the right to remove any User Content at our sole discretion without notice.</p>
+
+      <h2>3. Prohibited Conduct</h2>
+      <p>You agree not to:</p>
+      <ul>
+        <li>Submit false, misleading, or malicious content</li>
+        <li>Attempt to reverse-engineer, scrape, or interfere with the app</li>
+        <li>Use the app to harass, threaten, or harm others</li>
+        <li>Violate any applicable local, state, national, or international law</li>
+        <li>Impersonate any person or entity</li>
+      </ul>
+
+      <h2>4. Affiliate Links & Third-Party Sites</h2>
+      <p>The Crap Store contains affiliate links to third-party retailers including Amazon. CrapApp may earn a commission on qualifying purchases. We are not responsible for the products, services, or content of any third-party sites. Your transactions with third-party retailers are solely between you and them.</p>
+
+      <h2>5. Intellectual Property</h2>
+      <p>All original content, design, branding, and code in CrapApp is owned by CrapApp or its licensors. You may not reproduce, distribute, or create derivative works without express written permission. The CrapApp name, logo, and "We Give A Shit" tagline are proprietary to CrapApp.</p>
+
+      <h2>6. Disclaimer of Warranties</h2>
+      <p>CrapApp is provided "as is" and "as available" without warranties of any kind, express or implied. We do not warrant that the app will be uninterrupted, error-free, or free of viruses or harmful components. Bathroom ratings and recommendations are user-generated and we make no representations about their accuracy.</p>
+
+      <h2>7. Limitation of Liability</h2>
+      <p>To the fullest extent permitted by law, CrapApp shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to your use of the app — including but not limited to any bathroom-related decisions made in reliance on app content.</p>
+
+      <h2>8. Termination</h2>
+      <p>We reserve the right to suspend or terminate access to CrapApp at any time, for any reason, with or without notice. Provisions of these Terms that by their nature should survive termination will do so.</p>
+
+      <h2>9. Governing Law</h2>
+      <p>These Terms are governed by the laws of the State of Colorado, without regard to conflict of law principles. Any disputes arising under these Terms shall be resolved in the courts located in Colorado.</p>
+
+      <h2>10. Changes to These Terms</h2>
+      <p>We may update these Terms from time to time. The effective date at the top of this page will reflect any changes. Continued use of CrapApp after changes are posted constitutes your acceptance of the updated Terms.</p>
+
+      <h2>11. Contact</h2>
+      <p>Questions about these Terms? Contact us at <a href="mailto:maximollc2531@gmail.com">maximollc2531@gmail.com</a>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CRAPMAP ════ -->
+<div id="crapmap" class="screen">
+ <div class="app-shell">
+  <div class="page-header">
+    <h1>🗺️ CrapMap</h1>
+    <p>Crowdsourced bathroom ratings near you</p>
+  </div>
+
+  <div class="map-legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#4CAF50"></div> Clean (8-10)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FFC107"></div> Meh (5-7)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#F44336"></div> Avoid (1-4)</div>
+    <div class="legend-item" style="margin-left:auto; color:#666; font-size:12px;">📍 Your location</div>
+  </div>
+
+  <div class="map-container">
+    <div id="leaflet-map"></div>
+    <button class="code-brown-btn" onclick="codeBrown()">🚨 CODE BROWN</button>
+  </div>
+
+  <div class="bathroom-list" id="bathroom-list"></div>
+ </div>
+</div>
+
+<!-- ════ THRONE ROOM ════ -->
+<div id="throneroom" class="screen">
+ <div class="app-shell">
+  <div class="page-header" style="background:var(--dark);">
+    <h1>👑 Throne Room</h1>
+    <p>Your 5-10 min bathroom content drop</p>
+  </div>
+  <div class="throne-tabs">
+    <div class="throne-tab active" onclick="throneTab(this,'all')">All</div>
+    <div class="throne-tab" onclick="throneTab(this,'articles')">Articles</div>
+    <div class="throne-tab" onclick="throneTab(this,'trivia')">Trivia</div>
+    <div class="throne-tab" onclick="throneTab(this,'videos')">Videos</div>
+    <div class="throne-tab" onclick="throneTab(this,'minigames')">Mini Games</div>
+  </div>
+  <div class="throne-feed" id="throne-feed"></div>
+ </div>
+</div>
+
+<!-- ════ FLUSH & TELL ════ -->
+<div id="flushandtell" class="screen">
+ <div class="app-shell">
+  <div class="page-header" style="background:#1a3a4a;">
+    <h1>💬 Flush & Tell</h1>
+    <p>Anonymous confessions. No judgment. Only vibes.</p>
+  </div>
+  <div class="ft-compose">
+    <button class="ft-compose-btn" onclick="openPostModal()">
+      😳 Share your story anonymously...
+    </button>
+  </div>
+  <div class="ft-filters">
+    <div class="ft-filter active" onclick="ftFilter(this,'all')">🔥 Hot</div>
+    <div class="ft-filter" onclick="ftFilter(this,'confessions')">🤫 Confessions</div>
+    <div class="ft-filter" onclick="ftFilter(this,'disasters')">💥 Disasters</div>
+    <div class="ft-filter" onclick="ftFilter(this,'philosophy')">🧘 Philosophy</div>
+    <div class="ft-filter" onclick="ftFilter(this,'advice')">💡 Advice</div>
+  </div>
+  <div class="ft-posts" id="ft-posts"></div>
+ </div>
+</div>
+
+<!-- ════ CRAP STORE ════ -->
+<div id="crapstore" class="screen">
+ <div class="app-shell">
+  <div class="page-header" style="background:#2d1b4e;">
+    <h1>🛒 Crap Store</h1>
+    <p>Elevate your bathroom game</p>
+  </div>
+
+  <div class="store-cats">
+    <div class="store-cat active" onclick="storeCat(this,'all')">All</div>
+    <div class="store-cat" onclick="storeCat(this,'bidets')">🚿 Bidets</div>
+    <div class="store-cat" onclick="storeCat(this,'tp')">🧻 TP & Wipes</div>
+    <div class="store-cat" onclick="storeCat(this,'merch')">👕 Merch</div>
+    <div class="store-cat" onclick="storeCat(this,'gadgets')">⚡ Gadgets</div>
+    <div class="store-cat" onclick="storeCat(this,'scents')">🌸 Scents</div>
+  </div>
+
+  <div class="store-grid" id="store-grid"></div>
+ </div>
+</div>
+
+<!-- ════ THRONE CARD ════ -->
+<div id="thronecard" class="screen">
+ <div class="app-shell">
+  <div class="page-header" style="background:linear-gradient(135deg,#2C1A0E 0%,#5C3317 100%);">
+    <h1>🪪 Throne Card</h1>
+    <p>Your identity on the throne</p>
+  </div>
+  <div id="thronecard-content" style="padding:16px 16px 90px;"></div>
+ </div>
+</div>
+
+<!-- ════ ONBOARDING MODAL ════ -->
+<div class="modal-overlay" id="onboarding-modal">
+  <div class="modal" style="padding:28px 24px 36px;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:64px;margin-bottom:8px;" id="ob-avatar-preview">💩</div>
+      <h2 style="font-family:'Fredoka One',cursive;font-size:24px;color:var(--dark);">Claim Your Throne</h2>
+      <p style="font-size:13px;color:#888;margin-top:4px;">Pick your handle and emoji. You're anonymous — but you're <em>you</em>.</p>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:8px;">YOUR HANDLE</div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="ob-handle" placeholder="e.g. MidnightFlusher" style="flex:1;border:2px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px;font-family:'Nunito',sans-serif;font-size:14px;outline:none;">
+        <button class="btn-teal" onclick="randomHandle()" style="padding:10px 14px;white-space:nowrap;">🎲 Random</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:8px;">YOUR EMOJI</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;" id="ob-emoji-grid"></div>
+    </div>
+
+    <button class="btn-primary" style="width:100%;justify-content:center;font-size:18px;" onclick="saveProfile()">
+      🚽 Claim My Throne
+    </button>
+  </div>
+</div>
+<nav class="app-nav" id="app-nav">
+  <div class="app-nav-inner">
+    <button class="nav-btn active" onclick="goTo('crapmap')" id="nav-crapmap">
+      <span class="icon">🗺️</span>CrapMap
+    </button>
+    <button class="nav-btn" onclick="goTo('throneroom')" id="nav-throneroom">
+      <span class="icon">👑</span>Throne
+    </button>
+    <button class="nav-btn" onclick="goTo('flushandtell')" id="nav-flushandtell">
+      <span class="icon">💬</span>Flush
+    </button>
+    <button class="nav-btn" onclick="goTo('crapstore')" id="nav-crapstore">
+      <span class="icon">🛒</span>Store
+    </button>
+    <button class="nav-btn" onclick="goTo('thronecard')" id="nav-thronecard">
+      <span class="icon" id="nav-profile-emoji">🪪</span>Me
+    </button>
+  </div>
+</nav>
+
+<!-- ════ ARTICLE MODAL ════ -->
+<div class="modal-overlay" id="article-modal" onclick="closeArticleModal(event)">
+  <div class="modal" id="article-modal-content" style="max-height:92vh;">
+    <div class="modal-handle"></div>
+    <div id="article-detail"></div>
+  </div>
+</div>
+
+<!-- ════ MODALS ════ -->
+<div class="modal-overlay" id="bathroom-modal" onclick="closeBathroomModal(event)">
+  <div class="modal" id="bathroom-modal-content">
+    <div class="modal-handle"></div>
+    <div id="bathroom-detail"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="post-modal" onclick="closePostModal(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>💩 Drop Your Story</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:14px;">100% anonymous. We don't even wanna know who you are.</p>
+    <input type="text" id="post-title" placeholder="Give it a headline...">
+    <textarea id="post-body" placeholder="Tell us everything. The more chaotic, the better."></textarea>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="document.getElementById('post-modal').classList.remove('open')">Cancel</button>
+      <button class="btn-teal" onclick="submitPost()">🚽 Flush It</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CODE BROWN ALERT ════ -->
+<div class="code-brown-alert" id="code-brown-alert">
+  <div class="cba-title">🚨 CODE BROWN 🚨</div>
+  <div class="cba-sub">Nearest acceptable bathroom found</div>
+  <div class="cba-nearest">
+    <h3>Whole Foods Market</h3>
+    <p>742 Evergreen Terrace • Score: 9.4/10</p>
+    <div class="cba-dist">0.2 miles away</div>
+    <div style="font-size:12px;color:#4CAF50;font-weight:700;margin-top:4px;">✓ Clean · ✓ Private stall · ✓ TP stocked</div>
+  </div>
+  <button class="cba-dismiss" onclick="document.getElementById('code-brown-alert').classList.remove('open')">
+    🏃 I'm Running — Thanks!
+  </button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+<div class="badge-unlock-toast" id="badge-toast">
+  <span class="but-emoji" id="badge-toast-emoji">🏆</span>
+  <div class="but-label">BADGE UNLOCKED</div>
+  <div class="but-name" id="badge-toast-name">Achievement</div>
+</div>
+
+<!-- ── PRODUCT DETAIL DRAWER ── -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="product-drawer" id="product-drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-hero" id="drawer-hero">
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    <span id="drawer-emoji"></span>
+    <div class="drawer-hero-badge" id="drawer-hero-badge" style="display:none"></div>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-name" id="drawer-name"></div>
+    <div class="drawer-stars" id="drawer-stars"></div>
+    <div class="drawer-price-row">
+      <div class="drawer-price" id="drawer-price"></div>
+      <a class="drawer-add-btn" id="drawer-add-btn" href="#" target="_blank" rel="noopener noreferrer">🛒 View on Amazon</a>
+    </div>
+    <div class="drawer-affiliate-note" id="drawer-affiliate-note">🔗 Affiliate link — we earn a small commission at no cost to you</div>
+    <div class="drawer-desc">
+      <div class="drawer-desc-label">About this item</div>
+      <div id="drawer-desc-text"></div>
+    </div>
+    <div class="drawer-reviews">
+      <div class="drawer-reviews-label">Verified Reviews</div>
+      <div id="drawer-reviews-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+// ── TAG SYSTEM ──
+const TAG_CATEGORIES = [
+  {
+    label: "✨ Vibe",
+    tags: [
+      { id: "hidden_treasure", label: "🗝️ Hidden Treasure", desc: "Nobody would ever guess this gem exists" },
+      { id: "royal_throne", label: "👑 Royal Throne", desc: "Fit for royalty. Genuinely luxurious." },
+      { id: "emergency_only", label: "🚨 Emergency Only", desc: "Only use if it's truly Code Brown" },
+      { id: "surprisingly_decent", label: "😮 Surprisingly Decent", desc: "Looked sketchy. Wasn't." },
+      { id: "overrated", label: "📉 Overrated", desc: "Looks good in photos. Disappoints in person." },
+    ]
+  },
+  {
+    label: "🚽 Stall",
+    tags: [
+      { id: "single_stall", label: "🔂 Single Stall", desc: "One at a time. Full privacy guaranteed." },
+      { id: "multi_stall", label: "🔀 Multi-Stall", desc: "Multiple stalls. Witness protection not included." },
+      { id: "no_urinal", label: "🚫 No Urinal", desc: "Sit-down only situation" },
+      { id: "spacious", label: "🏟️ Spacious", desc: "Room to do yoga if the mood strikes" },
+      { id: "cramped", label: "📦 Cramped", desc: "Don't drop anything. You can't bend down." },
+      { id: "faulty_latch", label: "🔓 Faulty Latch", desc: "Brace your foot. Trust no one." },
+      { id: "door_gap", label: "👁️ Door Gap", desc: "Significant gap. Eye contact possible." },
+      { id: "good_graffiti", label: "🎨 Good Graffiti", desc: "Walls are worth reading. Bring reading glasses." },
+    ]
+  },
+  {
+    label: "🧻 TP & Hygiene",
+    tags: [
+      { id: "soft_tp", label: "☁️ Soft TP", desc: "Cloud-like. You deserve this." },
+      { id: "medium_tp", label: "🤙 Medium TP", desc: "Gets the job done. No complaints, no praise." },
+      { id: "clint_tp", label: "🤠 Clint Eastwood TP", desc: "Rough, tough, and won't take shit off anybody." },
+      { id: "prepare_to_wait", label: "⏳ Prepare to Wait", desc: "Line likely. Start your meditation now." },
+    ]
+  },
+  {
+    label: "⚡ Tech & Features",
+    tags: [
+      { id: "auto_flush", label: "🤖 Auto Flush", desc: "It flushes for you. Usually at the wrong time." },
+      { id: "manual_flush", label: "🖐️ Manual Flush", desc: "Old school. You're in control." },
+      { id: "wet_butt", label: "💦 WetButt Risk", desc: "Auto flush triggers mid-sit. Godspeed." },
+      { id: "motion_lights", label: "👻 Motion Sensor Lights", desc: "Stay still and face darkness. Your call." },
+      { id: "wifi", label: "📶 Wi-Fi Available", desc: "Extended sessions fully supported." },
+      { id: "bidet", label: "🚿 Bidet Present", desc: "Elevated experience. Join us." },
+      { id: "paper_towels", label: "📄 Paper Towels", desc: "Old reliable. Actually dries your hands." },
+      { id: "electric_dryer", label: "💨 Electric Dryer", desc: "Stand there for 45 seconds. Hands still damp." },
+    ]
+  },
+  {
+    label: "🗺️ Access",
+    tags: [
+      { id: "key_required", label: "🔑 Ask for Key", desc: "Must do the walk of shame to the counter" },
+      { id: "purchase_required", label: "🛒 Purchase Required", desc: "Buy something or face consequences" },
+      { id: "free_access", label: "🆓 Free Access", desc: "No questions asked. Walk right in." },
+      { id: "dont_ask", label: "🤫 Don't Ask, Don't Tell", desc: "Technically employees only. Nobody's watching." },
+      { id: "wheelchair", label: "♿ Accessible", desc: "Fully accessible stall available" },
+      { id: "gender_neutral", label: "🏳️ Gender Neutral", desc: "All are welcome on this throne" },
+    ]
+  }
+];
+
+// Flatten for easy lookup
+const ALL_TAGS = TAG_CATEGORIES.flatMap(c => c.tags);
+
+const bathrooms = [
+  { name: "Starbucks Reserve", addr: "420 Lincoln Ave, Steamboat Springs", score: 9.1, dist: "0.1 mi",
+    tags: ["soft_tp", "wifi", "free_access", "spacious", "paper_towels"],
+    color: "score-high", reviews: 284, lat: 40.4853, lng: -106.8317 },
+  { name: "Sheraton Steamboat Resort", addr: "2200 Village Inn Ct, Steamboat Springs", score: 8.7, dist: "0.3 mi",
+    tags: ["royal_throne", "bidet", "soft_tp", "spacious", "manual_flush", "electric_dryer"],
+    color: "score-high", reviews: 192, lat: 40.4572, lng: -106.8048 },
+  { name: "Shell Gas Station", addr: "30 Lincoln Ave, Steamboat Springs", score: 5.2, dist: "0.5 mi",
+    tags: ["key_required", "clint_tp", "cramped", "manual_flush", "faulty_latch", "paper_towels"],
+    color: "score-mid", reviews: 78, lat: 40.4841, lng: -106.8363 },
+  { name: "Greyhound Bus Station", addr: "305 9th St, Steamboat Springs", score: 2.1, dist: "0.7 mi",
+    tags: ["emergency_only", "clint_tp", "multi_stall", "door_gap", "good_graffiti"],
+    color: "score-low", reviews: 341, lat: 40.4867, lng: -106.8298 },
+  { name: "McDonald's", addr: "200 Anglers Dr, Steamboat Springs", score: 6.3, dist: "0.4 mi",
+    tags: ["dont_ask", "prepare_to_wait", "auto_flush", "wet_butt", "motion_lights", "medium_tp"],
+    color: "score-mid", reviews: 156, lat: 40.4912, lng: -106.8201 },
+  { name: "Whole Foods Market", addr: "1825 Central Park Dr, Steamboat Springs", score: 9.4, dist: "0.2 mi",
+    tags: ["hidden_treasure", "soft_tp", "spacious", "free_access", "wheelchair", "gender_neutral", "electric_dryer"],
+    color: "score-high", reviews: 420, lat: 40.4778, lng: -106.8156 },
+];
+
+function getTagObj(id) {
+  return ALL_TAGS.find(t => t.id === id) || { label: id, desc: '' };
+}
+
+const throneContent = [
+  { type: "trivia", tab: "trivia", q: "What percentage of people admit to using their phone on the toilet?", opts: ["42%", "58%", "73%", "89%"], answer: 2, color: "#5C3317" },
+  {
+    type: "article", tab: "articles", cat: "DEEP THOUGHTS", catColor: "#F5C518", banner: "#5C3317",
+    title: "The Bathroom is the Last Private Space You Have",
+    preview: "In a world of constant surveillance, open offices, and notification pings, your throne is the one place where nobody — not your boss, not your family — can reach you. We should talk about that.",
+    time: "4 min read", likes: 2847, comments: 193,
+    body: `<p>There is a war on solitude, and most of us don't even know we're losing it.</p>
+<p>Open-plan offices eliminated walls. Smartphones eliminated downtime. Family group chats eliminated the concept of being unreachable. Somewhere along the way, the idea of being truly, completely alone — even for five minutes — became a radical act.</p>
+<p>Except in one place.</p>
+<p>The bathroom.</p>
+<p>Think about it. You can be mid-meeting, mid-dinner, mid-argument — and the moment you say "I need to use the restroom," the world backs off. Nobody follows you. Nobody texts you "quick question." Your boss does not knock. This is the unwritten law of civilization: the bathroom is inviolable.</p>
+<h3>The Last Room With a Lock</h3>
+<p>Most of us don't have an office with a door anymore. We have hot desks, glass walls, and the constant ambient awareness of colleagues. Even working from home, there's a partner, a kid, a dog who needs something. But the bathroom has a lock. And that lock means something primal: I am unavailable. I am off the grid. I am, for this brief moment, sovereign over my own time.</p>
+<p>Sociologists have a term for this: "backstage behavior." The front stage is where we perform — smiling, answering emails, pretending to enjoy the all-hands meeting. The backstage is where we drop the performance. The bathroom is the ultimate backstage. It is the only room in your house, your office, or your local Starbucks where literally nobody expects anything from you.</p>
+<h3>Why This Actually Matters</h3>
+<p>The mental health implications of zero solitude are increasingly well-documented. We are not wired for constant social performance. The prefrontal cortex — responsible for decision-making, creativity, and regulating emotion — needs downtime to consolidate information and generate new ideas. It does this when you're not performing. When you're not "on."</p>
+<p>In other words: your brain needs the bathroom as much as your body does.</p>
+<p>When people report their best ideas coming in the shower or on the toilet, they're not being quirky. They're describing a real neurological phenomenon: default mode network activation. When the brain isn't focused on a task, it starts making unexpected connections. It wanders. It creates. It solves the thing you'd been staring at for two hours.</p>
+<h3>Defend the Throne</h3>
+<p>So next time someone jokes about spending too long in the bathroom, correct them. You weren't slacking. You were processing. Decompressing. Doing the cognitive maintenance that the rest of your day systematically prevents.</p>
+<p>The bathroom is not a break from your life. It might be the most important part of it.</p>
+<p style="font-style:italic;color:#aaa;font-size:13px;">— Crap App Editorial, We Give A Shit Division</p>`
+  },
+  {
+    type: "article", tab: "articles", cat: "SCIENCE", catColor: "#00BFA5", banner: "#00695C",
+    title: "Why Your Best Ideas Come in the Bathroom",
+    preview: "Neuroscientists confirm what you already knew: the combination of warmth, privacy, and mild dopamine release creates the perfect cognitive environment for creative breakthroughs.",
+    time: "3 min read", likes: 5621, comments: 344,
+    body: `<p>In 2014, a study by researchers at the University of California found that 72% of people reported having creative insights in the shower. No comparable study has been done on the toilet — presumably because funding bodies lack imagination — but anecdotal evidence is overwhelming: the bathroom is where good thinking happens.</p>
+<p>The question is why. And the answer is more interesting than you'd expect.</p>
+<h3>The Dopamine Factor</h3>
+<p>Warm water — or even the anticipation of a private, comfortable moment — triggers a mild release of dopamine in the brain. Dopamine is commonly associated with reward and motivation, but it also plays a crucial role in creative cognition. Higher dopamine levels widen what researchers call "the scope of attention," meaning you become more likely to notice connections between seemingly unrelated things.</p>
+<p>This is the neurochemical foundation of the "shower thought" — that sudden, lateral connection your brain makes when it's slightly relaxed and slightly euphoric. The toilet, it turns out, can produce the same effect. Particularly if you've been stressed all day and the bathroom represents your first genuinely private moment.</p>
+<h3>The Relaxation-Incubation Loop</h3>
+<p>Creative problem solving happens in two phases: the focused phase (where you consciously work on the problem) and the incubation phase (where your unconscious mind continues processing it while your conscious mind does something else). The bathroom is ideal incubation territory because it's boring enough that your conscious mind disengages, but not so stimulating that it hijacks the process.</p>
+<p>Scrolling Instagram does not do this. The bathroom does.</p>
+<h3>The Privacy Effect</h3>
+<p>There's also a psychological component. Creative thinking requires a certain degree of psychological safety — the sense that you can think weird thoughts without being judged. The private, locked nature of a bathroom removes social performance pressure. You don't have to be smart, efficient, or appropriate. You can think the dumb idea that turns out to be the good idea.</p>
+<p>Thomas Crapper, widely (if apocryphally) credited with popularizing the flush toilet, probably never imagined that his invention would become a neurological productivity tool. But here we are.</p>
+<p>Next time your manager asks where you had that breakthrough idea, tell them the truth. They won't believe you. That's fine.</p>
+<p style="font-style:italic;color:#aaa;font-size:13px;">— Dr. Cognita Flush, Contributing Science Editor</p>`
+  },
+  { type: "trivia", tab: "trivia", q: "The average person spends how much time on the toilet per year?", opts: ["1-2 hours", "18-20 hours", "3 months", "6 days"], answer: 3, color: "#1a3a4a" },
+  {
+    type: "article", tab: "articles", cat: "HUMOR", catColor: "#F44336", banner: "#B71C1C",
+    title: "Ranked: Every Public Bathroom in America, Worst to Best",
+    preview: "From the purgatory of a county fair port-a-potty to the transcendent luxury of a Vegas casino hotel — we've investigated so you don't have to.",
+    time: "7 min read", likes: 18420, comments: 1204,
+    body: `<p><em>We sent a correspondent to 47 public restrooms across 11 states over 6 weeks. He is recovering well and has asked not to be named.</em></p>
+<h3>🔴 Tier F: The Abyss</h3>
+<p><strong>County Fair Port-a-Potty (Any State, August)</strong> — The temperature inside exceeds the ambient temperature by approximately 40 degrees. The smell has a physical presence. The blue chemical fluid is doing its best but it is not enough. It has never been enough. A child has written "HELP" on the wall in what we choose to believe is a marker. Emergency use only. Approach as you would a sleeping bear: slowly, quietly, and with an exit strategy already planned.</p>
+<p><strong>Gas Station Bathroom Off I-40, New Mexico</strong> — The key is attached to a wooden plank the size of a surfboard, which the attendant hands you with a look that says "I am sorry for what you are about to experience." The door does not lock from the inside. The floor is wet. You do not investigate why the floor is wet. The mirror has given up being a mirror and is now just a vaguely reflective surface that shows you a haunted version of yourself. Get in. Get out. Do not make eye contact with anything.</p>
+<h3>🟡 Tier C: Acceptable Under Duress</h3>
+<p><strong>McDonald's, Urban Location</strong> — You must ask for a code at the counter. The employee will give you the code with the energy of someone who has given this code 400 times today and resents every single instance. The bathroom itself is fine — institutional, slightly damp, suspiciously well-trafficked — but fine. The code changes every few hours. This is to deter "non-customers," a category that somehow now includes people who have just purchased a large order of french fries and need to use the bathroom they have literally paid for.</p>
+<p><strong>Airport Bathroom, Any Terminal, Pre-Security</strong> — Functional. Busy. The auto-flush sensors are calibrated for someone slightly shorter than you, meaning they will fire approximately three times during your visit at moments of their choosing. A man is taking a phone call in the stall next to you. His tone suggests the call is professional. Respect.</p>
+<h3>🟢 Tier A: The Promised Land</h3>
+<p><strong>Nordstrom, Any Location</strong> — This is not a bathroom. This is a hospitality experience that happens to contain toilets. Ambient lighting. Classical music at a volume that says "we considered your comfort." Hand lotion in three scents. A full-length mirror that appears to have been designed to make you look better than you do in real life. Our correspondent sat in here for 25 minutes simply because nobody came to get him. He gave it 11 out of 10.</p>
+<p><strong>Vegas Casino Hotel Lobby Bathroom</strong> — The pinnacle. The apotheosis. A restroom so clean, so well-appointed, so aggressively luxurious that you briefly forget the financial devastation occurring 40 feet away on the casino floor. Marble. Attendant. Individual cloth hand towels laundered fresh. A small dish of mints positioned at eye level, as though the casino is apologizing for everything else. Our correspondent wept — quietly, with dignity, near the travertine sink.</p>
+<p style="font-style:italic;color:#aaa;font-size:13px;">— Field Report, Crap App Investigative Unit</p>`
+  },
+  {
+    type: "article", tab: "articles", cat: "WELLNESS", catColor: "#4CAF50", banner: "#2E7D32",
+    title: "The Squat Posture Is Actually Better and Here's Why",
+    preview: "Modern toilets have created a silent epidemic of sub-optimal angles. The Squatty Potty isn't a joke. Gastroenterologists weigh in.",
+    time: "5 min read", likes: 9012, comments: 782,
+    body: `<p>The modern toilet is, by any reasonable anatomical standard, badly designed. This is not a fringe opinion. This is the consensus of gastroenterologists, colorectal surgeons, and anthropologists who have spent their careers studying what happens to the human body when it eliminates waste.</p>
+<p>The problem is the angle.</p>
+<h3>The Puborectalis Problem</h3>
+<p>When you sit on a standard Western toilet at a 90-degree angle, a muscle called the puborectalis doesn't fully relax. This muscle wraps around the rectum and, in a seated position, maintains a kink — roughly like putting a bend in a garden hose. The result is that you're working harder than you need to. Straining. Pushing. Reading the same shampoo bottle paragraph four times.</p>
+<p>In a squatting position — knees above hips, torso leaning forward — the puborectalis releases completely. The rectal canal straightens. Things move. Efficiently. Without drama. Our ancestors squatted. Every culture that predates the flush toilet squatted. Two-thirds of the world still squats. They are, the data suggests, significantly less constipated than we are.</p>
+<h3>Enter the Squatty Potty</h3>
+<p>The Squatty Potty — a simple plastic footstool that slides under your toilet and elevates your feet to a partial squat position — became a viral sensation in 2015 thanks to an ad featuring a unicorn. This was considered silly. The underlying medical advice was not.</p>
+<p>A Stanford University study found that stool elimination was significantly faster and more complete with a footstool. A separate study in the Journal of Clinical Gastroenterology found reduced straining. The science is not ambiguous. The squatting position is objectively better.</p>
+<p>Why don't more people know this? Because nobody wants to talk about it. Which is, frankly, why Crap App exists.</p>
+<h3>Practical Implementation</h3>
+<p>You don't need a Squatty Potty. Any footstool, stack of books, or strategically positioned backpack will work. The goal is simply to get your knees above your hips. Lean forward slightly. Let gravity and anatomy do the rest.</p>
+<p>Your gastroenterologist will be delighted. Your mornings will be shorter. Your phone battery will last longer because you won't be sitting there for 25 minutes willing something to happen.</p>
+<p>We give a shit about your health. This is proof.</p>
+<p style="font-style:italic;color:#aaa;font-size:13px;">— Crap App Wellness Desk</p>`
+  },
+  {
+    type: "video", tab: "videos", cat: "VIDEO", catColor: "#FF6B35", banner: "#BF360C",
+    title: "We Rated 47 Airport Bathrooms So You Don't Have To",
+    preview: "Our correspondent flew through 12 airports in 6 days armed only with a clipboard and a nose. The results will shock you. JFK Terminal 4 wins. Nobody saw that coming.",
+    time: "8 min watch", likes: 31204, comments: 2891,
+    body: `<p><em>📹 Video content — full transcript below</em></p>
+<p>[COLD OPEN: Our host, Dave, stands in what appears to be a Dennys bathroom in Cincinnati. He is wearing a hazmat suit. This is a bit. Probably.]</p>
+<p><strong>Dave:</strong> "Day one. O'Hare International. Terminal 3. The bathroom near Gate H14 has 22 stalls. I have rated all of them. Three are acceptable. Two are what I'm calling 'spiritually damaging.' One smells like something happened there that will never fully be explained. I gave that one a four because the auto-flush worked perfectly. Life is full of contradictions."</p>
+<p>[CUT TO: Dave at LAX, holding a clipboard, visibly tired]</p>
+<p><strong>Dave:</strong> "LAX Terminal 2. Someone has put a motivational poster in here. It says 'You've Got This.' I don't know if they mean the travel or the situation at hand but in either case I find it comforting. Eight out of ten."</p>
+<h3>The Official Rankings (Condensed)</h3>
+<p><strong>🥇 JFK Terminal 4 (International Arrivals)</strong> — A surprise podium finisher. Renovated in 2023. Actual terrazzo floors. Soap that smells like something a boutique hotel would sell for $28 a bottle. Dave cried. We kept it in.</p>
+<p><strong>🥈 Denver International, Terminal C</strong> — Consistently clean, well-staffed, excellent natural light. The art on the walls is legitimately interesting. The only airport bathroom Dave described as "pleasant to linger in," which is either an endorsement or a warning depending on your perspective.</p>
+<p><strong>🥉 Singapore Changi (Honorary)</strong> — Yes, we know it's not in America. Yes, we included it anyway. The bathroom has a garden. There is a waterfall. Dave did not want to leave. We had to call his wife.</p>
+<p><strong>🔴 LaGuardia Terminal B</strong> — Undergoing construction since 2019. Will apparently always be undergoing construction. The temporary bathrooms are described in Dave's notes as "a philosophical statement about impermanence." Zero stars. Would not recommend. Did not have a choice.</p>
+<p style="font-style:italic;color:#aaa;font-size:13px;">— Crap App Video Unit</p>`
+  },
+  {
+    type: "video", tab: "videos", cat: "VIDEO", catColor: "#FF6B35", banner: "#BF360C",
+    title: "Bidet vs TP: A Blind Test with 100 Strangers",
+    preview: "We asked 100 people to try both and rate their experience without knowing which was which. The results are in and they are deeply, uncomfortably decisive.",
+    time: "6 min watch", likes: 44892, comments: 5102,
+    body: `<p><em>📹 Video content — full transcript and findings below</em></p>
+<p>We recruited 100 volunteers in four cities — New York, Austin, Portland, and Des Moines — with one simple ask: try both a bidet and traditional toilet paper and tell us which was better, without knowing the study hypothesis in advance.</p>
+<p>We expected it to be close. It was not close.</p>
+<h3>The Numbers</h3>
+<p><strong>88 out of 100</strong> participants preferred the bidet experience. Not slightly preferred. <em>Strongly</em> preferred. Among the 12 who preferred TP, four admitted they had "probably not used the bidet correctly," one said she "didn't trust it on principle," and three said they were "not ready to change." These are valid human responses. We respect them. We are also judging them slightly.</p>
+<h3>Selected Participant Responses</h3>
+<p><strong>Greg, 54, Des Moines:</strong> "I've been doing this wrong my entire life. I feel like someone should have told me. I feel like my doctor should have told me. I'm going to buy one today. I'm going to buy one for my parents."</p>
+<p><strong>Aisha, 31, New York:</strong> "I already own one. I've owned one for three years. I don't understand why this is still a debate in this country. We have sent things to Mars."</p>
+<p><strong>Todd, 47, Austin:</strong> "I'm a bidet guy now. I said it. I'm a bidet guy."</p>
+<p><strong>Linda, 62, Portland:</strong> "It was fine. I prefer my system. I have been doing this for 62 years and I am not accepting feedback at this time."</p>
+<h3>The Environmental Case (Brief, We Promise)</h3>
+<p>Americans use approximately 141 rolls of toilet paper per person per year — the highest per capita rate in the world. A single bidet uses roughly an eighth of a gallon of water per use. The manufacturing of one roll of toilet paper requires 37 gallons of water. The math is uncomfortable. The bidet wins on this front by such a margin that it barely warrants discussing.</p>
+<p>We're not telling you what to do. We're just presenting the data.</p>
+<p>The data is very loud.</p>
+<p style="font-style:italic;color:#aaa;font-size:13px;">— Crap App Investigative Video Unit</p>`
+  },
+  { type: "minigame", tab: "minigames", cat: "MINI GAME", catColor: "#9C27B0", banner: "#4A148C", title: "💩 Stall Roulette — Which Stall Do You Pick?", preview: "You walk into a public restroom. 5 stalls. Only one is acceptable. Tap to reveal your fate. Millions have played. Nobody wins every time.", time: "2 min game", likes: 87340, comments: 9201 },
+  { type: "trivia", tab: "trivia", q: "Which country has the highest bidet ownership rate?", opts: ["Japan (80%)", "Italy (97%)", "South Korea (65%)", "France (42%)"], answer: 1, color: "#2d1b4e" },
+];
+
+const ftPostsData = [
+  { avatar: "🦝", color: "#E8F5E9", user: "AnonymousBadger", time: "2h ago", flair: "DISASTER", flairBg: "#FFEBEE", flairColor: "#C62828", filter: "disasters", title: "Sharted at my company all-hands. In front of 200 people. While presenting.", body: "I was three slides into the Q3 review when I felt it. Made eye contact with my CEO. He knew. I knew. Everyone knew. I finished the presentation anyway. AMA.", votes: 12847, comments: 892 },
+  { avatar: "🐸", color: "#E3F2FD", user: "ThronerGeneral", time: "5h ago", flair: "PHILOSOPHY", flairBg: "#EDE7F6", flairColor: "#4527A0", filter: "philosophy", title: "The bathroom is proof that equality is real", body: "Kings, CEOs, celebrities — everyone sits on the same throne. I find this deeply comforting. No one is too important to take a dump.", votes: 8302, comments: 411 },
+  { avatar: "🦦", color: "#FFF8E1", user: "SilentButDeadly99", time: "1d ago", flair: "CONFESSION", flairBg: "#FFF9C4", flairColor: "#F57F17", filter: "confessions", title: "I've been using the executive bathroom on the 40th floor for 6 years and nobody knows", body: "The code is 1776. The toilet paper is three-ply. The motion sensor lights are perfectly calibrated. I am not an executive. I am a contractor.", votes: 34521, comments: 2103 },
+  { avatar: "🐺", color: "#FCE4EC", user: "PhilosopherKing88", time: "2d ago", flair: "ADVICE", flairBg: "#E8F5E9", flairColor: "#2E7D32", filter: "advice", title: "PSA: The handicapped stall is not a luxury upgrade — but honestly it kind of is", body: "More room. Grab bars. The full-length mirror positioned at self-reflection distance. I'm not saying do it. I'm just saying I understand.", votes: 6710, comments: 564 },
+  { avatar: "🐊", color: "#E8F5E9", user: "MidnightFlusher", time: "3d ago", flair: "CONFESSION", flairBg: "#FFF9C4", flairColor: "#F57F17", filter: "confessions", title: "I fake stomach issues to get 20 minutes alone at work. Every. Single. Day.", body: "Open plan office. No privacy. My 'IBS' has given me approximately 87 hours of solitude this year. I have never felt more at peace. I am not sorry.", votes: 21034, comments: 1567 },
+  { avatar: "🦉", color: "#EDE7F6", user: "DeepThoughtsDave", time: "4d ago", flair: "PHILOSOPHY", flairBg: "#EDE7F6", flairColor: "#4527A0", filter: "philosophy", title: "Every great decision I've ever made was made on the toilet", body: "Quit my job: toilet. Asked my wife to marry me: toilet (the idea, not the proposal). Started my business: toilet. The throne is where clarity lives.", votes: 15892, comments: 934 },
+  { avatar: "🦊", color: "#FFEBEE", user: "ChaosGremlin404", time: "5d ago", flair: "DISASTER", flairBg: "#FFEBEE", flairColor: "#C62828", filter: "disasters", title: "Locked in a port-a-potty at a music festival for 45 minutes. This is my story.", body: "The latch broke. My phone was at 2%. I could hear Tame Impala starting. A stranger eventually heard me screaming. We don't talk about this.", votes: 44201, comments: 3891 },
+  { avatar: "🐻", color: "#E8F5E9", user: "WisdomFromTheWalls", time: "6d ago", flair: "ADVICE", flairBg: "#E8F5E9", flairColor: "#2E7D32", filter: "advice", title: "The 3-courtesy-flush rule is the most important unwritten social contract", body: "Pre-flush. Mid-flush. Exit flush. This is not optional. This is civilization. Share this with someone who needs to hear it.", votes: 9823, comments: 712 },
+];
+
+const products = [
+  { emoji: "🚿", name: "ThroneWash Pro 3000 Bidet", price: "$89", stars: "★★★★★", reviews: 2847, badge: "BESTSELLER", bg: "#E3F2FD", cat: "bidets",
+    photo: "https://m.media-amazon.com/images/I/61k4mgZD2rL._AC_SL1500_.jpg",
+    amazonUrl: "https://www.amazon.com/s?k=bidet+attachment&tag=YOURTAG-20" },
+  { emoji: "💧", name: "Portable Travel Bidet Bottle", price: "$18", stars: "★★★★½", reviews: 5621, badge: null, bg: "#E3F2FD", cat: "bidets",
+    photo: "https://m.media-amazon.com/images/I/81vlSyNW-dL._AC_SL1500_.jpg",
+    amazonUrl: "https://www.amazon.com/s?k=portable+travel+bidet+bottle&tag=YOURTAG-20" },
+  { emoji: "🧻", name: "Ultra-Soft Cloud TP (48 rolls)", price: "$34", stars: "★★★★½", reviews: 1204, badge: null, bg: "#FFF8E1", cat: "tp",
+    photo: "https://m.media-amazon.com/images/I/71mP5eBo2bL._AC_SL1500_.jpg",
+    amazonUrl: "https://www.amazon.com/s?k=ultra+soft+toilet+paper+48+rolls&tag=YOURTAG-20" },
+  { emoji: "👑", name: '"I Give A Shit" Hoodie', price: "$45", stars: "★★★★★", reviews: 892, badge: "NEW", bg: "#F3E5F5", cat: "merch",
+    photo: null, amazonUrl: null, directUrl: "https://yourcrapappstore.fourthwall.com/hoodie", freeShipping: true },
+  { emoji: "💨", name: "Poo-Pourri Original Citrus Spray", price: "$12", stars: "★★★★★", reviews: 3421, badge: "HOT", bg: "#E8F5E9", cat: "scents",
+    photo: "https://m.media-amazon.com/images/I/61jmse3La5L._AC_SL1024_.jpg",
+    amazonUrl: "https://www.amazon.com/s?k=poo+pourri+original+citrus&tag=YOURTAG-20" },
+  { emoji: "📱", name: "Throne Phone Mount (adjustable)", price: "$22", stars: "★★★★☆", reviews: 567, badge: null, bg: "#FFF3E0", cat: "gadgets",
+    photo: "https://m.media-amazon.com/images/I/61d+pI7KG9L._AC_SL1500_.jpg",
+    amazonUrl: "https://www.amazon.com/s?k=toilet+phone+holder+mount&tag=YOURTAG-20" },
+  { emoji: "💩", name: "Crap App Enamel Pin Set", price: "$18", stars: "★★★★½", reviews: 344, badge: null, bg: "#FCE4EC", cat: "merch",
+    photo: null, amazonUrl: null, directUrl: "https://yourcrapappstore.fourthwall.com/pins", freeShipping: true },
+  { emoji: "🏆", name: "Squatty Potty Elite Edition", price: "$65", stars: "★★★★★", reviews: 8902, badge: "TOP RATED", bg: "#E8EAF6", cat: "gadgets",
+    photo: "https://m.media-amazon.com/images/I/71APmdld-EL._AC_SL1500_.jpg",
+    amazonUrl: "https://www.amazon.com/s?k=squatty+potty&tag=YOURTAG-20" },
+  { emoji: "🎁", name: "Poo-Pourri Deluxe Gift Set", price: "$34", stars: "★★★★☆", reviews: 1892, badge: "GIFT", bg: "#E0F2F1", cat: "scents",
+    photo: "https://m.media-amazon.com/images/I/91SqrxZnbuL._AC_SL1500_.jpg",
+    amazonUrl: "https://www.amazon.com/s?k=poo+pourri+gift+set+deluxe&tag=YOURTAG-20" },
+];
+
+const productDetails = [
+  {
+    desc: `Finally. A bidet that understands you. The ThroneWash Pro 3000 delivers a precision-engineered posterior cleansing experience that will make toilet paper feel like a relic of a darker, wetter era. Features include: adjustable water pressure (Gentle Mist to Power Wash), heated seat, and a nozzle so smart it practically has feelings. Over 2,800 customers have wept tears of gratitude. You will too.`,
+    reviews: [
+      { emoji: "🤠", name: "DesertDave_TX", stars: "★★★★★", text: "I've never felt more alive. I installed this on a Tuesday and by Wednesday I had called my estranged brother. Something about it just... opens you up.", verified: true },
+      { emoji: "👩‍💼", name: "PamelaFromAccounting", stars: "★★★★★", text: "Brought this to the office. HR said I can't do that. Worth it.", verified: true },
+      { emoji: "🧔", name: "BobWhoKnows", stars: "★★★★☆", text: "Four stars because my wife now refuses to go back to normal. That is a her problem and also a me problem.", verified: true },
+    ]
+  },
+  {
+    desc: `The bidet experience shouldn't end just because you left home. The Portable Travel Bidet Bottle is compact, discreet, and fits in any bag, backpack, or jacket pocket — ready to deploy whenever and wherever duty calls. Fill it with water, squeeze, aim, done. No batteries, no WiFi, no installation required. Just dignity, wherever you roam. Campers, travelers, festival-goers, and people who have seen the inside of a gas station bathroom all swear by this. Once you go portable, you never go back.`,
+    reviews: [
+      { emoji: "🎒", name: "BackpackerBrendan", stars: "★★★★★", text: "Took this through six countries. It has been to places I can't mention. It performed flawlessly every time. This is the MVP of my travel kit.", verified: true },
+      { emoji: "🏕️", name: "CampingCarolSeattle", stars: "★★★★½", text: "Brought this camping. My friends laughed. My friends are now all asking where I got it.", verified: true },
+      { emoji: "✈️", name: "FrequentFlyerFred", stars: "★★★★★", text: "I travel 200 days a year. This has changed my relationship with airports, hotels, and myself.", verified: false },
+    ]
+  },
+  {
+    desc: `Not all toilet paper is created equal. Some is made from recycled cardboard by people who hate you. This is not that. Ultra-Soft Cloud TP (48 rolls) is engineered for people who believe that what happens in the bathroom should be a moment of quiet dignity. Three-ply. Lightly scented. Dissolves 40% faster than leading brands. Your pipes will thank you. Your posterior will throw you a party.`,
+    reviews: [
+      { emoji: "🐻", name: "Bearcat_Pacific", stars: "★★★★★", text: "I bought this as a joke. Now I am a changed man. My grandmother calls it 'the fancy rolls.' She is correct.", verified: true },
+      { emoji: "👩‍🍳", name: "SylviaM_Reviews", stars: "★★★★½", text: "I rate everything I buy. This is the first TP I've given 4.5 stars to. I feel seen.", verified: true },
+      { emoji: "🧑‍🚀", name: "HoustonWeHaveASeat", stars: "★★★★★", text: "Feels like wiping with a cloud that went to therapy.", verified: false },
+    ]
+  },
+  {
+    desc: `Wear your values on your sleeve — or your chest, or your lower back if you're a risk-taker. The "I Give A Shit" Hoodie is a statement garment for the discerning individual who believes in bathroom positivity, community hygiene standards, and mildly confusing people at the grocery store. 80% cotton, 20% polyester, 100% committed to the bit. Unisex sizing. Machine washable. Just like you after a Code Brown situation.`,
+    reviews: [
+      { emoji: "🕺", name: "TrendyTheoTucson", stars: "★★★★★", text: "Wore this to Thanksgiving. My uncle asked what it means. I explained the whole app. Best Thanksgiving ever.", verified: true },
+      { emoji: "👩‍🎤", name: "RebeccaRocks2025", stars: "★★★★★", text: "Finally something to wear that matches my personality AND my bathroom habits.", verified: true },
+      { emoji: "🧑‍💻", name: "DevDudeDenver", stars: "★★★☆☆", text: "Three stars because my coworkers keep asking questions and I'm not ready for that level of intimacy yet.", verified: true },
+    ]
+  },
+  {
+    desc: `Before you go. That's the whole pitch. Poo-Pourri Original Citrus is the spray that started a bathroom revolution — a few spritzes in the bowl creates a barrier that traps odors before they can escape into the atmosphere, your dignity, or your relationship. This is the original, the legend, the one your coworker uses and refuses to name. Pocket-sized. Citrus-scented. Devastatingly effective. Keep one at home, one at the office, one in your bag. This is not optional.`,
+    reviews: [
+      { emoji: "🕵️", name: "DiscreetDwight", stars: "★★★★★", text: "I have had guests over seventeen times this year. Zero suspicions. This product is a marvel of modern chemistry.", verified: true },
+      { emoji: "👩‍👧", name: "MomOf4WhoNeedsThis", stars: "★★★★★", text: "I started buying this in bulk. My family doesn't know it exists. This is my secret and it will go to the grave with me.", verified: true },
+      { emoji: "🏠", name: "AirbnbHostSteve", stars: "★★★★★", text: "5-star rating maintained for 14 months. You do the math.", verified: false },
+    ]
+  },
+  {
+    desc: `You are already on your phone in there. Let's be honest. The Throne Phone Mount (adjustable) simply acknowledges the truth of your situation and elevates it — literally — to a comfortable viewing angle. Fits all major phone sizes. 360° rotation. Suction cup base rated for up to 11 lbs (you are not putting 11 lbs on it, but it's nice to know). Pairs beautifully with the Crap App. Surprise, surprise.`,
+    reviews: [
+      { emoji: "📺", name: "ScreentimeStanley", stars: "★★★★☆", text: "I've watched two full seasons of a prestige drama on this. My legs fell asleep on episode 6. No regrets.", verified: true },
+      { emoji: "👨‍👩‍👧", name: "FamilyDadGreg", stars: "★★★★☆", text: "My kids think I'm in there reading. I'm watching golf highlights. This mount changed my relationship with golf.", verified: true },
+      { emoji: "🎮", name: "GamerGaryPDX", stars: "★★★★★", text: "Mobile gaming just entered a new era for me personally.", verified: false },
+    ]
+  },
+  {
+    desc: `The Crap App Enamel Pin Set: three pins, infinite conversation starters, and a very specific type of person who will understand immediately and want to be your friend. Includes the Crowned Poop 💩, the Golden Throne 🚽, and the limited-edition Code Brown Alert 🚨. Durable enamel. Gold metal backing. Ships in a tiny box that will make you smile when you open it. Perfect gift for someone you trust enough to give this to.`,
+    reviews: [
+      { emoji: "🎒", name: "BagPinCollector", stars: "★★★★★", text: "Put all three on my tote bag. Been approached by four strangers this week. We are building a community.", verified: true },
+      { emoji: "🎁", name: "GiftingGuru_Nan", stars: "★★★★★", text: "Gave this to my gastroenterologist as a thank you gift. She cried. Happy tears. I think.", verified: true },
+      { emoji: "🤌", name: "StyleConsciousSam", stars: "★★★☆☆", text: "Three stars because I wanted MORE pins. This is a compliment disguised as a complaint.", verified: true },
+    ]
+  },
+  {
+    desc: `The Squatty Potty Elite Edition is what happens when biomechanics meets bathroom culture and decides to do something about it. By elevating your feet to a natural squat position, it aligns your colon in a way that your ancestors — who squatted over holes in the ground — figured out thousands of years ago. You, however, have a porcelain throne and now a little stool. This is progress. Nearly 9,000 reviews. The data does not lie. Your colon should not have to.`,
+    reviews: [
+      { emoji: "🧬", name: "Dr_NotAnActualDoctor", stars: "★★★★★", text: "I have recommended this to twelve people. Ten of them have thanked me. The other two haven't tried it yet. I'm patient.", verified: true },
+      { emoji: "🧘", name: "WellnessWendyO", stars: "★★★★★", text: "Paired this with a morning meditation practice. My whole life is different now. I'm not kidding even a little bit.", verified: true },
+      { emoji: "👴", name: "GrandpaLeroyFinds_Tech", stars: "★★★★★", text: "My grandson set this up for me. I thought it was silly. I was wrong. I am 74 and I was wrong.", verified: false },
+    ]
+  },
+  {
+    desc: `Everything that makes Poo-Pourri great, now in a gift-worthy package that says "I care about you and also about the air quality in your bathroom." The Deluxe Gift Set includes three full-size signature scents — Original Citrus, Lavender Vanilla, and the boldly named Royal Flush — plus a travel-size bonus bottle. Perfect for housewarmings, holidays, white elephant exchanges, or the person in your life who has everything except a solution to this particular problem. Comes in a beautiful box. Ships discreetly. You're welcome.`,
+    reviews: [
+      { emoji: "✈️", name: "FrequentFlyerFiona", stars: "★★★★☆", text: "I travel for work three weeks a month. This goes everywhere. Hotel bathrooms. Airport stalls. A Greyhound bus one time I don't want to talk about.", verified: true },
+      { emoji: "💅", name: "UpscaleUrsula", stars: "★★★★★", text: "I use the Lavender Vanilla at dinner parties. My guests think I have a scented candle in the powder room. I do not.", verified: true },
+      { emoji: "🏡", name: "NormalNathaniel", stars: "★★★★☆", text: "Works great. I feel slightly less like myself every time I use it, but in a good way.", verified: true },
+    ]
+  },
+];
+
+let cartCount = 0;
+let currentBathroomFilter = 'all';
+let currentStoreFilter = 'all';
+let drawerProductIndex = null;
+let triviaAnswered = {};
+
+// ── NAV ──
+function enterApp() {
+  goTo('crapmap');
+}
+
+function goTo(page) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+  document.getElementById('app-nav').classList.add('visible');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const nb = document.getElementById('nav-' + page);
+  if (nb) nb.classList.add('active');
+
+  if (page === 'crapmap') {
+    renderBathrooms();
+    setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 100);
+  }
+  if (page === 'throneroom') renderThrone();
+  if (page === 'flushandtell') renderPosts();
+  if (page === 'crapstore') renderStore();
+  if (page === 'thronecard') renderThroneCard();
+
+  window.scrollTo(0,0);
+}
+
+// ── CRAPMAP ──
+let leafletMap = null;
+let leafletMarkers = [];
+
+function scoreColor(score) {
+  if (score >= 8) return '#4CAF50';
+  if (score >= 5) return '#FFC107';
+  return '#F44336';
+}
+
+function initMap() {
+  if (leafletMap) {
+    setTimeout(() => leafletMap.invalidateSize(), 50);
+    return;
+  }
+
+  // Center on Steamboat Springs
+  leafletMap = L.map('leaflet-map', { zoomControl: true }).setView([40.4853, -106.8317], 14);
+
+  // OpenStreetMap tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(leafletMap);
+
+  // Add user location pulse marker
+  const userIcon = L.divIcon({
+    className: '',
+    html: `<div style="width:18px;height:18px;background:#2196F3;border-radius:50%;border:3px solid white;box-shadow:0 0 0 6px rgba(33,150,243,0.3);"></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9]
+  });
+  L.marker([40.4853, -106.8317], { icon: userIcon }).addTo(leafletMap)
+    .bindPopup('<div style="font-weight:800;font-size:13px;">📍 You are here</div>');
+
+  // Add bathroom markers
+  bathrooms.forEach((b, i) => {
+    const color = scoreColor(b.score);
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="
+        width:38px;height:38px;
+        background:${color};
+        border-radius:50% 50% 50% 0;
+        transform:rotate(-45deg);
+        border:2.5px solid white;
+        box-shadow:0 3px 10px rgba(0,0,0,0.3);
+        display:flex;align-items:center;justify-content:center;
+      "><span style="transform:rotate(45deg);font-size:17px;line-height:1;">💩</span></div>`,
+      iconSize: [38, 38],
+      iconAnchor: [19, 38],
+      popupAnchor: [0, -40]
+    });
+
+    const marker = L.marker([b.lat, b.lng], { icon }).addTo(leafletMap);
+    marker.bindPopup(`
+      <div style="min-width:160px;">
+        <div style="font-family:'Fredoka One',cursive;font-size:15px;color:#2C1A0E;margin-bottom:3px;">${b.name}</div>
+        <div style="font-size:11px;color:#888;margin-bottom:8px;">${b.addr}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="background:${color};color:white;font-family:'Fredoka One',cursive;font-size:18px;padding:4px 10px;border-radius:8px;">${b.score}</span>
+          <span style="font-size:11px;font-weight:700;color:#666;">${b.reviews} reviews</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">
+          ${b.tags.slice(0,3).map(id => `<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:50px;background:#f0f0f0;color:#555;">${getTagObj(id).label}</span>`).join('')}
+        </div>
+        <button onclick="showBathroom(${i})" style="
+          background:#F5C518;border:none;border-radius:50px;
+          font-family:'Fredoka One',cursive;font-size:13px;
+          padding:7px 16px;cursor:pointer;width:100%;
+          box-shadow:0 2px 0 #D4A017;
+        ">View & Tag</button>
+      </div>
+    `);
+    leafletMarkers.push(marker);
+  });
+}
+
+function tagClass(id) {
+  const cat = TAG_CATEGORIES.findIndex(c => c.tags.some(t => t.id === id));
+  return ['tag-vibe','tag-stall','tag-tp','tag-tech','tag-access'][cat] || '';
+}
+
+function renderBathrooms() {
+  setTimeout(initMap, 150);
+  const el = document.getElementById('bathroom-list');
+  el.innerHTML = bathrooms.map((b, i) => `
+    <div class="bathroom-card" onclick="showBathroom(${i})">
+      <div class="bc-score ${b.color}">${b.score}</div>
+      <div class="bc-info">
+        <div class="bc-name">${b.name}</div>
+        <div class="bc-addr">${b.addr} · ${b.reviews} reviews</div>
+        <div class="bc-tags">${b.tags.slice(0,4).map(id => {
+          const t = getTagObj(id);
+          return `<span class="bc-tag ${tagClass(id)}">${t.label}</span>`;
+        }).join('')}${b.tags.length > 4 ? `<span class="bc-tag">+${b.tags.length-4}</span>` : ''}</div>
+      </div>
+      <div class="bc-dist">${b.dist}</div>
+    </div>
+  `).join('');
+}
+
+function codeBrown() {
+  // Find highest-scoring bathroom (nearest/best)
+  const best = bathrooms.reduce((a, b) => b.score > a.score ? b : a);
+  document.getElementById('code-brown-alert').classList.add('open');
+  // Fly map to best bathroom
+  if (leafletMap) leafletMap.flyTo([best.lat, best.lng], 16, { duration: 1.5 });
+  // Track in profile
+  const profile = getProfile();
+  if (profile) {
+    profile.codeBrowns = (profile.codeBrowns || 0) + 1;
+    saveProfileData(profile);
+    checkBadgeUnlocks(profile);
+  }
+}
+
+let selectedNewTags = [];
+
+function showBathroom(i) {
+  const b = bathrooms[i];
+  selectedNewTags = [];
+  const color = b.score >= 8 ? '#4CAF50' : b.score >= 5 ? '#FFC107' : '#F44336';
+
+  const tagPickerHTML = TAG_CATEGORIES.map((cat, ci) => `
+    <div class="tag-section">
+      <div class="tag-section-label">${cat.label}</div>
+      <div class="tag-picker-grid">
+        ${cat.tags.map(tag => {
+          const already = b.tags.includes(tag.id);
+          return `<div class="tag-chip ${already ? 'selected' : ''}" id="chip-${i}-${tag.id}"
+            onclick="toggleTag(${i},'${tag.id}',this)">
+            ${tag.label}
+            <span class="tag-tooltip">${tag.desc}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('bathroom-detail').innerHTML = `
+    <h2 style="font-family:'Fredoka One',cursive;font-size:22px;margin-bottom:4px;">${b.name}</h2>
+    <p style="color:#888;font-size:13px;margin-bottom:14px;">📍 ${b.addr} · ${b.dist} away</p>
+
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <div style="flex:1;background:#f7f3ee;border-radius:14px;padding:12px;text-align:center;">
+        <div style="font-family:'Fredoka One',cursive;font-size:34px;color:${color}">${b.score}</div>
+        <div style="font-size:10px;font-weight:800;color:#aaa;letter-spacing:1px;">CRAP SCORE</div>
+      </div>
+      <div style="flex:2;background:#f7f3ee;border-radius:14px;padding:12px;">
+        <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:8px;">RATINGS</div>
+        ${[['🧹 Cleanliness', Math.min(10, b.score * 1.02).toFixed(1)],
+           ['🧻 TP Quality',  Math.min(10, b.score * 0.97).toFixed(1)],
+           ['🔒 Privacy',     Math.min(10, b.score * 1.05).toFixed(1)],
+           ['📶 Wi-Fi',       Math.min(10, b.score * 0.88).toFixed(1)]].map(([label, val]) => `
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">
+            <span>${label}</span><span style="font-weight:800;">${val}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:8px;">COMMUNITY TAGS</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${b.tags.map(id => {
+          const t = getTagObj(id);
+          return `<span class="bc-tag ${tagClass(id)}" style="font-size:12px;padding:5px 11px;">${t.label}</span>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div style="background:#f7f3ee;border-radius:16px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:12px;">➕ ADD TAGS — tap to toggle</div>
+      ${tagPickerHTML}
+      <button class="btn-teal" style="width:100%;justify-content:center;margin-top:8px;" onclick="saveTagEdits(${i})">
+        💾 Save My Tags
+      </button>
+    </div>
+
+    <div style="display:flex;gap:8px;">
+      <button class="btn-primary" style="flex:1;justify-content:center;" onclick="showToast('🗺️ Opening directions...');closeBathroomModal()">🗺️ Directions</button>
+      <button class="btn-teal" style="flex:1;justify-content:center;" onclick="showToast('⭐ Thanks for rating!');closeBathroomModal()">⭐ Rate It</button>
+    </div>
+  `;
+  document.getElementById('bathroom-modal').classList.add('open');
+}
+
+function toggleTag(bathIdx, tagId, el) {
+  const b = bathrooms[bathIdx];
+  if (b.tags.includes(tagId)) {
+    b.tags = b.tags.filter(t => t !== tagId);
+    el.classList.remove('selected');
+  } else {
+    b.tags.push(tagId);
+    el.classList.add('selected');
+  }
+}
+
+function saveTagEdits(i) {
+  renderBathrooms();
+  showToast('✅ Tags saved! Thanks for contributing.');
+  closeBathroomModal();
+}
+
+function closeBathroomModal(e) {
+  if (!e || e.target === document.getElementById('bathroom-modal')) {
+    document.getElementById('bathroom-modal').classList.remove('open');
+  }
+}
+
+// ── THRONE ROOM ──
+function renderThrone(filter) {
+  filter = filter || 'all';
+  const feed = document.getElementById('throne-feed');
+  const filtered = filter === 'all' ? throneContent : throneContent.filter(c => c.tab === filter);
+
+  if (filtered.length === 0) {
+    feed.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#aaa;">
+      <div style="font-size:48px;margin-bottom:12px;">🚽</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:20px;margin-bottom:8px;color:#ccc;">Nothing here yet</div>
+      <div style="font-size:13px;">Check back after your next session.</div>
+    </div>`;
+    return;
+  }
+
+  feed.innerHTML = filtered.map((c, i) => {
+    const globalIdx = throneContent.indexOf(c);
+    if (c.type === 'trivia') {
+      return `
+        <div class="trivia-card" style="background:linear-gradient(135deg,${c.color} 0%,${c.color}dd 100%)">
+          <div class="trivia-label">🎯 Daily Trivia</div>
+          <div class="trivia-q">${c.q}</div>
+          <div class="trivia-options">
+            ${c.opts.map((opt, j) => `
+              <div class="trivia-opt ${triviaAnswered[globalIdx] !== undefined ? (j === c.answer ? 'correct' : (j === triviaAnswered[globalIdx] ? 'wrong' : '')) : ''}"
+                id="topt-${globalIdx}-${j}" onclick="answerTrivia(${globalIdx},${j},${c.answer})">${opt}</div>
+            `).join('')}
+          </div>
+        </div>`;
+    }
+    return `
+      <div class="throne-card" onclick="openArticle(${globalIdx})" style="cursor:pointer;">
+        <div class="tc-banner" style="background:${c.banner}"></div>
+        <div class="tc-body">
+          <div class="tc-category" style="color:${c.catColor}">${c.cat}</div>
+          <div class="tc-title">${c.title}</div>
+          <div class="tc-preview">${c.preview}</div>
+          <div class="tc-footer">
+            <span class="tc-time">⏱ ${c.time}</span>
+            <div class="tc-actions">
+              <button class="tc-action" onclick="event.stopPropagation();likeArticle(this, ${globalIdx})">❤️ <span class="like-count-${globalIdx}">${(c.likes/1000).toFixed(1)}k</span></button>
+              <button class="tc-action" onclick="event.stopPropagation();openArticle(${globalIdx})">💬 ${c.comments}</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function answerTrivia(cardIdx, chosen, correct) {
+  if (triviaAnswered[cardIdx] !== undefined) return;
+  triviaAnswered[cardIdx] = chosen;
+  const isCorrect = chosen === correct;
+
+  for (let j = 0; j < 4; j++) {
+    const el = document.getElementById(`topt-${cardIdx}-${j}`);
+    if (!el) continue;
+    el.style.pointerEvents = 'none';
+    if (j === correct) {
+      el.classList.add('correct');
+    } else if (j === chosen && !isCorrect) {
+      el.classList.add('wrong');
+      // inject the ❌ WRONG overlay
+      const overlay = document.createElement('div');
+      overlay.className = 'trivia-wrong-overlay';
+      overlay.innerHTML = `<span class="wrong-x">❌</span><span class="wrong-label">WRONG</span>`;
+      el.appendChild(overlay);
+    }
+  }
+  showToast(isCorrect ? '✅ Correct! Nice brain.' : '❌ Nope. But hey, you learned something.');
+}
+
+function throneTab(el, filter) {
+  document.querySelectorAll('.throne-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderThrone(filter);
+}
+
+function openArticle(idx) {
+  const c = throneContent[idx];
+  if (!c.body) { showToast('📹 Video coming soon!'); return; }
+  document.getElementById('article-detail').innerHTML = `
+    <div style="height:6px;background:${c.banner};border-radius:3px;margin-bottom:16px;"></div>
+    <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:${c.catColor};margin-bottom:8px;text-transform:uppercase;">${c.cat}</div>
+    <h2 style="font-family:'Fredoka One',cursive;font-size:22px;line-height:1.25;margin-bottom:8px;color:var(--dark);">${c.title}</h2>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.08);">
+      <span style="font-size:12px;color:#aaa;font-weight:700;">⏱ ${c.time}</span>
+      <span style="font-size:12px;color:#aaa;font-weight:700;">❤️ ${(c.likes/1000).toFixed(1)}k</span>
+      <span style="font-size:12px;color:#aaa;font-weight:700;">💬 ${c.comments}</span>
+    </div>
+    <div class="article-body">${c.body}</div>
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.08);display:flex;gap:10px;">
+      <button class="btn-primary" style="flex:1;justify-content:center;" onclick="likeArticle(null,${idx});showToast('❤️ Liked!')">❤️ Like</button>
+      <button class="btn-ghost" onclick="closeArticleModal()">Close</button>
+    </div>
+  `;
+  document.getElementById('article-modal').classList.add('open');
+}
+
+function closeArticleModal(e) {
+  if (!e || e.target === document.getElementById('article-modal')) {
+    document.getElementById('article-modal').classList.remove('open');
+  }
+}
+
+function likeArticle(btn, idx) {
+  throneContent[idx].likes++;
+  const countEls = document.querySelectorAll(`.like-count-${idx}`);
+  countEls.forEach(el => el.textContent = (throneContent[idx].likes/1000).toFixed(1)+'k');
+  if (btn) { btn.style.color = '#F44336'; }
+  showToast('❤️ Liked!');
+}
+
+const REACTIONS = [
+  { id: 'poop',   emoji: '💩', label: 'Shit',    color: '#8B4513' },
+  { id: 'dead',   emoji: '😂', label: 'Dead',    color: '#FF6B35' },
+  { id: 'respect',emoji: '🫡', label: 'Respect', color: '#00BFA5' },
+  { id: 'brown',  emoji: '🚨', label: 'Code Brown', color: '#c0392b' },
+];
+
+function react(postIdx, reactionId, el) {
+  const p = ftPostsData[postIdx];
+  if (!p.reactions) p.reactions = {};
+  if (!p.userReacted) p.userReacted = {};
+
+  const prev = p.userReacted[postIdx];
+  if (prev === reactionId) {
+    // Toggle off
+    p.reactions[reactionId] = Math.max(0, (p.reactions[reactionId] || 1) - 1);
+    delete p.userReacted[postIdx];
+  } else {
+    // Remove previous reaction if any
+    if (prev) p.reactions[prev] = Math.max(0, (p.reactions[prev] || 1) - 1);
+    p.reactions[reactionId] = (p.reactions[reactionId] || 0) + 1;
+    p.userReacted[postIdx] = reactionId;
+
+    // Track profile stats
+    const profile = getProfile();
+    if (profile && reactionId === 'brown') {
+      // noop — tracking is on Code Brown button press
+    }
+    // Check for badge trigger on max reactions
+    if (profile) {
+      const total = Object.values(p.reactions).reduce((a,b) => a+b, 0);
+      profile.maxReactions = Math.max(profile.maxReactions || 0, total);
+      saveProfileData(profile);
+      checkBadgeUnlocks(profile);
+    }
+  }
+
+  // Re-render just the reaction bar for this post
+  const bar = document.getElementById(`reactions-${postIdx}`);
+  if (bar) bar.innerHTML = buildReactionBar(postIdx);
+
+  const r = REACTIONS.find(r => r.id === reactionId);
+  const toasts = { poop: '💩 Shit!', dead: '😂 You\'re dead!', respect: '🫡 Respect.', brown: '🚨 CODE BROWN level story!' };
+  showToast(toasts[reactionId] || '👍');
+}
+
+function buildReactionBar(postIdx) {
+  const p = ftPostsData[postIdx];
+  const reactions = p.reactions || {};
+  const userReacted = (p.userReacted || {})[postIdx];
+  return REACTIONS.map(r => {
+    const count = reactions[r.id] || 0;
+    const active = userReacted === r.id;
+    return `<button class="reaction-btn ${active ? 'reacted' : ''}" 
+      style="${active ? `background:${r.color}22;border-color:${r.color};color:${r.color};` : ''}"
+      onclick="react(${postIdx},'${r.id}',this)">
+      ${r.emoji} <span>${count > 0 ? (count >= 1000 ? (count/1000).toFixed(1)+'k' : count) : r.label}</span>
+    </button>`;
+  }).join('');
+}
+
+let currentFtFilter = 'all';
+
+function renderPosts(filter) {
+  filter = filter || currentFtFilter;
+  const el = document.getElementById('ft-posts');
+  const filtered = filter === 'all' ? ftPostsData : ftPostsData.filter(p => p.filter === filter);
+
+  if (filtered.length === 0) {
+    el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#aaa;">
+      <div style="font-size:48px;margin-bottom:12px;">💩</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:20px;margin-bottom:8px;color:#ccc;">Nothing flushed here yet</div>
+      <div style="font-size:13px;">Be the first to drop a story in this category.</div>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = filtered.map((p) => {
+    const globalIdx = ftPostsData.indexOf(p);
+    if (!p.reactions) p.reactions = { poop: p.votes || 1 };
+    return `
+    <div class="ft-post">
+      <div class="ft-post-header">
+        <div class="ft-avatar" style="background:${p.color}">${p.avatar}</div>
+        <div class="ft-user">
+          <div class="ft-username">${p.user}</div>
+          <div class="ft-time">${p.time}</div>
+        </div>
+        <div class="ft-flair" style="background:${p.flairBg};color:${p.flairColor}">${p.flair}</div>
+      </div>
+      <div class="ft-title">${p.title}</div>
+      <div class="ft-body">${p.body}</div>
+      <div class="ft-reactions" id="reactions-${globalIdx}">
+        ${buildReactionBar(globalIdx)}
+      </div>
+      <div class="ft-footer" style="margin-top:10px;">
+        <button style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;" onclick="showToast('💬 Opening comments...')">
+          💬 ${p.comments} comments
+        </button>
+        <button style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;margin-left:auto;" onclick="showToast('🔗 Link copied!')">
+          Share
+        </button>
+      </div>
+    </div>
+  `}).join('');
+}
+
+function ftFilter(el, filter) {
+  document.querySelectorAll('.ft-filter').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  currentFtFilter = filter;
+  renderPosts(filter);
+}
+
+function openPostModal() {
+  document.getElementById('post-modal').classList.add('open');
+}
+
+function closePostModal(e) {
+  if (e.target === document.getElementById('post-modal')) {
+    document.getElementById('post-modal').classList.remove('open');
+  }
+}
+
+function submitPost() {
+  const title = document.getElementById('post-title').value.trim();
+  const body = document.getElementById('post-body').value.trim();
+  if (!title || !body) { showToast('⚠️ Give it a title and a story!'); return; }
+  document.getElementById('post-modal').classList.remove('open');
+  document.getElementById('post-title').value = '';
+  document.getElementById('post-body').value = '';
+
+  const profile = getProfile();
+  const newPost = {
+    avatar: profile ? profile.emoji : '🎭',
+    color: '#E8EAF6',
+    user: profile ? profile.handle : 'Anonymous' + Math.floor(Math.random()*9999),
+    time: 'just now', flair: 'FRESH', flairBg: '#E0F2F1', flairColor: '#006064',
+    filter: 'all', title, body, votes: 1, comments: 0, isOwn: !!profile
+  };
+  ftPostsData.unshift(newPost);
+  if (profile) {
+    profile.posts = (profile.posts || 0) + 1;
+    profile.myPosts = profile.myPosts || [];
+    profile.myPosts.unshift({ title, body, time: 'just now' });
+    saveProfileData(profile);
+    checkBadgeUnlocks(profile);
+  }
+  currentFtFilter = 'all';
+  document.querySelectorAll('.ft-filter').forEach(f => f.classList.remove('active'));
+  document.querySelector('.ft-filter').classList.add('active');
+  renderPosts('all');
+  showToast('🚽 Flushed! Story posted.');
+}
+
+// ── THRONE CARD / PROFILE ──
+const PROFILE_KEY = 'crapapp_profile';
+
+const HANDLE_PREFIXES = ['Silent','Midnight','Phantom','Stealth','Royal','Rogue','Covert','Humble','Mighty','Mystery','Brave','Lone','Golden','Cunning'];
+const HANDLE_SUFFIXES = ['Flusher','Staller','Throner','Squatter','Hoverer','Philosopher','Plunger','Depositor','Rusher','Lingerer','Contemplator','Reliever'];
+const PROFILE_EMOJIS = ['🦝','🐸','🦦','🐺','🐊','🦉','🦊','🐻','🦁','🐯','🦅','🐙','🦋','🐉','🦄','🐨','🦖','🦩','🐝','🦔'];
+
+const BADGES = [
+  // Tier 1 — Getting Started
+  { id: 'first_deposit',   tier: 1, emoji: '🌟', name: 'First Deposit',        desc: 'Posted your first story. You showed up and delivered.',         req: p => p.posts >= 1 },
+  { id: 'first_flush',     tier: 1, emoji: '🗝️', name: 'First Flush',          desc: 'Tagged your first bathroom on CrapMap.',                        req: p => p.tags >= 1 },
+  { id: 'know_your_shit',  tier: 1, emoji: '🎯', name: 'Know Your Shit',       desc: 'Answered your first trivia question.',                          req: p => p.trivia >= 1 },
+  { id: 'early_adopter',   tier: 1, emoji: '👑', name: 'Early Adopter',        desc: 'Joined during the beta. You were here first.',                  req: p => true },
+  // Tier 2 — Getting Comfortable
+  { id: 'double_deuce',    tier: 2, emoji: '💩', name: 'Double Deuce',         desc: 'Posted your 2nd story. You had more in you.',                   req: p => p.posts >= 2 },
+  { id: 'cartographer',    tier: 2, emoji: '🗺️', name: 'Cartographer',         desc: 'Tagged 5 bathrooms. Charting the territory.',                   req: p => p.tags >= 5 },
+  { id: 'toilet_scholar',  tier: 2, emoji: '🧠', name: 'Toilet Scholar',       desc: 'Got 5 trivia answers correct. You studied.',                    req: p => p.triviaCorrect >= 5 },
+  { id: 'turtle_head',     tier: 2, emoji: '🐢', name: 'Turtle Head',          desc: 'Hit Code Brown 3 times. You know that feeling.',                req: p => (p.codeBrowns || 0) >= 3 },
+  // Tier 3 — Committed
+  { id: 'power_flush',     tier: 3, emoji: '🔱', name: 'Power Flush',          desc: 'Posted 5 stories. Cleared the pipes completely.',               req: p => p.posts >= 5 },
+  { id: 'swirley_bird',    tier: 3, emoji: '🎡', name: 'Swirley Bird',         desc: 'Tagged 10 bathrooms. You\'ve been around the bowl.',            req: p => p.tags >= 10 },
+  { id: 'shit_tickets',    tier: 3, emoji: '🧻', name: 'Shit Tickets',         desc: 'Rated TP quality on 5 different bathrooms.',                    req: p => (p.tpRatings || 0) >= 5 },
+  { id: 'cable_layer',     tier: 3, emoji: '🔥', name: 'Cable Layer',          desc: 'A story hit 500 reactions. You laid something substantial.',    req: p => (p.maxReactions || 0) >= 500 },
+  // Legendary
+  { id: 'mt_flushmore',    tier: 4, emoji: '🗿', name: 'Mt. Flushmore',        desc: 'Tagged 25 bathrooms. A monument to the cause.',                 req: p => p.tags >= 25 },
+  { id: 'pooh_bear',       tier: 4, emoji: '🐻', name: 'Pooh Bear',            desc: 'Posted 10 stories. Prolific. Relentless. Beloved.',             req: p => p.posts >= 10 },
+  { id: 'turd_cutter',     tier: 4, emoji: '✂️', name: 'Turd Cutter',         desc: 'A story hit 1,000 reactions. Cut right through the noise.',     req: p => (p.maxReactions || 0) >= 1000 },
+  { id: 'clint_eastwood',  tier: 4, emoji: '🤠', name: 'Clint Eastwood',      desc: 'Tagged a bathroom as Clint Eastwood TP. Respect.',              req: p => (p.clintTag || false) },
+  { id: 'mortal_coil',     tier: 4, emoji: '🎭', name: 'Shuffle off a Mortal Coil', desc: 'Earned every other badge. You have truly given a shit.', req: p => BADGES.filter(b => b.id !== 'mortal_coil').every(b => b.req(p)) },
+];
+
+function getProfile() {
+  try { return JSON.parse(localStorage.getItem(PROFILE_KEY)); } catch(e) { return null; }
+}
+
+function saveProfileData(data) {
+  try { localStorage.setItem(PROFILE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+function randomHandle() {
+  const p = HANDLE_PREFIXES[Math.floor(Math.random() * HANDLE_PREFIXES.length)];
+  const s = HANDLE_SUFFIXES[Math.floor(Math.random() * HANDLE_SUFFIXES.length)];
+  document.getElementById('ob-handle').value = p + s;
+}
+
+function buildOnboarding() {
+  // Populate emoji grid
+  const grid = document.getElementById('ob-emoji-grid');
+  let selectedEmoji = PROFILE_EMOJIS[0];
+  grid.innerHTML = PROFILE_EMOJIS.map(e => `
+    <div class="tag-chip ${e === selectedEmoji ? 'selected' : ''}" 
+      style="font-size:22px;padding:8px 10px;min-width:48px;justify-content:center;"
+      onclick="selectEmoji(this,'${e}')">${e}</div>
+  `).join('');
+  randomHandle();
+}
+
+function selectEmoji(el, emoji) {
+  document.querySelectorAll('#ob-emoji-grid .tag-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('ob-avatar-preview').textContent = emoji;
+}
+
+function saveProfile() {
+  const handle = document.getElementById('ob-handle').value.trim();
+  if (!handle) { showToast('⚠️ Pick a handle first!'); return; }
+  const selectedEl = document.querySelector('#ob-emoji-grid .tag-chip.selected');
+  const emoji = selectedEl ? selectedEl.textContent.trim() : '💩';
+  const profile = {
+    handle, emoji,
+    since: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+    posts: 0, tags: 0, trivia: 0, triviaCorrect: 0, streak: 1,
+    myPosts: []
+  };
+  saveProfileData(profile);
+  document.getElementById('onboarding-modal').classList.remove('open');
+  document.getElementById('nav-profile-emoji').textContent = emoji;
+  renderThroneCard();
+  showToast(`👑 Welcome to the throne, ${handle}!`);
+  // Fire badge check — Early Adopter should unlock immediately
+  setTimeout(() => checkBadgeUnlocks(profile), 600);
+}
+
+function renderThroneCard() {
+  const profile = getProfile();
+  const el = document.getElementById('thronecard-content');
+
+  if (!profile) {
+    el.innerHTML = `
+      <div style="text-align:center;padding:60px 20px;">
+        <div style="font-size:80px;margin-bottom:16px;">🚽</div>
+        <div style="font-family:'Fredoka One',cursive;font-size:26px;color:var(--dark);margin-bottom:8px;">Your Throne Awaits</div>
+        <p style="color:#888;font-size:14px;line-height:1.6;margin-bottom:24px;">Create your anonymous profile. Track your contributions. Earn badges. Be somebody — just not your actual somebody.</p>
+        <button class="btn-primary" style="font-size:18px;" onclick="showOnboarding()">🚽 Claim Your Throne</button>
+      </div>`;
+    return;
+  }
+
+  // Update nav emoji
+  document.getElementById('nav-profile-emoji').textContent = profile.emoji;
+
+  // Compute badges
+  const TIER_LABELS = { 1: '🌱 Tier 1 — Getting Started', 2: '💪 Tier 2 — Getting Comfortable', 3: '🔥 Tier 3 — Committed', 4: '⭐ Legendary' };
+  const TIER_CLASSES = { 1: 'tier-1', 2: 'tier-2', 3: 'tier-3', 4: 'tier-4' };
+  const earned = BADGES.filter(b => b.req(profile));
+  const earnedIds = new Set(earned.map(b => b.id));
+
+  const badgeTiersHTML = [1,2,3,4].map(tier => {
+    const tierBadges = BADGES.filter(b => b.tier === tier);
+    return `
+      <div style="margin-bottom:16px;">
+        <div style="margin-bottom:8px;">
+          <span class="badge-tier-label ${TIER_CLASSES[tier]}">${TIER_LABELS[tier]}</span>
+        </div>
+        <div class="badge-grid" style="margin-bottom:0;">
+          ${tierBadges.map(b => {
+            const isEarned = earnedIds.has(b.id);
+            return `<div class="badge-item ${isEarned ? (tier === 4 ? 'tier-4' : '') : 'locked'}">
+              <div class="badge-emoji">${b.emoji}</div>
+              <div class="badge-info">
+                <div class="badge-name">${b.name}</div>
+                <div class="badge-desc">${isEarned ? b.desc : '???'}</div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  // Throne score
+  const throneScore = (profile.posts * 10) + (profile.tags * 5) + (profile.triviaCorrect * 3) + ((profile.codeBrowns||0) * 2) + (profile.streak * 1);
+
+  // My posts
+  const myPostsHTML = (profile.myPosts && profile.myPosts.length > 0)
+    ? profile.myPosts.slice(0,5).map(p => `
+        <div class="profile-post">
+          <div class="profile-post-title">${p.title}</div>
+          <div class="profile-post-meta">💩 flushed ${p.time}</div>
+        </div>`).join('')
+    : `<div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">No stories yet. The world is waiting.</div>`;
+
+  el.innerHTML = `
+    <div class="throne-card-hero">
+      <button class="edit-profile-btn" onclick="showOnboarding()">✏️ Edit</button>
+      <div class="tc-hero-top">
+        <div class="tc-avatar-big">${profile.emoji}</div>
+        <div>
+          <div class="tc-name">${profile.handle}</div>
+          <div class="tc-since">On the throne since ${profile.since}</div>
+          <div style="margin-top:6px;">
+            <span style="background:rgba(245,197,24,0.15);border:1px solid rgba(245,197,24,0.3);color:rgba(255,255,255,0.6);font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;">
+              ${earned.length} / ${BADGES.length} badges
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="tc-stats">
+        <div class="tc-stat">
+          <div class="tc-stat-num">${profile.posts}</div>
+          <div class="tc-stat-label">Stories</div>
+        </div>
+        <div class="tc-stat">
+          <div class="tc-stat-num">${profile.tags}</div>
+          <div class="tc-stat-label">Tags</div>
+        </div>
+        <div class="tc-stat">
+          <div class="tc-stat-num">${profile.triviaCorrect}</div>
+          <div class="tc-stat-label">Trivia ✓</div>
+        </div>
+        <div class="tc-stat">
+          <div class="tc-stat-num">${profile.codeBrowns || 0}</div>
+          <div class="tc-stat-label">Code Browns</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;position:relative;z-index:1;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+          <span style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.5);letter-spacing:1px;">THRONE SCORE</span>
+          <span style="font-size:12px;font-weight:800;color:var(--gold);">${throneScore} pts</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.1);border-radius:50px;height:8px;overflow:hidden;">
+          <div style="height:100%;width:${Math.min(100, throneScore / 2)}%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:50px;transition:width 0.8s ease;"></div>
+        </div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;text-align:right;">Next rank at ${Math.ceil(throneScore/50)*50} pts</div>
+      </div>
+    </div>
+
+    <div class="profile-section-title">🏆 Badges (${earned.length}/${BADGES.length} earned)</div>
+    ${badgeTiersHTML}
+
+    <div class="profile-section-title">💩 My Stories (${profile.posts})</div>
+    ${myPostsHTML}
+
+    <div style="margin-top:20px;padding:16px;background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:12px;">⚙️ ACCOUNT</div>
+      <button class="btn-ghost" style="width:100%;text-align:center;color:#F44336;border-color:rgba(244,67,54,0.3);" onclick="resetProfile()">
+        🗑️ Reset Throne Card
+      </button>
+    </div>
+  `;
+}
+
+function showOnboarding() {
+  buildOnboarding();
+  // Pre-fill if editing
+  const profile = getProfile();
+  if (profile) {
+    document.getElementById('ob-handle').value = profile.handle;
+    document.getElementById('ob-avatar-preview').textContent = profile.emoji;
+    // Pre-select current emoji
+    setTimeout(() => {
+      document.querySelectorAll('#ob-emoji-grid .tag-chip').forEach(el => {
+        if (el.textContent.trim() === profile.emoji) el.classList.add('selected');
+        else el.classList.remove('selected');
+      });
+    }, 50);
+  }
+  document.getElementById('onboarding-modal').classList.add('open');
+}
+
+function resetProfile() {
+  if (confirm('Are you sure? This will wipe your Throne Card. No undo.')) {
+    try { localStorage.removeItem(PROFILE_KEY); } catch(e) {}
+    document.getElementById('nav-profile-emoji').textContent = '🪪';
+    renderThroneCard();
+    showToast('🚽 Throne Card reset. Fresh start.');
+  }
+}
+
+function checkBadgeUnlocks(profile) {
+  const prevEarned = profile.earnedBadges || [];
+  const nowEarned = BADGES.filter(b => b.req(profile)).map(b => b.id);
+  const newlyEarned = nowEarned.filter(id => !prevEarned.includes(id));
+  if (newlyEarned.length > 0) {
+    profile.earnedBadges = nowEarned;
+    saveProfileData(profile);
+    // Show the first newly earned badge
+    const badge = BADGES.find(b => b.id === newlyEarned[0]);
+    if (badge) showBadgeToast(badge);
+  }
+}
+
+let badgeToastTimer;
+function showBadgeToast(badge) {
+  const t = document.getElementById('badge-toast');
+  document.getElementById('badge-toast-emoji').textContent = badge.emoji;
+  document.getElementById('badge-toast-name').textContent = badge.name;
+  t.classList.add('show');
+  clearTimeout(badgeToastTimer);
+  badgeToastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+const _origAnswerTrivia = answerTrivia;
+answerTrivia = function(cardIdx, chosen, correct) {
+  _origAnswerTrivia(cardIdx, chosen, correct);
+  const profile = getProfile();
+  if (profile) {
+    profile.trivia = (profile.trivia || 0) + 1;
+    if (chosen === correct) profile.triviaCorrect = (profile.triviaCorrect || 0) + 1;
+    saveProfileData(profile);
+    checkBadgeUnlocks(profile);
+  }
+};
+
+// Track tag saves against profile
+const _origSaveTagEdits = saveTagEdits;
+saveTagEdits = function(i) {
+  _origSaveTagEdits(i);
+  const profile = getProfile();
+  if (profile) {
+    profile.tags = (profile.tags || 0) + 1;
+    // Check if a TP tag was toggled on
+    const b = bathrooms[i];
+    if (b.tags.some(t => ['soft_tp','medium_tp','clint_tp'].includes(t))) {
+      profile.tpRatings = (profile.tpRatings || 0) + 1;
+    }
+    // Check for Clint Eastwood tag
+    if (b.tags.includes('clint_tp')) profile.clintTag = true;
+    saveProfileData(profile);
+    checkBadgeUnlocks(profile);
+  }
+};
+
+// ── CRAP STORE ──
+function renderStore(filter) {
+  const f = filter || currentStoreFilter;
+  const grid = document.getElementById('store-grid');
+  const allIndexed = products.map((p, i) => ({ ...p, idx: i }));
+  const filtered = f === 'all' ? allIndexed : allIndexed.filter(p => p.cat === f);
+  grid.innerHTML = filtered.map((p) => `
+    <div class="product-card" onclick="openDrawer(${p.idx})">
+      <div class="product-thumb" style="background:${p.bg};padding:0;overflow:hidden;">
+        ${p.photo
+          ? `<img src="${p.photo}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentNode.innerHTML='<span style=\\'font-size:52px;\\'>${p.emoji}</span>'">`
+          : `<span style="font-size:52px;">${p.emoji}</span>`
+        }
+        ${p.badge ? `<div class="product-badge ${p.badge === 'GIFT' ? 'badge-gift' : 'badge-default'}">${p.badge}</div>` : ''}
+        ${p.photo ? `<div style="position:absolute;bottom:7px;right:7px;background:rgba(255,255,255,0.92);border-radius:8px;padding:2px 6px;font-size:18px;line-height:1.3;">${p.emoji}</div>` : ''}
+      </div>
+      </div>
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="product-stars">${p.stars} <span style="color:#bbb">(${p.reviews.toLocaleString()})</span></div>
+        ${p.freeShipping ? '<div class="free-shipping-badge">🚚 Free Shipping</div>' : ''}
+        <div class="product-price" style="margin-top:6px;">
+          ${p.price}
+          <a class="add-to-cart" href="${p.directUrl || p.amazonUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="${p.directUrl ? 'Shop CrapApp Store' : 'View on Amazon'}">🛒</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openDrawer(idx) {
+  const p = products[idx];
+  const d = productDetails[idx];
+  drawerProductIndex = idx;
+
+  const heroEl = document.getElementById('drawer-hero');
+  const emojiEl = document.getElementById('drawer-emoji');
+
+  if (p.photo) {
+    heroEl.style.background = 'none';
+    heroEl.style.padding = '0';
+    heroEl.style.overflow = 'hidden';
+    emojiEl.style.display = 'none';
+    // Remove old photo if present
+    const oldImg = heroEl.querySelector('.drawer-hero-img');
+    if (oldImg) oldImg.remove();
+    const img = document.createElement('img');
+    img.className = 'drawer-hero-img';
+    img.src = p.photo;
+    img.alt = p.name;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;';
+    img.onerror = () => { img.remove(); emojiEl.style.display = ''; heroEl.style.background = p.bg; };
+    heroEl.insertBefore(img, heroEl.firstChild);
+    // Emoji pill overlay
+    let emojiPill = heroEl.querySelector('.drawer-emoji-pill');
+    if (!emojiPill) {
+      emojiPill = document.createElement('div');
+      emojiPill.className = 'drawer-emoji-pill';
+      emojiPill.style.cssText = 'position:absolute;bottom:12px;right:12px;background:rgba(255,255,255,0.92);border-radius:10px;padding:3px 8px;font-size:24px;line-height:1.3;z-index:2;';
+      heroEl.appendChild(emojiPill);
+    }
+    emojiPill.textContent = p.emoji;
+    emojiPill.style.display = '';
+  } else {
+    heroEl.style.background = p.bg;
+    heroEl.style.padding = '';
+    heroEl.style.overflow = '';
+    emojiEl.style.display = '';
+    emojiEl.textContent = p.emoji;
+    const oldImg = heroEl.querySelector('.drawer-hero-img');
+    if (oldImg) oldImg.remove();
+    const emojiPill = heroEl.querySelector('.drawer-emoji-pill');
+    if (emojiPill) emojiPill.style.display = 'none';
+  }
+
+  document.getElementById('drawer-hero').style.position = 'relative';
+  document.getElementById('drawer-name').textContent = p.name;
+  document.getElementById('drawer-stars').innerHTML = `${p.stars} <span>(${p.reviews.toLocaleString()} reviews)</span>`;
+  document.getElementById('drawer-price').textContent = p.price;
+  document.getElementById('drawer-desc-text').textContent = d.desc;
+
+  const badgeEl = document.getElementById('drawer-hero-badge');
+  if (p.badge) {
+    badgeEl.textContent = p.badge;
+    badgeEl.style.display = '';
+    badgeEl.style.background = p.badge === 'GIFT' ? 'var(--teal)' : '#F44336';
+  } else { badgeEl.style.display = 'none'; }
+
+  const addBtn = document.getElementById('drawer-add-btn');
+  addBtn.href = p.amazonUrl || p.directUrl;
+  addBtn.innerHTML = '🛒 View on Amazon';
+
+  // Free shipping badge
+  let freeShipEl = document.getElementById('drawer-free-shipping');
+  if (!freeShipEl) {
+    freeShipEl = document.createElement('div');
+    freeShipEl.id = 'drawer-free-shipping';
+    freeShipEl.className = 'drawer-free-shipping';
+    freeShipEl.innerHTML = '🚚 Free Shipping';
+    addBtn.parentNode.insertBefore(freeShipEl, addBtn.parentNode.nextSibling);
+  }
+
+  // Merch: show "Shop CrapApp Store" teal button, hide Amazon button
+  // Affiliate: show Amazon button, hide shop button
+  let shopBtn = document.getElementById('drawer-shop-btn');
+  if (p.directUrl) {
+    // merch item
+    addBtn.style.display = 'none';
+    if (!shopBtn) {
+      shopBtn = document.createElement('a');
+      shopBtn.id = 'drawer-shop-btn';
+      shopBtn.className = 'drawer-shop-btn';
+      shopBtn.target = '_blank';
+      shopBtn.rel = 'noopener noreferrer';
+      addBtn.parentNode.appendChild(shopBtn);
+    }
+    shopBtn.href = p.directUrl;
+    shopBtn.innerHTML = '👕 Shop CrapApp Store';
+    shopBtn.style.display = 'flex';
+    freeShipEl.style.display = 'inline-flex';
+    document.getElementById('drawer-affiliate-note').style.display = 'none';
+  } else {
+    // affiliate item
+    addBtn.style.display = 'flex';
+    addBtn.href = p.amazonUrl;
+    if (shopBtn) shopBtn.style.display = 'none';
+    freeShipEl.style.display = 'none';
+    document.getElementById('drawer-affiliate-note').style.display = 'block';
+  }
+
+  document.getElementById('drawer-reviews-list').innerHTML = d.reviews.map(r => `
+    <div class="review-card">
+      <div class="review-top">
+        <div class="review-avatar">${r.emoji}</div>
+        <div class="review-meta">
+          <div class="review-name">${r.name}</div>
+          <div class="review-stars">${r.stars}</div>
+        </div>
+        ${r.verified ? '<div class="review-verified">✓ Verified Purchase</div>' : ''}
+      </div>
+      <div class="review-text">${r.text}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('product-drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.getElementById('product-drawer').classList.remove('open');
+  document.body.style.overflow = '';
+  drawerProductIndex = null;
+}
+
+function storeCat(el, cat) {
+  document.querySelectorAll('.store-cat').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentStoreFilter = cat;
+  renderStore(cat);
+}
+
+// ── UTILS ──
+let toastTimer;
+// ── LEGAL ──
+function showLegal(page) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+  document.getElementById('app-nav').classList.remove('visible');
+  window.scrollTo(0, 0);
+}
+
+function hideLegal() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('hero').classList.add('active');
+  document.getElementById('app-nav').classList.remove('visible');
+  window.scrollTo(0, 0);
+}
+
+// ── EMAIL CAPTURE ──
+function submitEmail() {
+  const input = document.getElementById('email-input');
+  const btn = document.getElementById('email-submit');
+  const email = input.value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!email || !emailRegex.test(email)) {
+    input.style.borderColor = '#F44336';
+    input.placeholder = 'Need a valid email!';
+    setTimeout(() => {
+      input.style.borderColor = '';
+      input.placeholder = 'your@email.com';
+    }, 2000);
+    return;
+  }
+
+  // Store locally for now — swap in your email service (Mailchimp, ConvertKit, etc.) here
+  const signups = JSON.parse(localStorage.getItem('crapapp_signups') || '[]');
+  if (!signups.includes(email)) signups.push(email);
+  localStorage.setItem('crapapp_signups', JSON.stringify(signups));
+
+  btn.textContent = '✓ You\'re on the list!';
+  btn.classList.add('success');
+  input.value = '';
+  input.placeholder = 'your@email.com';
+  input.disabled = true;
+  btn.disabled = true;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// Init
+renderBathrooms();
+// Restore profile emoji in nav if already set
+const _initProfile = getProfile();
+if (_initProfile) {
+  document.getElementById('nav-profile-emoji').textContent = _initProfile.emoji;
+}
+</script>
+</body>
+</html>
