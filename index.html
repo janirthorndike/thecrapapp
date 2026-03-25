@@ -311,6 +311,58 @@
 
   /* ── URINAL GAME ── */
   .ug-body { padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
+  .ug-classic-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; background: #0d3349; color: white;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 16px; padding: 14px 20px;
+    font-family: 'Fredoka One', cursive; font-size: 16px;
+    cursor: pointer; margin-bottom: 16px;
+    transition: all 0.15s;
+  }
+  .ug-classic-btn:hover { background: #164d6e; border-color: var(--gold); }
+  .ug-classic-badge {
+    font-size: 10px; font-weight: 800; letter-spacing: 1px;
+    background: var(--gold); color: var(--dark);
+    padding: 2px 8px; border-radius: 50px;
+  }
+  .ug-classic-modal-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.85);
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .ug-classic-modal-overlay.open { display: flex; }
+  .ug-classic-modal {
+    background: #0d3349;
+    border-radius: 20px; overflow: hidden;
+    width: 100%; max-width: 580px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    position: relative;
+  }
+  .ug-classic-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .ug-classic-modal-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px; color: var(--gold);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ug-classic-modal-close {
+    background: rgba(255,255,255,0.1); border: none;
+    color: white; width: 32px; height: 32px;
+    border-radius: 50%; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .ug-classic-modal-close:hover { background: rgba(255,255,255,0.2); }
+  .ug-classic-iframe {
+    width: 100%; height: 384px; border: none; display: block;
+    background: #000;
+  }
   .ug-scenario {
     background: white; border-radius: 20px;
     padding: 20px; margin-bottom: 16px;
@@ -1936,6 +1988,17 @@
  </div>
 </div>
 
+<!-- ════ CLASSIC URINAL GAME MODAL ════ -->
+<div class="ug-classic-modal-overlay" id="ug-classic-overlay" onclick="closeClassicGame(event)">
+  <div class="ug-classic-modal">
+    <div class="ug-classic-modal-header">
+      <div class="ug-classic-modal-title">🕹️ The Urinal Game (1997) <span class="ug-classic-badge">ORIGINAL</span></div>
+      <button class="ug-classic-modal-close" onclick="closeClassicGame()">✕</button>
+    </div>
+    <iframe class="ug-classic-iframe" id="ug-classic-iframe" src="" allowfullscreen></iframe>
+  </div>
+</div>
+
 <!-- ════ ONBOARDING MODAL ════ -->
 <div class="modal-overlay" id="onboarding-modal">
   <div class="modal" style="padding:28px 24px 36px;position:relative;">
@@ -3462,6 +3525,19 @@ function storeCat(el, cat) {
   renderStore(cat);
 }
 
+function openClassicGame() {
+  document.getElementById('ug-classic-iframe').src = 'https://archive.org/embed/urinalgame';
+  document.getElementById('ug-classic-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeClassicGame(e) {
+  if (e && e.target !== document.getElementById('ug-classic-overlay')) return;
+  document.getElementById('ug-classic-overlay').classList.remove('open');
+  document.getElementById('ug-classic-iframe').src = '';
+  document.body.style.overflow = '';
+}
+
 // ── URINAL GAME ──
 const URINAL_SCENARIOS = [
   {
@@ -3578,6 +3654,10 @@ function renderUrinalGame() {
         <div class="ug-score-label">Streak 🔥</div>
       </div>
     </div>
+
+    <button class="ug-classic-btn" onclick="openClassicGame()">
+      🕹️ Play the Original (1997 Flash) <span class="ug-classic-badge">CLASSIC</span>
+    </button>
 
     <div class="ug-rule-card">
       <strong>The Unwritten Code:</strong> Never take a urinal adjacent to an occupied one if alternatives exist. Always maximize distance. End urinals are sacred. Eye contact is forbidden. The shorty is never the answer.
