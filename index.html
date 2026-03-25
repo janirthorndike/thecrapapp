@@ -94,19 +94,20 @@
     background: var(--brown);
     min-height: 100vh;
     position: relative;
-    overflow: hidden;
   }
 
   .hero-bg {
     position: absolute; inset: 0;
     background: radial-gradient(ellipse at 30% 20%, #7B4A24 0%, #3d1f0a 60%, #1a0a04 100%);
     z-index: 0;
+    pointer-events: none;
   }
 
   .hero-dots {
     position: absolute; inset: 0; z-index: 1;
     background-image: radial-gradient(circle, rgba(245,197,24,0.08) 1px, transparent 1px);
     background-size: 28px 28px;
+    pointer-events: none;
   }
 
   .hero-content {
@@ -308,6 +309,220 @@
     margin-top: 12px; line-height: 1.5;
   }
 
+  /* ── URINAL GAME ── */
+  .ug-body { padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
+  .ug-scenario {
+    background: white; border-radius: 20px;
+    padding: 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border: 2px solid transparent;
+  }
+  .ug-scenario.correct { border-color: #4CAF50; background: #f1fff3; }
+  .ug-scenario.wrong { border-color: #F44336; background: #fff5f5; }
+  .ug-level {
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px;
+    color: #aaa; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .ug-prompt {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px; color: var(--dark);
+    margin-bottom: 4px; line-height: 1.3;
+  }
+  .ug-sub {
+    font-size: 12px; color: #888; margin-bottom: 16px; line-height: 1.5;
+  }
+  .ug-urinals {
+    display: flex; gap: 8px; justify-content: center;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .ug-urinal {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 4px; cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .ug-urinal:hover .ug-u { transform: scale(1.08); }
+  .ug-u {
+    width: 48px; height: 64px;
+    border-radius: 12px 12px 20px 20px;
+    background: #e8e0d8;
+    border: 2px solid #c8b8a8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .ug-u.occupied { background: #ffebee; border-color: #F44336; }
+  .ug-u.shorty { height: 46px; width: 42px; font-size: 16px; background: #e8e0d8; }
+  .ug-u.selected { border-color: var(--gold); background: #fffde7; box-shadow: 0 0 0 3px rgba(245,197,24,0.3); }
+  .ug-u.correct-pick { border-color: #4CAF50; background: #e8f5e9; box-shadow: 0 0 0 3px rgba(76,175,80,0.3); }
+  .ug-u.wrong-pick { border-color: #F44336; background: #ffebee; box-shadow: 0 0 0 3px rgba(244,67,54,0.3); }
+  .ug-label { font-size: 10px; font-weight: 800; color: #aaa; }
+  .ug-result {
+    text-align: center; padding: 10px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px; border-radius: 12px;
+    display: none;
+  }
+  .ug-result.correct { display: block; color: #2E7D32; background: #e8f5e9; }
+  .ug-result.wrong { display: block; color: #C62828; background: #ffebee; }
+  .ug-scoreboard {
+    background: var(--brown); color: white;
+    border-radius: 20px; padding: 20px;
+    text-align: center; margin-bottom: 16px;
+    display: flex; gap: 0; overflow: hidden;
+  }
+  .ug-score-item {
+    flex: 1; padding: 8px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+  }
+  .ug-score-item:last-child { border-right: none; }
+  .ug-score-num {
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px; color: var(--gold);
+  }
+  .ug-score-label { font-size: 10px; color: rgba(255,255,255,0.5); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+  .ug-next-btn {
+    width: 100%; background: var(--gold); color: var(--dark);
+    border: none; border-radius: 50px;
+    font-family: 'Fredoka One', cursive; font-size: 18px;
+    padding: 14px; cursor: pointer;
+    box-shadow: 0 4px 0 var(--gold-dark);
+    transition: all 0.15s; margin-top: 12px;
+    display: none;
+  }
+  .ug-next-btn:hover { transform: translateY(-1px); }
+  .ug-next-btn.visible { display: block; }
+  .ug-rule-card {
+    background: #0d3349; color: white;
+    border-radius: 16px; padding: 16px 18px;
+    margin-bottom: 16px; font-size: 13px; line-height: 1.6;
+  }
+  .ug-rule-card strong { color: var(--gold); }
+  .ug-over {
+    text-align: center; padding: 40px 20px;
+    display: none;
+  }
+  .ug-over.show { display: block; }
+  .ug-over-emoji { font-size: 72px; margin-bottom: 12px; }
+  .ug-over-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px; color: var(--dark); margin-bottom: 8px;
+  }
+  .ug-over-sub { font-size: 14px; color: #888; margin-bottom: 24px; }
+
+  /* ── URINAL GAME ── */
+  .ug-body { padding: 20px 16px 100px; }
+  .ug-intro {
+    text-align: center; margin-bottom: 24px;
+  }
+  .ug-streak {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(245,197,24,0.12);
+    border: 1.5px solid rgba(245,197,24,0.3);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px; color: #F5C518;
+    margin-bottom: 16px;
+  }
+  .ug-scenario {
+    background: white;
+    border-radius: 20px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border: 2px solid transparent;
+  }
+  .ug-scenario-label {
+    font-size: 10px; font-weight: 800;
+    letter-spacing: 1.5px; color: #aaa;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .ug-scenario-text {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px; color: var(--dark);
+    line-height: 1.3;
+  }
+  .ug-bank {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: flex-end;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+  .ug-urinal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .ug-urinal:hover .ug-bowl { border-color: var(--gold); }
+  .ug-urinal.selected .ug-bowl { border-color: var(--teal); background: rgba(0,191,165,0.1); }
+  .ug-urinal.correct .ug-bowl { border-color: #4CAF50; background: rgba(76,175,80,0.1); }
+  .ug-urinal.wrong .ug-bowl { border-color: #F44336; background: rgba(244,67,54,0.1); }
+  .ug-bowl {
+    width: 52px; height: 68px;
+    border: 3px solid rgba(0,0,0,0.12);
+    border-radius: 8px 8px 20px 20px;
+    background: #f8f8f8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .ug-bowl.shorty {
+    height: 50px;
+    width: 44px;
+  }
+  .ug-divider {
+    width: 6px; height: 80px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    align-self: flex-start;
+  }
+  .ug-divider.shorty { height: 60px; }
+  .ug-num {
+    font-size: 11px; font-weight: 800;
+    color: #aaa;
+  }
+  .ug-occupant {
+    font-size: 20px;
+    position: absolute;
+    top: -28px;
+  }
+  .ug-result {
+    text-align: center;
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .ug-result.show { display: block; }
+  .ug-result.pass { background: rgba(76,175,80,0.1); border: 2px solid #4CAF50; }
+  .ug-result.fail { background: rgba(244,67,54,0.08); border: 2px solid #F44336; }
+  .ug-result-emoji { font-size: 48px; margin-bottom: 8px; }
+  .ug-result-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px; margin-bottom: 6px;
+  }
+  .ug-result.pass .ug-result-title { color: #2E7D32; }
+  .ug-result.fail .ug-result-title { color: #C62828; }
+  .ug-result-explain { font-size: 13px; color: #555; line-height: 1.55; margin-bottom: 16px; }
+  .ug-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .ug-score-bar {
+    display: flex; gap: 6px; justify-content: center;
+    margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .ug-score-pip {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #e0e0e0;
+  }
+  .ug-score-pip.pass { background: #4CAF50; }
+  .ug-score-pip.fail { background: #F44336; }
+
   /* ── LEGAL SCREENS ── */
   .legal-screen {
     background: var(--cream);
@@ -432,7 +647,7 @@
     #hero.screen.active { display: block; }
 
     .app-shell {
-      max-width: 480px;
+      max-width: 960px;
       box-shadow: 0 0 80px rgba(0,0,0,0.5);
       border-radius: 0;
     }
@@ -443,7 +658,7 @@
       justify-content: center !important;
     }
     .app-nav-inner {
-      max-width: 480px;
+      max-width: 960px;
       background: var(--brown);
       padding: 10px 0 14px;
       box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
@@ -453,15 +668,36 @@
   .page-header {
     background: var(--brown);
     padding: 48px 20px 20px;
-    position: sticky; top: 0; z-index: 50;
+    position: sticky; top: 0; z-index: 60;
     box-shadow: 0 2px 12px rgba(0,0,0,0.2);
     width: 100%;
+  }
+  .page-header-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 12px;
   }
   .page-header h1 {
     font-family: 'Fredoka One', cursive;
     font-size: 28px; color: var(--gold);
     display: flex; align-items: center; gap: 10px;
+    flex: 1;
   }
+  .home-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.55);
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px; font-weight: 800;
+    padding: 5px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .home-btn:hover { background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.85); }
   .page-header p { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 2px; }
 
   .page-body { padding: 16px 16px 90px; width: 100%; }
@@ -530,7 +766,7 @@
   }
 
   .code-brown-btn {
-    position: absolute; bottom: 16px; right: 16px; z-index: 1000;
+    position: absolute; bottom: 16px; right: 16px; z-index: 10;
     background: #c0392b;
     color: white;
     border: none; border-radius: 50px;
@@ -1429,7 +1665,6 @@
     </div>
     <div class="email-fine-print">We respect your privacy. Unsubscribe anytime. Read our <a href="#" onclick="showLegal('privacy')" style="color:rgba(255,255,255,0.4);text-decoration:underline;">Privacy Policy</a>.</div>
   </div>
-</div>
 
   <!-- Hero Footer -->
   <div class="hero-footer">
@@ -1578,7 +1813,10 @@
 <div id="crapmap" class="screen">
  <div class="app-shell">
   <div class="page-header">
-    <h1>🗺️ CrapMap</h1>
+    <div class="page-header-top">
+      <h1>🗺️ CrapMap</h1>
+      <button class="home-btn" onclick="goHome()">🏠 Home</button>
+    </div>
     <p>Crowdsourced bathroom ratings near you</p>
   </div>
 
@@ -1586,7 +1824,8 @@
     <div class="legend-item"><div class="legend-dot" style="background:#4CAF50"></div> Clean (8-10)</div>
     <div class="legend-item"><div class="legend-dot" style="background:#FFC107"></div> Meh (5-7)</div>
     <div class="legend-item"><div class="legend-dot" style="background:#F44336"></div> Avoid (1-4)</div>
-    <div class="legend-item" style="margin-left:auto; color:#666; font-size:12px;">📍 Your location</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2196F3;border-radius:4px;"></div> Real-world</div>
+    <div class="legend-item" style="margin-left:auto; color:#666; font-size:12px;">📍 You</div>
   </div>
 
   <div class="map-container">
@@ -1602,7 +1841,10 @@
 <div id="throneroom" class="screen">
  <div class="app-shell">
   <div class="page-header" style="background:var(--dark);">
-    <h1>👑 Throne Room</h1>
+    <div class="page-header-top">
+      <h1>👑 Throne Room</h1>
+      <button class="home-btn" onclick="goHome()">🏠 Home</button>
+    </div>
     <p>Your 5-10 min bathroom content drop</p>
   </div>
   <div class="throne-tabs">
@@ -1620,7 +1862,10 @@
 <div id="flushandtell" class="screen">
  <div class="app-shell">
   <div class="page-header" style="background:#1a3a4a;">
-    <h1>💬 Flush & Tell</h1>
+    <div class="page-header-top">
+      <h1>💬 Flush & Tell</h1>
+      <button class="home-btn" onclick="goHome()">🏠 Home</button>
+    </div>
     <p>Anonymous confessions. No judgment. Only vibes.</p>
   </div>
   <div class="ft-compose">
@@ -1643,7 +1888,10 @@
 <div id="crapstore" class="screen">
  <div class="app-shell">
   <div class="page-header" style="background:#2d1b4e;">
-    <h1>🛒 Crap Store</h1>
+    <div class="page-header-top">
+      <h1>🛒 Crap Store</h1>
+      <button class="home-btn" onclick="goHome()">🏠 Home</button>
+    </div>
     <p>Elevate your bathroom game</p>
   </div>
 
@@ -1664,16 +1912,34 @@
 <div id="thronecard" class="screen">
  <div class="app-shell">
   <div class="page-header" style="background:linear-gradient(135deg,#2C1A0E 0%,#5C3317 100%);">
-    <h1>🪪 Throne Card</h1>
+    <div class="page-header-top">
+      <h1>🪪 Throne Card</h1>
+      <button class="home-btn" onclick="goHome()">🏠 Home</button>
+    </div>
     <p>Your identity on the throne</p>
   </div>
   <div id="thronecard-content" style="padding:16px 16px 90px;"></div>
  </div>
 </div>
 
+<!-- ════ URINAL GAME ════ -->
+<div id="urinalgame" class="screen">
+ <div class="app-shell">
+  <div class="page-header" style="background:#0d3349;">
+    <div class="page-header-top">
+      <h1>🚽 Urinal Code</h1>
+      <button class="home-btn" onclick="goHome()">🏠 Home</button>
+    </div>
+    <p>Pick the correct urinal. The code must be followed.</p>
+  </div>
+  <div class="ug-body" id="ug-body"></div>
+ </div>
+</div>
+
 <!-- ════ ONBOARDING MODAL ════ -->
 <div class="modal-overlay" id="onboarding-modal">
-  <div class="modal" style="padding:28px 24px 36px;">
+  <div class="modal" style="padding:28px 24px 36px;position:relative;">
+    <button onclick="document.getElementById('onboarding-modal').classList.remove('open')" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.08);border:none;color:#888;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>
     <div style="text-align:center;margin-bottom:20px;">
       <div style="font-size:64px;margin-bottom:8px;" id="ob-avatar-preview">💩</div>
       <h2 style="font-family:'Fredoka One',cursive;font-size:24px;color:var(--dark);">Claim Your Throne</h2>
@@ -1700,6 +1966,9 @@
 </div>
 <nav class="app-nav" id="app-nav">
   <div class="app-nav-inner">
+    <button class="nav-btn" onclick="goHome()" id="nav-home">
+      <span class="icon">🏠</span>Home
+    </button>
     <button class="nav-btn active" onclick="goTo('crapmap')" id="nav-crapmap">
       <span class="icon">🗺️</span>CrapMap
     </button>
@@ -1714,6 +1983,9 @@
     </button>
     <button class="nav-btn" onclick="goTo('thronecard')" id="nav-thronecard">
       <span class="icon" id="nav-profile-emoji">🪪</span>Me
+    </button>
+    <button class="nav-btn" onclick="goTo('urinalgame')" id="nav-urinalgame">
+      <span class="icon">🚽</span>Game
     </button>
   </div>
 </nav>
@@ -1750,6 +2022,7 @@
 
 <!-- ════ CODE BROWN ALERT ════ -->
 <div class="code-brown-alert" id="code-brown-alert">
+  <button onclick="document.getElementById('code-brown-alert').classList.remove('open')" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:white;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
   <div class="cba-title">🚨 CODE BROWN 🚨</div>
   <div class="cba-sub">Nearest acceptable bathroom found</div>
   <div class="cba-nearest">
@@ -2009,6 +2282,7 @@ const throneContent = [
 <p style="font-style:italic;color:#aaa;font-size:13px;">— Crap App Investigative Video Unit</p>`
   },
   { type: "minigame", tab: "minigames", cat: "MINI GAME", catColor: "#9C27B0", banner: "#4A148C", title: "💩 Stall Roulette — Which Stall Do You Pick?", preview: "You walk into a public restroom. 5 stalls. Only one is acceptable. Tap to reveal your fate. Millions have played. Nobody wins every time.", time: "2 min game", likes: 87340, comments: 9201 },
+  { type: "minigame", tab: "minigames", cat: "MINI GAME", catColor: "#0d3349", banner: "#0d3349", title: "🚽 Urinal Code — Can You Pick the Right One?", preview: "The unwritten rules of the urinal bank are ancient, sacred, and non-negotiable. 5 rounds. Real scenarios. Only one correct answer. Do you have what it takes?", time: "3 min game", likes: 142800, comments: 18400, action: "goTo('urinalgame')" },
   { type: "trivia", tab: "trivia", q: "Which country has the highest bidet ownership rate?", opts: ["Japan (80%)", "Italy (97%)", "South Korea (65%)", "France (42%)"], answer: 1, color: "#2d1b4e" },
 ];
 
@@ -2137,6 +2411,13 @@ function enterApp() {
   goTo('crapmap');
 }
 
+function goHome() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('hero').classList.add('active');
+  document.getElementById('app-nav').classList.remove('visible');
+  window.scrollTo(0, 0);
+}
+
 function goTo(page) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(page).classList.add('active');
@@ -2153,6 +2434,8 @@ function goTo(page) {
   if (page === 'flushandtell') renderPosts();
   if (page === 'crapstore') renderStore();
   if (page === 'thronecard') renderThroneCard();
+  if (page === 'urinalgame') initUrinalGame();
+  if (page === 'urinalgame') initUrinalGame();
 
   window.scrollTo(0,0);
 }
@@ -2160,6 +2443,8 @@ function goTo(page) {
 // ── CRAPMAP ──
 let leafletMap = null;
 let leafletMarkers = [];
+let userMarker = null;
+let overpassMarkers = [];
 
 function scoreColor(score) {
   if (score >= 8) return '#4CAF50';
@@ -2173,26 +2458,15 @@ function initMap() {
     return;
   }
 
-  // Center on Steamboat Springs
-  leafletMap = L.map('leaflet-map', { zoomControl: true }).setView([40.4853, -106.8317], 14);
+  // Start with a world view, then fly to user location
+  leafletMap = L.map('leaflet-map', { zoomControl: true }).setView([20, 0], 2);
 
-  // OpenStreetMap tiles
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
     maxZoom: 19
   }).addTo(leafletMap);
 
-  // Add user location pulse marker
-  const userIcon = L.divIcon({
-    className: '',
-    html: `<div style="width:18px;height:18px;background:#2196F3;border-radius:50%;border:3px solid white;box-shadow:0 0 0 6px rgba(33,150,243,0.3);"></div>`,
-    iconSize: [18, 18],
-    iconAnchor: [9, 9]
-  });
-  L.marker([40.4853, -106.8317], { icon: userIcon }).addTo(leafletMap)
-    .bindPopup('<div style="font-weight:800;font-size:13px;">📍 You are here</div>');
-
-  // Add bathroom markers
+  // Add seeded CrapApp bathroom markers
   bathrooms.forEach((b, i) => {
     const color = scoreColor(b.score);
     const icon = L.divIcon({
@@ -2210,7 +2484,6 @@ function initMap() {
       iconAnchor: [19, 38],
       popupAnchor: [0, -40]
     });
-
     const marker = L.marker([b.lat, b.lng], { icon }).addTo(leafletMap);
     marker.bindPopup(`
       <div style="min-width:160px;">
@@ -2233,6 +2506,114 @@ function initMap() {
     `);
     leafletMarkers.push(marker);
   });
+
+  // Try GPS first, fall back to IP geolocation
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => locateUser(pos.coords.latitude, pos.coords.longitude, true),
+      ()  => ipGeolocate()
+    , { timeout: 6000 });
+  } else {
+    ipGeolocate();
+  }
+}
+
+function ipGeolocate() {
+  fetch('https://ip-api.com/json/?fields=lat,lon,city')
+    .then(r => r.json())
+    .then(d => locateUser(d.lat, d.lon, false))
+    .catch(() => locateUser(40.4853, -106.8317, false)); // final fallback: Steamboat
+}
+
+function locateUser(lat, lng, isGPS) {
+  // Fly to user location
+  leafletMap.flyTo([lat, lng], 15, { duration: 1.4 });
+
+  // User dot marker
+  const userIcon = L.divIcon({
+    className: '',
+    html: `<div style="width:18px;height:18px;background:#2196F3;border-radius:50%;border:3px solid white;box-shadow:0 0 0 6px rgba(33,150,243,0.3);"></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9]
+  });
+  if (userMarker) userMarker.remove();
+  userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(leafletMap)
+    .bindPopup(`<div style="font-weight:800;font-size:13px;">📍 You are here${isGPS ? '' : ' (approximate)'}</div>`);
+
+  // Fetch real toilets from Overpass
+  fetchOverpass(lat, lng);
+}
+
+function fetchOverpass(lat, lng) {
+  const radius = 2000; // 2km
+  const query = `
+    [out:json][timeout:15];
+    node["amenity"="toilets"](around:${radius},${lat},${lng});
+    out body;
+  `;
+  const url = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
+
+  // Show loading indicator
+  showToast('🗺️ Loading real-world bathrooms...');
+
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      // Clear old overpass markers
+      overpassMarkers.forEach(m => m.remove());
+      overpassMarkers = [];
+
+      if (!data.elements || data.elements.length === 0) {
+        showToast('No public bathrooms found nearby in OSM data.');
+        return;
+      }
+
+      data.elements.forEach(el => {
+        if (!el.lat || !el.lon) return;
+        const tags = el.tags || {};
+        const name = tags.name || tags['name:en'] || 'Public Restroom';
+        const access = tags.access === 'private' ? '🔒 Private' : tags.access === 'customers' ? '🛍️ Customers only' : '✅ Public';
+        const fee = tags.fee === 'yes' ? '💰 Fee required' : tags.fee === 'no' ? '🆓 Free' : '';
+        const hours = tags.opening_hours || '';
+        const changing = tags.changing_table === 'yes' ? '👶 Changing table' : '';
+        const wheelchair = tags.wheelchair === 'yes' ? '♿ Accessible' : '';
+
+        const icon = L.divIcon({
+          className: '',
+          html: `<div style="
+            width:32px;height:32px;
+            background:#1565C0;
+            border-radius:6px;
+            border:2.5px solid white;
+            box-shadow:0 3px 10px rgba(0,0,0,0.3);
+            display:flex;align-items:center;justify-content:center;
+            font-size:15px;
+          ">🚻</div>`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+          popupAnchor: [0, -20]
+        });
+
+        const details = [access, fee, hours, changing, wheelchair].filter(Boolean);
+
+        const marker = L.marker([el.lat, el.lon], { icon }).addTo(leafletMap);
+        marker.bindPopup(`
+          <div style="min-width:160px;">
+            <div style="font-family:'Fredoka One',cursive;font-size:15px;color:#2C1A0E;margin-bottom:4px;">🚻 ${name}</div>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;">
+              ${details.map(d => `<span style="font-size:11px;font-weight:700;color:#555;">${d}</span>`).join('')}
+            </div>
+            <div style="font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:6px;margin-top:4px;">
+              📡 Data from OpenStreetMap
+            </div>
+          </div>
+        `);
+        overpassMarkers.push(marker);
+      });
+
+      showToast(`🚻 Found ${overpassMarkers.length} real bathrooms nearby`);
+    })
+    .catch(() => showToast('⚠️ Could not load real-world bathroom data'));
 }
 
 function tagClass(id) {
@@ -2398,7 +2779,7 @@ function renderThrone(filter) {
         </div>`;
     }
     return `
-      <div class="throne-card" onclick="openArticle(${globalIdx})" style="cursor:pointer;">
+      <div class="throne-card" onclick="${c.action ? c.action : `openArticle(${globalIdx})`}" style="cursor:pointer;">
         <div class="tc-banner" style="background:${c.banner}"></div>
         <div class="tc-body">
           <div class="tc-category" style="color:${c.catColor}">${c.cat}</div>
@@ -2408,7 +2789,9 @@ function renderThrone(filter) {
             <span class="tc-time">⏱ ${c.time}</span>
             <div class="tc-actions">
               <button class="tc-action" onclick="event.stopPropagation();likeArticle(this, ${globalIdx})">❤️ <span class="like-count-${globalIdx}">${(c.likes/1000).toFixed(1)}k</span></button>
-              <button class="tc-action" onclick="event.stopPropagation();openArticle(${globalIdx})">💬 ${c.comments}</button>
+              <button class="tc-action" onclick="event.stopPropagation();${c.action ? c.action : `openArticle(${globalIdx})`}">
+                ${c.action ? '🎮 Play' : `💬 ${c.comments}`}
+              </button>
             </div>
           </div>
         </div>
@@ -3079,8 +3462,515 @@ function storeCat(el, cat) {
   renderStore(cat);
 }
 
+// ── URINAL GAME ──
+const URINAL_SCENARIOS = [
+  {
+    level: 1,
+    prompt: "Empty bathroom. 5 urinals.",
+    sub: "The classic opening. No one is here. You have ultimate power. Where do you go?",
+    count: 5,
+    occupied: [],
+    shorties: [],
+    correct: [0, 4],
+    explanation: "✅ Correct! Always take an end urinal when the room is empty. Never start in the middle — that's the act of a villain."
+  },
+  {
+    level: 2,
+    prompt: "One guy at the far left. 5 urinals.",
+    sub: "He's on urinal 1. You enter. The code is watching.",
+    count: 5,
+    occupied: [0],
+    shorties: [],
+    correct: [4],
+    explanation: "✅ Correct! Maximum distance from the only other occupant. This is non-negotiable."
+  },
+  {
+    level: 3,
+    prompt: "Guys at both ends. 5 urinals.",
+    sub: "Urinals 1 and 5 are taken. The middle three await your judgment.",
+    count: 5,
+    occupied: [0, 4],
+    shorties: [],
+    correct: [2],
+    explanation: "✅ Correct! The exact middle maximizes distance from both occupants. Geometry. Honor. Restraint."
+  },
+  {
+    level: 4,
+    prompt: "5 urinals. One is a shorty.",
+    sub: "Urinal 3 is the short one — mounted lower for children or very confident adults.",
+    count: 5,
+    occupied: [],
+    shorties: [2],
+    correct: [0, 4],
+    explanation: "✅ Correct! End urinals. The shorty is a trap for the unprepared. You are prepared."
+  },
+  {
+    level: 5,
+    prompt: "Peak hour. 4 of 5 urinals occupied.",
+    sub: "Only urinal 3 is free. This is not a choice — this is a crisis.",
+    count: 5,
+    occupied: [0, 1, 3, 4],
+    shorties: [],
+    correct: [2],
+    explanation: "✅ Correct! When there is no good option, you take the only option. Eyes forward. Breathing shallow. Get in, get out."
+  },
+  {
+    level: 6,
+    prompt: "The Buffer Zone Dilemma. 6 urinals.",
+    sub: "Urinals 1 and 4 are occupied. Where do you go?",
+    count: 6,
+    occupied: [0, 3],
+    shorties: [],
+    correct: [5],
+    explanation: "✅ Correct! Urinal 6 — maximum distance, end position. Urinals 2 and 5 would violate the one-buffer-minimum rule."
+  },
+  {
+    level: 7,
+    prompt: "The Shorty Trap. 4 urinals, one shorty.",
+    sub: "Urinals 1 and 4 are taken. Urinal 2 is a shorty. Urinal 3 is normal.",
+    count: 4,
+    occupied: [0, 3],
+    shorties: [1],
+    correct: [2],
+    explanation: "✅ Correct! Even though urinal 3 is between two occupied ones, the shorty at 2 makes that side worse. Take 3. Eyes front. No eye contact."
+  },
+  {
+    level: 8,
+    prompt: "The Soul Crusher. All 5 are empty but one has wet floor.",
+    sub: "Urinal 3 has a suspicious puddle. Your end options are 1 and 5.",
+    count: 5,
+    occupied: [],
+    shorties: [],
+    wet: [2],
+    correct: [0, 4],
+    explanation: "✅ Correct! The wet floor urinal is a psychological hazard. End urinals only. The puddle does not exist. You did not see it."
+  },
+];
+
+let ugState = {
+  scenarioIdx: 0,
+  score: 0,
+  streak: 0,
+  answered: false,
+};
+
+function initUrinalGame() {
+  ugState = { scenarioIdx: 0, score: 0, streak: 0, answered: false };
+  renderUrinalGame();
+}
+
+function renderUrinalGame() {
+  const el = document.getElementById('ug-body');
+  const s = URINAL_SCENARIOS[ugState.scenarioIdx];
+
+  el.innerHTML = `
+    <div class="ug-scoreboard">
+      <div class="ug-score-item">
+        <div class="ug-score-num">${ugState.score}</div>
+        <div class="ug-score-label">Score</div>
+      </div>
+      <div class="ug-score-item">
+        <div class="ug-score-num">${ugState.scenarioIdx + 1}/${URINAL_SCENARIOS.length}</div>
+        <div class="ug-score-label">Round</div>
+      </div>
+      <div class="ug-score-item">
+        <div class="ug-score-num">${ugState.streak}</div>
+        <div class="ug-score-label">Streak 🔥</div>
+      </div>
+    </div>
+
+    <div class="ug-rule-card">
+      <strong>The Unwritten Code:</strong> Never take a urinal adjacent to an occupied one if alternatives exist. Always maximize distance. End urinals are sacred. Eye contact is forbidden. The shorty is never the answer.
+    </div>
+
+    <div class="ug-scenario" id="ug-scenario">
+      <div class="ug-level">Round ${ugState.scenarioIdx + 1} · Level ${s.level}</div>
+      <div class="ug-prompt">${s.prompt}</div>
+      <div class="ug-sub">${s.sub}</div>
+      <div class="ug-urinals">
+        ${Array.from({length: s.count}, (_, i) => {
+          const isOccupied = s.occupied.includes(i);
+          const isShorty = (s.shorties || []).includes(i);
+          const isWet = (s.wet || []).includes(i);
+          const classes = ['ug-u', isOccupied ? 'occupied' : '', isShorty ? 'shorty' : ''].filter(Boolean).join(' ');
+          const icon = isOccupied ? '🧍' : isWet ? '💧' : isShorty ? '🚽' : '🚽';
+          return `
+            <div class="ug-urinal" onclick="ugPick(${i})" id="ug-urinal-${i}">
+              <div class="${classes}" id="ug-u-${i}">${icon}</div>
+              <div class="ug-label">${i + 1}</div>
+            </div>`;
+        }).join('')}
+      </div>
+      <div class="ug-result" id="ug-result"></div>
+      <button class="ug-next-btn" id="ug-next-btn" onclick="ugNext()">
+        ${ugState.scenarioIdx < URINAL_SCENARIOS.length - 1 ? 'Next Scenario →' : '🏆 See Results'}
+      </button>
+    </div>
+
+    <div class="ug-over" id="ug-over"></div>
+  `;
+}
+
+function ugPick(i) {
+  if (ugState.answered) return;
+  const s = URINAL_SCENARIOS[ugState.scenarioIdx];
+  if (s.occupied.includes(i)) {
+    showToast('🚫 That one is occupied!');
+    return;
+  }
+  ugState.answered = true;
+
+  const isCorrect = s.correct.includes(i);
+  const uEl = document.getElementById('ug-u-' + i);
+  const resultEl = document.getElementById('ug-result');
+  const nextBtn = document.getElementById('ug-next-btn');
+  const scenarioEl = document.getElementById('ug-scenario');
+
+  // Highlight all correct picks in green
+  s.correct.forEach(c => {
+    const el = document.getElementById('ug-u-' + c);
+    if (el) el.classList.add('correct-pick');
+  });
+
+  if (isCorrect) {
+    ugState.score += 10 + (ugState.streak * 2);
+    ugState.streak++;
+    uEl.classList.add('correct-pick');
+    resultEl.className = 'ug-result correct';
+    resultEl.textContent = ugState.streak > 1
+      ? `🔥 ${ugState.streak}x Streak! +${10 + (ugState.streak-1)*2} pts — ${s.explanation}`
+      : s.explanation;
+    scenarioEl.classList.add('correct');
+  } else {
+    ugState.streak = 0;
+    uEl.classList.add('wrong-pick');
+    resultEl.className = 'ug-result wrong';
+    resultEl.textContent = `❌ Wrong. ${s.explanation}`;
+    scenarioEl.classList.add('wrong');
+  }
+
+  nextBtn.classList.add('visible');
+
+  // Update scoreboard
+  document.querySelector('.ug-score-num').textContent = ugState.score;
+  document.querySelectorAll('.ug-score-num')[2].textContent = ugState.streak;
+}
+
+function ugNext() {
+  ugState.scenarioIdx++;
+  ugState.answered = false;
+
+  if (ugState.scenarioIdx >= URINAL_SCENARIOS.length) {
+    ugShowResults();
+    return;
+  }
+  renderUrinalGame();
+}
+
+function ugShowResults() {
+  const el = document.getElementById('ug-body');
+  const pct = Math.round((ugState.score / (URINAL_SCENARIOS.length * 12)) * 100);
+  let emoji, title, sub;
+
+  if (ugState.score >= URINAL_SCENARIOS.length * 10) {
+    emoji = '🏆'; title = 'Code Master'; sub = 'You have achieved complete mastery of the unwritten rules. Men nod at you in restrooms. They know.';
+  } else if (ugState.score >= URINAL_SCENARIOS.length * 6) {
+    emoji = '✅'; title = 'Solid Technique'; sub = 'A few missteps, but your fundamentals are sound. You would not embarrass yourself at a stadium urinal trough.';
+  } else if (ugState.score >= URINAL_SCENARIOS.length * 3) {
+    emoji = '😬'; title = 'Needs Work'; sub = 'You have violated the code more than once. Thankfully, no one saw. This time.';
+  } else {
+    emoji = '💀'; title = 'You Chose Violence'; sub = 'At some point you picked an adjacent urinal when other options existed. You know what you did.';
+  }
+
+  el.innerHTML = `
+    <div class="ug-over show">
+      <div class="ug-over-emoji">${emoji}</div>
+      <div class="ug-over-title">${title}</div>
+      <div class="ug-over-sub">${sub}</div>
+      <div class="ug-scoreboard" style="margin-bottom:24px;">
+        <div class="ug-score-item">
+          <div class="ug-score-num">${ugState.score}</div>
+          <div class="ug-score-label">Final Score</div>
+        </div>
+        <div class="ug-score-item">
+          <div class="ug-score-num">${pct}%</div>
+          <div class="ug-score-label">Accuracy</div>
+        </div>
+      </div>
+      <button class="btn-primary" style="width:100%;justify-content:center;" onclick="initUrinalGame()">
+        🔄 Play Again
+      </button>
+    </div>
+  `;
+}
+
 // ── UTILS ──
 let toastTimer;
+// ── URINAL GAME ──
+const UG_SCENARIOS = [
+  {
+    count: 5,
+    occupied: [1, 3], // 1-indexed
+    shorties: [],
+    text: "5 urinals. Two guys at positions 1 and 3. Where do you go?",
+    correct: [5],
+    explain: "Classic buffer zone. 1 and 3 are taken — you never stand next to someone if you can help it. Position 5 is the only acceptable choice. Position 2 would put you between two people. Unacceptable.",
+  },
+  {
+    count: 4,
+    occupied: [1, 4],
+    shorties: [],
+    text: "4 urinals. Ends are both taken. What do you do?",
+    correct: [],
+    explain: "You leave. There is no correct urinal here. Both remaining options put you directly adjacent to someone. A true gentleman uses a stall or waits. The code is clear.",
+    noCorrect: true,
+  },
+  {
+    count: 6,
+    occupied: [2, 5],
+    shorties: [],
+    text: "6 urinals. Positions 2 and 5 are occupied. Your move.",
+    correct: [4],
+    explain: "Position 4 maximizes distance from both occupied urinals. Position 1 puts you next to 2. Position 6 puts you next to 5. Position 3 is squeezed. 4 is the sweet spot.",
+  },
+  {
+    count: 5,
+    occupied: [],
+    shorties: [],
+    text: "Empty bank. 5 urinals, totally vacant. First one in. Where do you go?",
+    correct: [1, 5],
+    explain: "End positions only. You're setting the tone for the entire bank. Picking a middle urinal forces everyone else into an impossible situation. Take an end. Be the change.",
+  },
+  {
+    count: 4,
+    occupied: [2],
+    shorties: [4],
+    text: "4 urinals. Position 2 is taken. Position 4 is a shorty urinal (lower mount). Where do you go?",
+    correct: [4],
+    explain: "The shorty urinal exists as a buffer solution. Yes, it was designed for children. Yes, you'll use it. It provides the maximum distance from position 2 AND its awkward height discourages adjacent use. This is tactical.",
+  },
+  {
+    count: 5,
+    occupied: [1, 3, 5],
+    shorties: [],
+    text: "Every other urinal taken — positions 1, 3, and 5. Two spots left. A man is waiting behind you.",
+    correct: [],
+    explain: "You step aside for the waiting man. Neither position 2 nor 4 is acceptable — both are immediately adjacent to an occupied urinal. You nod, gesture to the bank, and silently communicate: 'After you, or we both wait.' He will understand.",
+    noCorrect: true,
+  },
+  {
+    count: 6,
+    occupied: [3],
+    shorties: [1],
+    text: "6 urinals. Only position 3 is taken. Position 1 is a shorty. Where do you go?",
+    correct: [6],
+    explain: "Position 6 is the farthest from the occupied urinal AND avoids the shorty situation. Yes, position 1 would be far enough, but nobody needs the shorty drama when position 6 is right there.",
+  },
+  {
+    count: 3,
+    occupied: [2],
+    shorties: [],
+    text: "Only 3 urinals. The middle one is taken. Both ends are open.",
+    correct: [],
+    explain: "You go to a stall. Both ends are directly adjacent to the middle. This is a trap. The person who designed this bathroom hates you personally. Do not engage. Stall up.",
+    noCorrect: true,
+  },
+];
+
+const UG_OCCUPANTS = ['🧔', '👨', '👴', '🧑', '👦', '🤵'];
+
+let ugState = {
+  scenarioIdx: 0,
+  order: [],
+  selected: null,
+  score: { pass: 0, fail: 0 },
+  history: [],
+  round: 0,
+  totalRounds: 5,
+  done: false,
+};
+
+function initUrinalGame() {
+  // Shuffle scenario order
+  const indices = UG_SCENARIOS.map((_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  ugState = {
+    order: indices,
+    selected: null,
+    score: { pass: 0, fail: 0 },
+    history: [],
+    round: 0,
+    totalRounds: 5,
+    done: false,
+  };
+  renderUrinalGame();
+}
+
+function renderUrinalGame() {
+  const el = document.getElementById('ug-body');
+  if (!el) return;
+
+  if (ugState.done) {
+    renderUrinalGameOver();
+    return;
+  }
+
+  const s = UG_SCENARIOS[ugState.order[ugState.round]];
+  const round = ugState.round + 1;
+
+  // Build urinal bank HTML
+  let bankHTML = '';
+  for (let i = 1; i <= s.count; i++) {
+    const isOccupied = s.occupied.includes(i);
+    const isShorty = s.shorties.includes(i);
+    const occupant = isOccupied ? UG_OCCUPANTS[Math.floor(Math.random() * UG_OCCUPANTS.length)] : '';
+    bankHTML += `
+      <div class="ug-urinal" id="ug-u-${i}" onclick="ugSelect(${i})">
+        <div class="ug-bowl ${isShorty ? 'shorty' : ''}" id="ug-bowl-${i}">
+          ${isOccupied ? `<div class="ug-occupant">${occupant}</div>` : ''}
+          ${isShorty ? '⬇️' : ''}
+        </div>
+        <div class="ug-num">${i}</div>
+      </div>
+    `;
+    if (i < s.count) {
+      bankHTML += `<div class="ug-divider ${isShorty ? 'shorty' : ''}"></div>`;
+    }
+  }
+
+  // Score pips
+  const pips = Array(ugState.totalRounds).fill(0).map((_, i) => {
+    if (i < ugState.history.length) {
+      return `<div class="ug-score-pip ${ugState.history[i] ? 'pass' : 'fail'}"></div>`;
+    }
+    return `<div class="ug-score-pip"></div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="ug-intro">
+      <div class="ug-streak">Round ${round} of ${ugState.totalRounds}</div>
+      <div class="ug-score-bar">${pips}</div>
+    </div>
+
+    <div class="ug-scenario">
+      <div class="ug-scenario-label">The Situation</div>
+      <div class="ug-scenario-text">${s.text}</div>
+    </div>
+
+    <div class="ug-bank" id="ug-bank">${bankHTML}</div>
+
+    ${s.noCorrect ? `
+      <div style="text-align:center;margin-bottom:16px;">
+        <button class="btn-primary" onclick="ugSelectLeave()" style="background:#607D8B;box-shadow:0 4px 0 #455A64;">
+          🚶 I'm leaving — no acceptable urinal
+        </button>
+      </div>
+    ` : ''}
+
+    <div class="ug-result" id="ug-result"></div>
+
+    <div style="text-align:center;margin-top:8px;">
+      <p style="font-size:11px;color:#bbb;font-style:italic;">Tap a urinal to select it${s.noCorrect ? ', or leave if none are acceptable' : ''}</p>
+    </div>
+  `;
+}
+
+function ugSelect(num) {
+  const s = UG_SCENARIOS[ugState.order[ugState.round]];
+  if (document.getElementById('ug-result').classList.contains('show')) return;
+
+  ugState.selected = num;
+  document.querySelectorAll('.ug-urinal').forEach(el => el.classList.remove('selected'));
+  document.getElementById(`ug-u-${num}`)?.classList.add('selected');
+
+  // Evaluate
+  const isCorrect = s.correct.includes(num);
+  ugShowResult(isCorrect, s, num);
+}
+
+function ugSelectLeave() {
+  const s = UG_SCENARIOS[ugState.order[ugState.round]];
+  if (document.getElementById('ug-result').classList.contains('show')) return;
+  const isCorrect = s.noCorrect === true;
+  ugShowResult(isCorrect, s, null);
+}
+
+function ugShowResult(isCorrect, s, selected) {
+  ugState.history.push(isCorrect);
+  if (isCorrect) ugState.score.pass++; else ugState.score.fail++;
+
+  // Highlight correct/wrong urinals
+  if (selected !== null) {
+    document.getElementById(`ug-u-${selected}`)?.classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect && s.correct.length > 0) {
+      s.correct.forEach(c => document.getElementById(`ug-u-${c}`)?.classList.add('correct'));
+    }
+  }
+
+  const isLast = ugState.round >= ugState.totalRounds - 1;
+  const resultEl = document.getElementById('ug-result');
+  resultEl.className = `ug-result show ${isCorrect ? 'pass' : 'fail'}`;
+  resultEl.innerHTML = `
+    <div class="ug-result-emoji">${isCorrect ? '✅' : '❌'}</div>
+    <div class="ug-result-title">${isCorrect ? 'Code upheld.' : 'Code violated.'}</div>
+    <div class="ug-result-explain">${s.explain}</div>
+    <div class="ug-actions">
+      <button class="btn-primary" onclick="${isLast ? 'ugGameOver()' : 'ugNext()'}">
+        ${isLast ? '🏆 See Results' : '➡️ Next Scenario'}
+      </button>
+    </div>
+  `;
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function ugNext() {
+  ugState.round++;
+  ugState.selected = null;
+  renderUrinalGame();
+  document.getElementById('ug-body').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function ugGameOver() {
+  ugState.done = true;
+  renderUrinalGameOver();
+}
+
+function renderUrinalGameOver() {
+  const el = document.getElementById('ug-body');
+  const { pass, fail } = ugState.score;
+  const total = pass + fail;
+  const pct = Math.round((pass / total) * 100);
+
+  let grade, gradeColor, gradeDesc;
+  if (pct === 100) { grade = 'S'; gradeColor = '#F5C518'; gradeDesc = 'Perfect. You are the guardian of the code. Men enter this restroom safe because of you.'; }
+  else if (pct >= 80) { grade = 'A'; gradeColor = '#4CAF50'; gradeDesc = 'Highly competent. Minor lapses, but the code runs deep in your veins.'; }
+  else if (pct >= 60) { grade = 'B'; gradeColor = '#2196F3'; gradeDesc = 'Passable. You understand the basics but need to sharpen your instincts.'; }
+  else if (pct >= 40) { grade = 'C'; gradeColor = '#FF9800'; gradeDesc = 'Concerning. You\'ve probably created several awkward situations in your life.'; }
+  else { grade = 'F'; gradeColor = '#F44336'; gradeDesc = 'You are a menace. The code exists for a reason. Please study it.'; }
+
+  const pips = ugState.history.map(h => `<div class="ug-score-pip ${h ? 'pass' : 'fail'}"></div>`).join('');
+
+  el.innerHTML = `
+    <div style="text-align:center;padding:24px 16px;">
+      <div style="font-size:64px;margin-bottom:12px;">🚽</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:18px;color:#aaa;margin-bottom:4px;">Final Score</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:80px;color:${gradeColor};line-height:1;margin-bottom:8px;">${grade}</div>
+      <div style="font-size:16px;font-weight:800;color:#555;margin-bottom:16px;">${pass} / ${total} correct</div>
+      <div class="ug-score-bar" style="justify-content:center;margin-bottom:20px;">${pips}</div>
+      <div style="background:white;border-radius:16px;padding:16px 20px;margin-bottom:24px;font-size:14px;color:#555;line-height:1.6;box-shadow:0 2px 10px rgba(0,0,0,0.07);">
+        ${gradeDesc}
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="initUrinalGame()">🔄 Play Again</button>
+        <button class="btn-teal" onclick="goTo('throneroom')">👑 Throne Room</button>
+      </div>
+    </div>
+  `;
+}
+
 // ── LEGAL ──
 function showLegal(page) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
