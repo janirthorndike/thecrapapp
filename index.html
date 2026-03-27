@@ -20,15 +20,15 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Crap App — We Give A Shit">
 <meta property="og:description" content="Find clean bathrooms near you, read throne room content, share legendary stories, and shop premium bathroom gear. The app you never knew you needed.">
-<meta property="og:image" content="https://thecrapapp.netlify.app/og-image.png">
-<meta property="og:url" content="https://thecrapapp.netlify.app">
+<meta property="og:image" content="https://thecrapapp.app/og-image.png">
+<meta property="og:url" content="https://thecrapapp.app">
 <meta property="og:site_name" content="Crap App">
 
 <!-- Twitter / X Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Crap App — We Give A Shit">
 <meta name="twitter:description" content="Find clean bathrooms near you, read throne room content, share legendary stories, and shop premium bathroom gear.">
-<meta name="twitter:image" content="https://thecrapapp.netlify.app/og-image.png">
+<meta name="twitter:image" content="https://thecrapapp.app/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -309,7 +309,158 @@
     margin-top: 12px; line-height: 1.5;
   }
 
-  /* ── URINAL GAME ── */
+  /* ── GAMES HUB ── */
+  .games-hub { padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
+  .games-hub-title {
+    font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+    color: #aaa; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .game-card {
+    background: white; border-radius: 20px;
+    padding: 18px 20px; margin-bottom: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    display: flex; align-items: center; gap: 16px;
+    cursor: pointer; transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .game-card:hover { transform: translateY(-2px); border-color: var(--gold); box-shadow: var(--shadow); }
+  .game-card-icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; flex-shrink: 0;
+  }
+  .game-card-info { flex: 1; }
+  .game-card-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px; color: var(--dark); margin-bottom: 3px;
+  }
+  .game-card-desc { font-size: 12px; color: #888; line-height: 1.4; }
+  .game-card-badge {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+    padding: 3px 10px; border-radius: 50px; flex-shrink: 0;
+  }
+  .game-back-btn {
+    background: none; border: none;
+    font-family: 'Nunito', sans-serif; font-size: 13px;
+    font-weight: 800; color: #aaa; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 0 16px; transition: color 0.15s;
+  }
+  .game-back-btn:hover { color: var(--brown); }
+
+  /* ── STALL SELECTOR ── */
+  .ss-scenario {
+    background: white; border-radius: 20px;
+    padding: 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border: 2px solid transparent;
+  }
+  .ss-scenario.correct { border-color: #4CAF50; background: #f1fff3; }
+  .ss-scenario.wrong { border-color: #F44336; background: #fff5f5; }
+  .ss-prompt {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px; color: var(--dark);
+    margin-bottom: 4px; line-height: 1.3;
+  }
+  .ss-sub { font-size: 12px; color: #888; margin-bottom: 18px; line-height: 1.5; }
+  .ss-stalls {
+    display: flex; gap: 8px; justify-content: center;
+    margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .ss-stall {
+    width: 72px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 4px; transition: transform 0.15s;
+  }
+  .ss-stall:hover .ss-door { transform: scale(1.05); }
+  .ss-door {
+    width: 72px; height: 96px;
+    background: #f0ebe3; border: 2px solid #c8b8a8;
+    border-radius: 8px 8px 4px 4px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 4px; font-size: 13px; line-height: 1.3;
+    position: relative; transition: all 0.2s;
+    text-align: center; padding: 4px;
+  }
+  .ss-door.occupied { background: #ffebee; border-color: #F44336; }
+  .ss-door.selected { border-color: var(--gold); background: #fffde7; box-shadow: 0 0 0 3px rgba(245,197,24,0.3); }
+  .ss-door.correct-pick { border-color: #4CAF50; background: #e8f5e9; box-shadow: 0 0 0 3px rgba(76,175,80,0.3); }
+  .ss-door.wrong-pick { border-color: #F44336; background: #ffebee; box-shadow: 0 0 0 3px rgba(244,67,54,0.3); }
+  .ss-stall-num { font-size: 10px; font-weight: 800; color: #aaa; }
+  .ss-clue { font-size: 11px; line-height: 1.3; }
+  .ss-result {
+    text-align: center; padding: 10px; border-radius: 12px;
+    font-weight: 800; font-size: 14px; display: none; line-height: 1.5;
+  }
+  .ss-result.correct { display: block; color: #2E7D32; background: #e8f5e9; }
+  .ss-result.wrong { display: block; color: #C62828; background: #ffebee; }
+
+  /* ── POOP PERSONALITY ── */
+  .pp-question {
+    background: white; border-radius: 20px;
+    padding: 24px 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .pp-q-num {
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px;
+    color: #aaa; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .pp-q-text {
+    font-family: 'Fredoka One', cursive;
+    font-size: 19px; color: var(--dark);
+    line-height: 1.3; margin-bottom: 18px;
+  }
+  .pp-options { display: flex; flex-direction: column; gap: 10px; }
+  .pp-option {
+    background: #f8f6f3; border: 2px solid transparent;
+    border-radius: 14px; padding: 13px 16px;
+    font-size: 14px; font-weight: 700; color: var(--dark);
+    cursor: pointer; transition: all 0.15s; line-height: 1.4;
+  }
+  .pp-option:hover { border-color: var(--gold); background: #fffde7; }
+  .pp-option.selected { border-color: var(--teal); background: #e0f7f4; }
+  .pp-progress {
+    background: rgba(0,0,0,0.08); border-radius: 50px;
+    height: 6px; margin-bottom: 16px; overflow: hidden;
+  }
+  .pp-progress-fill {
+    height: 100%; background: var(--teal);
+    border-radius: 50px; transition: width 0.4s ease;
+  }
+  .pp-result-card {
+    background: var(--brown); color: white;
+    border-radius: 24px; padding: 28px 24px;
+    text-align: center; margin-bottom: 16px;
+  }
+  .pp-result-emoji { font-size: 72px; margin-bottom: 12px; }
+  .pp-result-type {
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px; color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .pp-result-subtitle {
+    font-size: 14px; color: rgba(255,255,255,0.6);
+    font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .pp-result-desc {
+    font-size: 14px; color: rgba(255,255,255,0.8);
+    line-height: 1.65;
+  }
+  .pp-traits {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center; margin-top: 16px;
+  }
+  .pp-trait {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(245,197,24,0.3);
+    color: rgba(255,255,255,0.8);
+    border-radius: 50px; padding: 5px 14px;
+    font-size: 12px; font-weight: 800;
+  }
+
+  /* ── URINAL GAME (existing, keep) ── */
   .ug-body { padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
   .ug-classic-btn {
     display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -642,7 +793,57 @@
     margin: 8px 0;
   }
 
-  /* ── HERO FOOTER ── */
+  /* ── SHARE ── */
+  .share-section {
+    position: relative; z-index: 2;
+    margin: 0 24px 32px;
+    text-align: center;
+  }
+  .share-label {
+    font-family: 'Boogaloo', cursive;
+    font-size: 13px; letter-spacing: 3px;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .share-buttons {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  }
+  .share-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 10px 18px; border-radius: 50px; border: none;
+    font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
+    cursor: pointer; transition: all 0.15s; text-decoration: none;
+    white-space: nowrap;
+  }
+  .share-btn:hover { transform: translateY(-2px); }
+  .share-btn-x { background: #000; color: white; }
+  .share-btn-wa { background: #25D366; color: white; }
+  .share-btn-fb { background: #1877F2; color: white; }
+  .share-btn-copy { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border: 1.5px solid rgba(255,255,255,0.2); }
+  .share-btn-copy.copied { background: var(--teal); color: white; border-color: var(--teal); }
+  .share-btn-sms { background: #34C759; color: white; text-decoration: none; }
+
+  /* In-app share section (Throne Card) */
+  .tc-share {
+    margin-top: 20px; padding: 16px;
+    background: white; border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .tc-share-label {
+    font-size: 11px; font-weight: 800; color: #aaa;
+    letter-spacing: 1px; margin-bottom: 12px;
+  }
+  .tc-share-buttons {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .tc-share-btn {
+    flex: 1; min-width: 80px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 12px; border-radius: 12px; border: none;
+    font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+    cursor: pointer; transition: all 0.15s; text-decoration: none;
+  }
+  .tc-share-btn:hover { transform: translateY(-1px); opacity: 0.9; }
   .hero-footer {
     position: relative; z-index: 2;
     padding: 24px 24px 40px;
@@ -790,7 +991,7 @@
 
   .map-container {
     position: relative;
-    height: 52vh;
+    height: 38vh;
   }
 
   #leaflet-map {
@@ -1718,12 +1919,33 @@
     <div class="email-fine-print">We respect your privacy. Unsubscribe anytime. Read our <a href="#" onclick="showLegal('privacy')" style="color:rgba(255,255,255,0.4);text-decoration:underline;">Privacy Policy</a>.</div>
   </div>
 
+  <!-- Share Section -->
+  <div class="share-section">
+    <div class="share-label">Share the 💩</div>
+    <div class="share-buttons">
+      <a class="share-btn share-btn-wa" href="https://wa.me/?text=Give%20a%20shit%20about%20where%20you%20shit.%20%F0%9F%9A%BD%20CrapApp%20%E2%80%94%20bathroom%20finder%2C%20throne%20content%20%26%20legendary%20stories.%20We%20Give%20A%20Shit.%20https%3A%2F%2Fthecrapapp.app" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 1C5.925 1 1 5.925 1 12c0 1.86.484 3.605 1.33 5.12L1 23l6.055-1.31A10.955 10.955 0 0 0 12 23c6.075 0 11-4.925 11-11S18.075 1 12 1zm0 20a8.94 8.94 0 0 1-4.56-1.241l-.328-.194-3.391.734.748-3.308-.214-.34A8.954 8.954 0 0 1 3 12c0-4.963 4.037-9 9-9s9 4.037 9 9-4.037 9-9 9z"/></svg>
+        WhatsApp
+      </a>
+      <a class="share-btn share-btn-fb" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fthecrapapp.app" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        Facebook
+      </a>
+      <a class="share-btn share-btn-sms" href="sms:?body=Give%20a%20shit%20about%20where%20you%20shit.%20%F0%9F%9A%BD%20CrapApp%20%E2%80%94%20bathroom%20finder%2C%20throne%20content%20%26%20legendary%20stories.%20We%20Give%20A%20Shit.%20https%3A%2F%2Fthecrapapp.app">
+        💬 Messages
+      </a>
+      <button class="share-btn share-btn-copy" id="hero-copy-btn" onclick="copyShareLink(this)">
+        🔗 Copy Link
+      </button>
+    </div>
+  </div>
+
   <!-- Hero Footer -->
   <div class="hero-footer">
     <div class="hero-footer-links">
       <a onclick="showLegal('privacy')">Privacy Policy</a>
       <a onclick="showLegal('terms')">Terms of Service</a>
-      <a href="mailto:maximollc2531@gmail.com">maximollc2531@gmail.com</a>
+      <a href="mailto:hello@thecrapapp.app">hello@thecrapapp.app</a>
     </div>
     <div class="hero-footer-copy">© 2025 CrapApp. We give a shit.</div>
   </div>
@@ -1783,13 +2005,13 @@
       <p>CrapApp is intended for users 13 years of age and older. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us and we will delete it promptly.</p>
 
       <h2>Data Retention & Deletion</h2>
-      <p>Email addresses collected for launch notifications are retained until you unsubscribe or request deletion. To request removal of your data, email us at <a href="mailto:maximollc2531@gmail.com">maximollc2531@gmail.com</a> and we will respond within 30 days.</p>
+      <p>Email addresses collected for launch notifications are retained until you unsubscribe or request deletion. To request removal of your data, email us at <a href="mailto:hello@thecrapapp.app">hello@thecrapapp.app</a> and we will respond within 30 days.</p>
 
       <h2>Changes to This Policy</h2>
       <p>We may update this Privacy Policy from time to time. When we do, we'll update the effective date above. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
 
       <h2>Contact</h2>
-      <p>Questions about this Privacy Policy? Reach us at <a href="mailto:maximollc2531@gmail.com">maximollc2531@gmail.com</a>.</p>
+      <p>Questions about this Privacy Policy? Reach us at <a href="mailto:hello@thecrapapp.app">hello@thecrapapp.app</a>.</p>
     </div>
   </div>
 </div>
@@ -1856,7 +2078,7 @@
       <p>We may update these Terms from time to time. The effective date at the top of this page will reflect any changes. Continued use of CrapApp after changes are posted constitutes your acceptance of the updated Terms.</p>
 
       <h2>11. Contact</h2>
-      <p>Questions about these Terms? Contact us at <a href="mailto:maximollc2531@gmail.com">maximollc2531@gmail.com</a>.</p>
+      <p>Questions about these Terms? Contact us at <a href="mailto:hello@thecrapapp.app">hello@thecrapapp.app</a>.</p>
     </div>
   </div>
 </div>
@@ -1979,10 +2201,10 @@
  <div class="app-shell">
   <div class="page-header" style="background:#0d3349;">
     <div class="page-header-top">
-      <h1>🚽 Urinal Code</h1>
+      <h1>🎮 Play</h1>
       <button class="home-btn" onclick="goHome()">🏠 Home</button>
     </div>
-    <p>Pick the correct urinal. The code must be followed.</p>
+    <p>Toilet-themed games for the discerning throne-sitter</p>
   </div>
   <div class="ug-body" id="ug-body"></div>
  </div>
@@ -2029,9 +2251,6 @@
 </div>
 <nav class="app-nav" id="app-nav">
   <div class="app-nav-inner">
-    <button class="nav-btn" onclick="goHome()" id="nav-home">
-      <span class="icon">🏠</span>Home
-    </button>
     <button class="nav-btn active" onclick="goTo('crapmap')" id="nav-crapmap">
       <span class="icon">🗺️</span>CrapMap
     </button>
@@ -2048,7 +2267,15 @@
       <span class="icon" id="nav-profile-emoji">🪪</span>Me
     </button>
     <button class="nav-btn" onclick="goTo('urinalgame')" id="nav-urinalgame">
-      <span class="icon">🚽</span>Game
+      <span class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;">
+          <rect x="7" y="2" width="10" height="2" rx="1" fill="currentColor" opacity="0.6"/>
+          <path d="M8 4h8v7c0 3-1.5 5-4 5s-4-2-4-5V4z" fill="currentColor"/>
+          <path d="M10 16v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M14 16v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M9 19h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </span>Play
     </button>
   </div>
 </nav>
@@ -3273,6 +3500,16 @@ function renderThroneCard() {
     <div class="profile-section-title">💩 My Stories (${profile.posts})</div>
     ${myPostsHTML}
 
+    <div class="tc-share">
+      <div class="tc-share-label">📣 SHARE CRAPAPP</div>
+      <div class="tc-share-buttons">
+        <a class="tc-share-btn" style="background:#25D366;color:white;" href="https://wa.me/?text=Give%20a%20shit%20about%20where%20you%20shit.%20%F0%9F%9A%BD%20CrapApp%20%E2%80%94%20bathroom%20finder%2C%20throne%20content%20%26%20legendary%20stories.%20We%20Give%20A%20Shit.%20https%3A%2F%2Fthecrapapp.app" target="_blank" rel="noopener">💬 WhatsApp</a>
+        <a class="tc-share-btn" style="background:#1877F2;color:white;" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fthecrapapp.app" target="_blank" rel="noopener">📘 Facebook</a>
+        <a class="tc-share-btn" style="background:#34C759;color:white;" href="sms:?body=Give%20a%20shit%20about%20where%20you%20shit.%20%F0%9F%9A%BD%20CrapApp%20%E2%80%94%20bathroom%20finder%2C%20throne%20content%20%26%20legendary%20stories.%20We%20Give%20A%20Shit.%20https%3A%2F%2Fthecrapapp.app">💬 Messages</a>
+        <button class="tc-share-btn" style="background:#f0ebe3;color:var(--dark);" id="tc-copy-btn" onclick="copyShareLink(this)">🔗 Copy</button>
+      </div>
+    </div>
+
     <div style="margin-top:20px;padding:16px;background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
       <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:12px;">⚙️ ACCOUNT</div>
       <button class="btn-ghost" style="width:100%;text-align:center;color:#F44336;border-color:rgba(244,67,54,0.3);" onclick="resetProfile()">
@@ -3630,7 +3867,67 @@ let ugState = {
   answered: false,
 };
 
+// ── GAMES HUB ──
 function initUrinalGame() {
+  renderGamesHub();
+}
+
+function renderGamesHub() {
+  const el = document.getElementById('ug-body');
+  el.innerHTML = `
+    <div class="games-hub">
+      <div class="games-hub-title">Choose Your Game</div>
+
+      <div class="game-card" onclick="startUrinalCode()">
+        <div class="game-card-icon" style="background:#e3f2fd;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <rect x="7" y="2" width="10" height="2" rx="1" fill="#1565C0" opacity="0.6"/>
+            <path d="M8 4h8v7c0 3-1.5 5-4 5s-4-2-4-5V4z" fill="#1565C0"/>
+            <path d="M10 16v3M14 16v3M9 19h6" stroke="#1565C0" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="game-card-info">
+          <div class="game-card-title">Urinal Code</div>
+          <div class="game-card-desc">Pick the correct urinal. The unwritten rules must be followed. Honor is at stake.</div>
+        </div>
+        <div class="game-card-badge" style="background:#e3f2fd;color:#1565C0;">Logic</div>
+      </div>
+
+      <div class="game-card" onclick="startStallSelector()">
+        <div class="game-card-icon" style="background:#fce4ec;">🚪</div>
+        <div class="game-card-info">
+          <div class="game-card-title">Stall Selector</div>
+          <div class="game-card-desc">Read the clues. Pick the best stall. Some are traps. Some are treasures. Good luck.</div>
+        </div>
+        <div class="game-card-badge" style="background:#fce4ec;color:#c62828;">New</div>
+      </div>
+
+      <div class="game-card" onclick="startPoopPersonality()">
+        <div class="game-card-icon" style="background:#f3e5f5;">💩</div>
+        <div class="game-card-info">
+          <div class="game-card-title">Poop Personality</div>
+          <div class="game-card-desc">8 questions. 8 types. Find out who you really are when no one is watching.</div>
+        </div>
+        <div class="game-card-badge" style="background:#f3e5f5;color:#6a1b9a;">Quiz</div>
+      </div>
+
+      <button class="ug-classic-btn" onclick="openClassicGame()" style="margin-top:8px;">
+        🕹️ Play the Original (1997 Flash) <span class="ug-classic-badge">CLASSIC</span>
+      </button>
+      <div style="text-align:center;margin:-8px 0 16px;font-size:12px;color:rgba(255,255,255,0.4);font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <rect x="5" y="3" width="14" height="18" rx="2" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+          <path d="M9 6h6M12 18v.01" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M19 12l2 2-2 2M5 12l-2 2 2 2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Best in landscape mode
+      </div>
+    </div>
+  `;
+}
+
+// ── URINAL CODE ──
+function startUrinalCode() {
   ugState = { scenarioIdx: 0, score: 0, streak: 0, answered: false };
   renderUrinalGame();
 }
@@ -3638,56 +3935,49 @@ function initUrinalGame() {
 function renderUrinalGame() {
   const el = document.getElementById('ug-body');
   const s = URINAL_SCENARIOS[ugState.scenarioIdx];
-
   el.innerHTML = `
-    <div class="ug-scoreboard">
-      <div class="ug-score-item">
-        <div class="ug-score-num">${ugState.score}</div>
-        <div class="ug-score-label">Score</div>
+    <div class="ug-body" style="padding-bottom:100px;">
+      <button class="game-back-btn" onclick="renderGamesHub()">← All Games</button>
+      <div class="ug-scoreboard">
+        <div class="ug-score-item">
+          <div class="ug-score-num" id="ug-score-display">${ugState.score}</div>
+          <div class="ug-score-label">Score</div>
+        </div>
+        <div class="ug-score-item">
+          <div class="ug-score-num">${ugState.scenarioIdx + 1}/${URINAL_SCENARIOS.length}</div>
+          <div class="ug-score-label">Round</div>
+        </div>
+        <div class="ug-score-item">
+          <div class="ug-score-num" id="ug-streak-display">${ugState.streak}</div>
+          <div class="ug-score-label">Streak 🔥</div>
+        </div>
       </div>
-      <div class="ug-score-item">
-        <div class="ug-score-num">${ugState.scenarioIdx + 1}/${URINAL_SCENARIOS.length}</div>
-        <div class="ug-score-label">Round</div>
+      <div class="ug-rule-card">
+        <strong>The Unwritten Code:</strong> Never take a urinal adjacent to an occupied one if alternatives exist. Always maximize distance. End urinals are sacred. Eye contact is forbidden.
       </div>
-      <div class="ug-score-item">
-        <div class="ug-score-num">${ugState.streak}</div>
-        <div class="ug-score-label">Streak 🔥</div>
-      </div>
-    </div>
-
-    <button class="ug-classic-btn" onclick="openClassicGame()">
-      🕹️ Play the Original (1997 Flash) <span class="ug-classic-badge">CLASSIC</span>
-    </button>
-
-    <div class="ug-rule-card">
-      <strong>The Unwritten Code:</strong> Never take a urinal adjacent to an occupied one if alternatives exist. Always maximize distance. End urinals are sacred. Eye contact is forbidden. The shorty is never the answer.
-    </div>
-
-    <div class="ug-scenario" id="ug-scenario">
-      <div class="ug-level">Round ${ugState.scenarioIdx + 1} · Level ${s.level}</div>
-      <div class="ug-prompt">${s.prompt}</div>
-      <div class="ug-sub">${s.sub}</div>
-      <div class="ug-urinals">
-        ${Array.from({length: s.count}, (_, i) => {
-          const isOccupied = s.occupied.includes(i);
-          const isShorty = (s.shorties || []).includes(i);
-          const isWet = (s.wet || []).includes(i);
-          const classes = ['ug-u', isOccupied ? 'occupied' : '', isShorty ? 'shorty' : ''].filter(Boolean).join(' ');
-          const icon = isOccupied ? '🧍' : isWet ? '💧' : isShorty ? '🚽' : '🚽';
-          return `
-            <div class="ug-urinal" onclick="ugPick(${i})" id="ug-urinal-${i}">
+      <div class="ug-scenario" id="ug-scenario">
+        <div class="ug-level">Round ${ugState.scenarioIdx + 1} · Level ${s.level}</div>
+        <div class="ug-prompt">${s.prompt}</div>
+        <div class="ug-sub">${s.sub}</div>
+        <div class="ug-urinals">
+          ${Array.from({length: s.count}, (_, i) => {
+            const isOccupied = s.occupied.includes(i);
+            const isShorty = (s.shorties || []).includes(i);
+            const isWet = (s.wet || []).includes(i);
+            const classes = ['ug-u', isOccupied ? 'occupied' : '', isShorty ? 'shorty' : ''].filter(Boolean).join(' ');
+            const icon = isOccupied ? '🧍' : isWet ? '💧' : '🚽';
+            return `<div class="ug-urinal" onclick="ugPick(${i})" id="ug-urinal-${i}">
               <div class="${classes}" id="ug-u-${i}">${icon}</div>
               <div class="ug-label">${i + 1}</div>
             </div>`;
-        }).join('')}
+          }).join('')}
+        </div>
+        <div class="ug-result" id="ug-result"></div>
+        <button class="ug-next-btn" id="ug-next-btn" onclick="ugNext()">
+          ${ugState.scenarioIdx < URINAL_SCENARIOS.length - 1 ? 'Next Scenario →' : '🏆 See Results'}
+        </button>
       </div>
-      <div class="ug-result" id="ug-result"></div>
-      <button class="ug-next-btn" id="ug-next-btn" onclick="ugNext()">
-        ${ugState.scenarioIdx < URINAL_SCENARIOS.length - 1 ? 'Next Scenario →' : '🏆 See Results'}
-      </button>
     </div>
-
-    <div class="ug-over" id="ug-over"></div>
   `;
 }
 
@@ -3751,7 +4041,6 @@ function ugShowResults() {
   const el = document.getElementById('ug-body');
   const pct = Math.round((ugState.score / (URINAL_SCENARIOS.length * 12)) * 100);
   let emoji, title, sub;
-
   if (ugState.score >= URINAL_SCENARIOS.length * 10) {
     emoji = '🏆'; title = 'Code Master'; sub = 'You have achieved complete mastery of the unwritten rules. Men nod at you in restrooms. They know.';
   } else if (ugState.score >= URINAL_SCENARIOS.length * 6) {
@@ -3761,25 +4050,308 @@ function ugShowResults() {
   } else {
     emoji = '💀'; title = 'You Chose Violence'; sub = 'At some point you picked an adjacent urinal when other options existed. You know what you did.';
   }
-
   el.innerHTML = `
-    <div class="ug-over show">
-      <div class="ug-over-emoji">${emoji}</div>
-      <div class="ug-over-title">${title}</div>
-      <div class="ug-over-sub">${sub}</div>
-      <div class="ug-scoreboard" style="margin-bottom:24px;">
-        <div class="ug-score-item">
-          <div class="ug-score-num">${ugState.score}</div>
-          <div class="ug-score-label">Final Score</div>
+    <div class="ug-body" style="padding-bottom:100px;">
+      <div class="ug-over show">
+        <div class="ug-over-emoji">${emoji}</div>
+        <div class="ug-over-title">${title}</div>
+        <div class="ug-over-sub">${sub}</div>
+        <div class="ug-scoreboard" style="margin-bottom:24px;">
+          <div class="ug-score-item"><div class="ug-score-num">${ugState.score}</div><div class="ug-score-label">Final Score</div></div>
+          <div class="ug-score-item"><div class="ug-score-num">${pct}%</div><div class="ug-score-label">Accuracy</div></div>
         </div>
-        <div class="ug-score-item">
-          <div class="ug-score-num">${pct}%</div>
-          <div class="ug-score-label">Accuracy</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+          <button class="btn-primary" onclick="startUrinalCode()">🔄 Play Again</button>
+          <button class="btn-teal" onclick="renderGamesHub()">← All Games</button>
         </div>
       </div>
-      <button class="btn-primary" style="width:100%;justify-content:center;" onclick="initUrinalGame()">
-        🔄 Play Again
-      </button>
+    </div>
+  `;
+}
+
+// ── STALL SELECTOR ──
+const STALL_SCENARIOS = [
+  {
+    prompt: "Airport terminal. 4 stalls. You have 8 minutes before boarding.",
+    sub: "Time is not on your side. Read fast.",
+    stalls: [
+      { icon: "🔒", label: "Locked", clues: ["🔒 Occupied", "👟 Feet visible", "📰 Rustling"], occupied: true },
+      { icon: "🚪", label: "Open", clues: ["✅ Vacant", "💧 Damp floor", "🌀 Flushed recently"], occupied: false },
+      { icon: "🚪", label: "Open", clues: ["✅ Vacant", "🧻 Full TP roll", "✨ Clean seat"], occupied: false },
+      { icon: "🚫", label: "OOO", clues: ["🚫 Out of Order", "⚠️ Do not enter"], occupied: true },
+    ],
+    correct: [2],
+    explanation: "Stall 3 — clean seat, full TP, vacant. Stall 2 has a damp floor which is a psychological hazard. Stall 4 is out of order. Stall 1 is occupied. This was not complicated."
+  },
+  {
+    prompt: "Work office bathroom. Friday afternoon. Three stalls.",
+    sub: "You know these people. They know you. The stakes are social.",
+    stalls: [
+      { icon: "🔒", label: "Locked", clues: ["🔒 Occupied", "👞 Dress shoes visible", "😶 Total silence"], occupied: true },
+      { icon: "🚪", label: "Open", clues: ["✅ Vacant", "🧻 Empty TP roll", "😱 No backup roll"], occupied: false },
+      { icon: "🚪", label: "Open", clues: ["✅ Vacant", "🧻 Half roll", "🪟 Good gap seal"], occupied: false },
+    ],
+    correct: [2],
+    explanation: "Stall 3. Half a roll is enough. Stall 2 has no TP — a catastrophic trap. Stall 1 is occupied, and those are dress shoes. That's your manager. Do not make a sound."
+  },
+  {
+    prompt: "Music festival porta-potties. 5 units. Hour 6 of 8.",
+    sub: "This is a humanitarian situation. There are no good options. Only less bad ones.",
+    stalls: [
+      { icon: "🚽", label: "Unit 1", clues: ["✅ Vacant", "🌡️ Extremely hot", "💀 Hour 6 smell"], occupied: false },
+      { icon: "🚽", label: "Unit 2", clues: ["✅ Vacant", "🧻 TP present", "💦 Mysterious puddle outside"], occupied: false },
+      { icon: "🚽", label: "Unit 3", clues: ["🔒 Occupied", "⏱️ Been in 18 min", "🎵 Humming inside"], occupied: true },
+      { icon: "🚽", label: "Unit 4", clues: ["✅ Vacant", "🧻 TP present", "🌬️ Slight shade"], occupied: false },
+      { icon: "🚽", label: "Unit 5", clues: ["✅ Vacant", "🚫 No TP", "🪰 Concerning sounds"], occupied: false },
+    ],
+    correct: [3],
+    explanation: "Unit 4. Shade reduces internal temperature meaningfully. TP present. Vacant. In a festival porta-potty situation, shade + TP = luxury. Unit 5 has concerning sounds. You don't want to know."
+  },
+  {
+    prompt: "Gas station bathroom. Middle of nowhere. One toilet.",
+    sub: "There is only one option. But you must assess the threat level before committing.",
+    stalls: [
+      { icon: "🚽", label: "The Throne", clues: ["✅ Vacant", "🗝️ Key required (you have it)", "🪣 Mop bucket present", "💡 Single flickering bulb", "🧻 Single square of TP remaining"], occupied: false },
+    ],
+    correct: [0],
+    explanation: "You have no choice. You have the key. The mop bucket is a good sign — someone cleaned recently. The single square of TP is your problem to solve. This is what phone books are for in movies. You'll figure it out."
+  },
+  {
+    prompt: "5-star hotel bathroom. 6 immaculate stalls.",
+    sub: "They are all perfect. This is the hardest scenario.",
+    stalls: [
+      { icon: "🚪", label: "Stall 1", clues: ["✅ Vacant", "🌹 Fresh flower", "🪞 Mirror inside", "🧻 Origami TP fold"], occupied: false },
+      { icon: "🚪", label: "Stall 2", clues: ["✅ Vacant", "🌹 Fresh flower", "🎵 Soft music", "🧻 Origami TP fold"], occupied: false },
+      { icon: "🔒", label: "Stall 3", clues: ["🔒 Occupied", "👠 Heels visible", "🥂 Champagne glass shadow"], occupied: true },
+      { icon: "🚪", label: "Stall 4", clues: ["✅ Vacant", "🌹 Fresh flower", "🧻 Origami TP fold", "🌡️ Perfectly tempered"], occupied: false },
+      { icon: "🚪", label: "Stall 5", clues: ["✅ Vacant", "🌹 Fresh flower", "🔇 Most isolated", "🧻 Double origami fold"], occupied: false },
+      { icon: "🚪", label: "Stall 6", clues: ["✅ Vacant", "🌹 Fresh flower", "🧻 Origami TP fold", "🚿 Bidet attachment"], occupied: false },
+    ],
+    correct: [4, 5],
+    explanation: "Stall 5 (most isolated from occupied stall 3) or Stall 6 (bidet). Both are correct. You are in a 5-star hotel. You deserve the bidet. You have earned this."
+  },
+];
+
+let ssState = { scenarioIdx: 0, score: 0, answered: false };
+
+function startStallSelector() {
+  ssState = { scenarioIdx: 0, score: 0, answered: false };
+  renderStallScenario();
+}
+
+function renderStallScenario() {
+  if (ssState.scenarioIdx >= STALL_SCENARIOS.length) { ssShowResults(); return; }
+  const el = document.getElementById('ug-body');
+  const s = STALL_SCENARIOS[ssState.scenarioIdx];
+  el.innerHTML = `
+    <div class="ug-body" style="padding-bottom:100px;">
+      <button class="game-back-btn" onclick="renderGamesHub()">← All Games</button>
+      <div class="ug-scoreboard">
+        <div class="ug-score-item"><div class="ug-score-num">${ssState.score}</div><div class="ug-score-label">Score</div></div>
+        <div class="ug-score-item"><div class="ug-score-num">${ssState.scenarioIdx + 1}/${STALL_SCENARIOS.length}</div><div class="ug-score-label">Round</div></div>
+      </div>
+      <div class="ss-scenario" id="ss-scenario">
+        <div class="ug-level">Scenario ${ssState.scenarioIdx + 1}</div>
+        <div class="ss-prompt">${s.prompt}</div>
+        <div class="ss-sub">${s.sub}</div>
+        <div class="ss-stalls">
+          ${s.stalls.map((stall, i) => `
+            <div class="ss-stall" onclick="ssPick(${i})">
+              <div class="ss-door ${stall.occupied ? 'occupied' : ''}" id="ss-door-${i}">
+                <div style="font-size:22px;">${stall.icon}</div>
+                <div class="ss-clue">${stall.clues.slice(0,2).join('<br>')}</div>
+              </div>
+              <div class="ss-stall-num">${stall.label}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="ss-result" id="ss-result"></div>
+        <button class="ug-next-btn" id="ss-next-btn" onclick="ssNext()">
+          ${ssState.scenarioIdx < STALL_SCENARIOS.length - 1 ? 'Next Scenario →' : '🏆 See Results'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function ssPick(i) {
+  if (ssState.answered) return;
+  ssState.answered = true;
+  const s = STALL_SCENARIOS[ssState.scenarioIdx];
+  if (s.stalls[i].occupied) { showToast('🚫 That one is occupied!'); ssState.answered = false; return; }
+  const isCorrect = s.correct.includes(i);
+  const door = document.getElementById('ss-door-' + i);
+  const resultEl = document.getElementById('ss-result');
+  const nextBtn = document.getElementById('ss-next-btn');
+  const scenarioEl = document.getElementById('ss-scenario');
+  s.correct.forEach(c => { const el = document.getElementById('ss-door-' + c); if (el) el.classList.add('correct-pick'); });
+  if (isCorrect) {
+    ssState.score += 10;
+    door.classList.add('correct-pick');
+    resultEl.className = 'ss-result correct';
+    scenarioEl.classList.add('correct');
+  } else {
+    door.classList.add('wrong-pick');
+    resultEl.className = 'ss-result wrong';
+    scenarioEl.classList.add('wrong');
+  }
+  resultEl.textContent = s.explanation;
+  nextBtn.classList.add('visible');
+}
+
+function ssNext() {
+  ssState.scenarioIdx++;
+  ssState.answered = false;
+  renderStallScenario();
+}
+
+function ssShowResults() {
+  const el = document.getElementById('ug-body');
+  const pct = Math.round((ssState.score / (STALL_SCENARIOS.length * 10)) * 100);
+  let emoji, title, sub;
+  if (pct >= 90) { emoji = '🧠'; title = 'Stall Savant'; sub = 'You read every clue correctly. You could survive any bathroom, anywhere, under any conditions.'; }
+  else if (pct >= 60) { emoji = '👍'; title = 'Decent Instincts'; sub = 'A few misreads, but your core judgment is sound. You would not leave a 5-star stall for a gas station.'; }
+  else { emoji = '😬'; title = 'High-Risk Behavior'; sub = 'You made some choices that a more experienced bathroom navigator would not have made. Reflect on this.'; }
+  el.innerHTML = `
+    <div class="ug-body" style="padding-bottom:100px;">
+      <div class="ug-over show">
+        <div class="ug-over-emoji">${emoji}</div>
+        <div class="ug-over-title">${title}</div>
+        <div class="ug-over-sub">${sub}</div>
+        <div class="ug-scoreboard" style="margin-bottom:24px;">
+          <div class="ug-score-item"><div class="ug-score-num">${ssState.score}</div><div class="ug-score-label">Final Score</div></div>
+          <div class="ug-score-item"><div class="ug-score-num">${pct}%</div><div class="ug-score-label">Accuracy</div></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+          <button class="btn-primary" onclick="startStallSelector()">🔄 Play Again</button>
+          <button class="btn-teal" onclick="renderGamesHub()">← All Games</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ── POOP PERSONALITY ──
+const PP_QUESTIONS = [
+  { q: "It's 9am on a Tuesday. You need to go at work. What do you do?", opts: [
+    { text: "Handle it immediately. Efficiency matters.", type: "A" },
+    { text: "Wait until the bathroom is empty. Obviously.", type: "B" },
+    { text: "Go to a different floor. Anonymity is paramount.", type: "C" },
+    { text: "Hold it until you get home. Non-negotiable.", type: "D" },
+  ]},
+  { q: "How do you feel about the courtesy flush?", opts: [
+    { text: "Mandatory. I do it preemptively.", type: "B" },
+    { text: "Only if I know someone is outside.", type: "A" },
+    { text: "I don't believe in it. Nature is natural.", type: "E" },
+    { text: "I do it three times minimum.", type: "F" },
+  ]},
+  { q: "Someone walks into the adjacent stall while you're mid-session. You:", opts: [
+    { text: "Freeze completely. Not a sound until they leave.", type: "B" },
+    { text: "Continue normally. We're all adults.", type: "A" },
+    { text: "Finish as fast as physically possible.", type: "G" },
+    { text: "Start a casual conversation. Life is short.", type: "H" },
+  ]},
+  { q: "What's your phone policy in the bathroom?", opts: [
+    { text: "Phone is the whole point of being in here.", type: "F" },
+    { text: "Absolutely not. That's disgusting.", type: "A" },
+    { text: "Emergencies only. I'm not an animal.", type: "B" },
+    { text: "I have a dedicated bathroom playlist.", type: "H" },
+  ]},
+  { q: "A coworker says 'long meeting?' when you return to your desk. You:", opts: [
+    { text: "Laugh it off. Everyone knows what happened.", type: "H" },
+    { text: "Die inside. Plan to resign.", type: "B" },
+    { text: "Confirm the meeting story and commit.", type: "C" },
+    { text: "Stare at them until they look away.", type: "G" },
+  ]},
+  { q: "What best describes your TP technique?", opts: [
+    { text: "Folder. Always. It's called civilization.", type: "A" },
+    { text: "Crumpler. More surface area, more coverage.", type: "E" },
+    { text: "I have a system that I will not describe.", type: "F" },
+    { text: "Depends on the TP quality.", type: "C" },
+  ]},
+  { q: "You're at someone's house and the toilet clogs. You:", opts: [
+    { text: "Find the plunger immediately. Handle it.", type: "A" },
+    { text: "Flush again hoping for a miracle.", type: "G" },
+    { text: "Leave quietly. This never happened.", type: "C" },
+    { text: "Confess immediately. Honesty is the policy.", type: "H" },
+  ]},
+  { q: "Your ideal bathroom experience is:", opts: [
+    { text: "Under 3 minutes. In and out. Respect your time.", type: "G" },
+    { text: "15-20 minutes minimum. This is my decompression time.", type: "F" },
+    { text: "Exactly as long as needed. I do not rush.", type: "A" },
+    { text: "In a perfectly clean, private, silent bathroom.", type: "B" },
+  ]},
+];
+
+const PP_TYPES = {
+  A: { name: "The Professional", emoji: "💼", subtitle: "Efficient · Principled · Composed", desc: "You approach bathroom activities with the same discipline you bring to everything else. Clean, efficient, no drama. You fold your TP, you wash your hands for exactly 20 seconds, and you return to your desk looking like nothing happened. Because nothing did.", traits: ["Folder", "Punctual", "No-nonsense", "Respectable"] },
+  B: { name: "The Phantom", emoji: "👻", subtitle: "Stealthy · Private · Vigilant", desc: "You have mastered the art of the invisible bathroom visit. No one knows when you go. No one knows how long. You leave no trace, make no sound, and return having technically never left. You are a ghost. A clean, well-prepared ghost.", traits: ["Silent", "Strategic", "Private", "Prepared"] },
+  C: { name: "The Strategist", emoji: "🗺️", subtitle: "Calculated · Discreet · Thorough", desc: "You have mapped every bathroom in your building, your neighborhood, and three nearby zip codes. You know which floors are empty at 10am, which Starbucks has the cleanest restroom, and you always have a plan B. And a plan C. Obviously.", traits: ["Planful", "Discreet", "Resourceful", "Detail-oriented"] },
+  D: { name: "The Iron Will", emoji: "🏋️", subtitle: "Disciplined · Stubborn · Domestic", desc: "Your body is your home, and your home is where you go. You have held it through three-hour meetings, international flights, and a particularly intense escape room. Some call it extreme. You call it standards.", traits: ["Determined", "Domestic", "Principled", "Endurance"] },
+  E: { name: "The Free Spirit", emoji: "🌿", subtitle: "Unbothered · Natural · Authentic", desc: "Nature calls, you answer. No fuss, no strategy, no courtesy flush required. You are at peace with the human experience in all its forms. People find this either refreshing or alarming depending on context.", traits: ["Authentic", "Relaxed", "Unfiltered", "Present"] },
+  F: { name: "The Extended Session", emoji: "📚", subtitle: "Contemplative · Thorough · Unhurried", desc: "The bathroom is not a pitstop. It is a sanctuary. You bring reading material. You have a playlist. You have been known to solve significant life problems from a seated position. Some of your best ideas have happened in there. You know this.", traits: ["Contemplative", "Reader", "Thorough", "Unbothered"] },
+  G: { name: "The Speed Runner", emoji: "⚡", subtitle: "Fast · Efficient · Minimalist", desc: "You're in, you're out, no one saw anything. You hold bathroom world records that will never be officially recognized. You believe time spent in a bathroom is time not spent doing literally anything else. You are not wrong.", traits: ["Fast", "Efficient", "Minimal", "Focused"] },
+  H: { name: "The Social Creature", emoji: "🎉", subtitle: "Comfortable · Open · Unbothered", desc: "You have had full conversations through stall doors. You have made friends in bathroom lines. You do not understand why this is considered unusual. The bathroom is just another room. Life happens everywhere.", traits: ["Open", "Social", "Comfortable", "Relatable"] },
+};
+
+let ppState = { qIdx: 0, answers: [], done: false };
+
+function startPoopPersonality() {
+  ppState = { qIdx: 0, answers: [], done: false };
+  renderPPQuestion();
+}
+
+function renderPPQuestion() {
+  if (ppState.qIdx >= PP_QUESTIONS.length) { ppShowResult(); return; }
+  const el = document.getElementById('ug-body');
+  const q = PP_QUESTIONS[ppState.qIdx];
+  const pct = Math.round((ppState.qIdx / PP_QUESTIONS.length) * 100);
+  el.innerHTML = `
+    <div class="ug-body" style="padding-bottom:100px;">
+      <button class="game-back-btn" onclick="renderGamesHub()">← All Games</button>
+      <div class="pp-progress"><div class="pp-progress-fill" style="width:${pct}%"></div></div>
+      <div class="pp-question">
+        <div class="pp-q-num">Question ${ppState.qIdx + 1} of ${PP_QUESTIONS.length}</div>
+        <div class="pp-q-text">${q.q}</div>
+        <div class="pp-options">
+          ${q.opts.map((opt, i) => `
+            <div class="pp-option" onclick="ppAnswer('${opt.type}', this)">${opt.text}</div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function ppAnswer(type, el) {
+  document.querySelectorAll('.pp-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  ppState.answers.push(type);
+  setTimeout(() => {
+    ppState.qIdx++;
+    renderPPQuestion();
+  }, 400);
+}
+
+function ppShowResult() {
+  const counts = {};
+  ppState.answers.forEach(a => counts[a] = (counts[a] || 0) + 1);
+  const dominant = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+  const t = PP_TYPES[dominant];
+  const el = document.getElementById('ug-body');
+  el.innerHTML = `
+    <div class="ug-body" style="padding-bottom:100px;">
+      <div class="pp-result-card">
+        <div class="pp-result-emoji">${t.emoji}</div>
+        <div class="pp-result-type">${t.name}</div>
+        <div class="pp-result-subtitle">${t.subtitle}</div>
+        <div class="pp-result-desc">${t.desc}</div>
+        <div class="pp-traits">${t.traits.map(tr => `<div class="pp-trait">${tr}</div>`).join('')}</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:0 16px;">
+        <button class="btn-primary" onclick="startPoopPersonality()">🔄 Retake Quiz</button>
+        <button class="btn-teal" onclick="renderGamesHub()">← All Games</button>
+      </div>
     </div>
   `;
 }
@@ -3830,6 +4402,39 @@ function submitEmail() {
   input.placeholder = 'your@email.com';
   input.disabled = true;
   btn.disabled = true;
+}
+
+// ── SHARE ──
+function copyShareLink(btn) {
+  const text = 'Give a shit about where you shit. 🚽 CrapApp — bathroom finder, throne content & legendary stories. We Give A Shit. https://thecrapapp.app';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2200);
+    }).catch(() => fallbackCopy(text, btn));
+  } else {
+    fallbackCopy(text, btn);
+  }
+}
+
+function fallbackCopy(text, btn) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try {
+    document.execCommand('copy');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2200);
+  } catch(e) {
+    showToast('⚠️ Copy failed — try long-pressing the link');
+  }
+  document.body.removeChild(ta);
 }
 
 function showToast(msg) {
