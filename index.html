@@ -207,7 +207,7 @@
   /* App preview cards */
   .preview-section {
     position: relative; z-index: 2;
-    padding: 0 24px 120px;
+    padding: 0 24px 24px;
   }
   .preview-label {
     text-align: center;
@@ -374,7 +374,7 @@
   }
   .ss-stall:hover .ss-door { transform: scale(1.05); }
   .ss-door {
-    width: 72px; height: 96px;
+    width: 72px; height: 110px;
     background: #f0ebe3; border: 2px solid #c8b8a8;
     border-radius: 8px 8px 4px 4px;
     display: flex; flex-direction: column;
@@ -1872,13 +1872,6 @@
     <button class="hero-cta" onclick="enterApp()">
       🚽 Enter the App
     </button>
-
-    <div class="hero-features">
-      <div class="feature-pill" onclick="goTo('crapmap')">🗺️ CrapMap</div>
-      <div class="feature-pill" onclick="goTo('throneroom')">👑 Throne Room</div>
-      <div class="feature-pill" onclick="goTo('flushandtell')">💬 Flush & Tell</div>
-      <div class="feature-pill" onclick="goTo('crapstore')">🛒 Crap Store</div>
-    </div>
   </div>
 
   <div class="preview-section">
@@ -1903,6 +1896,11 @@
         <div class="pc-icon">🛒</div>
         <div class="pc-title">Crap Store</div>
         <div class="pc-desc">Premium bidets, merch, and bathroom essentials.</div>
+      </div>
+      <div class="preview-card" onclick="goTo('urinalgame')">
+        <div class="pc-icon">🎮</div>
+        <div class="pc-title">Play</div>
+        <div class="pc-desc">Urinal Code, Stall Selector & the 1997 classic. Plus your poop personality.</div>
       </div>
     </div>
   </div>
@@ -4159,7 +4157,7 @@ function renderStallScenario() {
             <div class="ss-stall" onclick="ssPick(${i})">
               <div class="ss-door ${stall.occupied ? 'occupied' : ''}" id="ss-door-${i}">
                 <div style="font-size:22px;">${stall.icon}</div>
-                <div class="ss-clue">${stall.clues.slice(0,2).join('<br>')}</div>
+                <div class="ss-clue">${stall.clues.slice(0,3).join('<br>')}</div>
               </div>
               <div class="ss-stall-num">${stall.label}</div>
             </div>
