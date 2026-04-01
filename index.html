@@ -2169,9 +2169,9 @@
 
   <div class="store-cats">
     <div class="store-cat active" onclick="storeCat(this,'all')">All</div>
+    <div class="store-cat" onclick="storeCat(this,'merch')">👕 Merch</div>
     <div class="store-cat" onclick="storeCat(this,'bidets')">🚿 Bidets</div>
     <div class="store-cat" onclick="storeCat(this,'tp')">🧻 TP & Wipes</div>
-    <div class="store-cat" onclick="storeCat(this,'merch')">👕 Merch</div>
     <div class="store-cat" onclick="storeCat(this,'gadgets')">⚡ Gadgets</div>
     <div class="store-cat" onclick="storeCat(this,'scents')">🌸 Scents</div>
   </div>
@@ -2596,7 +2596,11 @@ const products = [
     photo: "https://m.media-amazon.com/images/I/71mP5eBo2bL._AC_SL1500_.jpg",
     amazonUrl: "https://www.amazon.com/s?k=ultra+soft+toilet+paper+48+rolls&tag=YOURTAG-20" },
   { emoji: "👑", name: '"I Give A Shit" Hoodie', price: "$45", stars: "★★★★★", reviews: 892, badge: "NEW", bg: "#F3E5F5", cat: "merch",
-    photo: null, amazonUrl: null, directUrl: "https://yourcrapappstore.fourthwall.com/hoodie", freeShipping: true },
+    photo: "https://imgproxy.fourthwall.com/5GTrSLHF9WzBgZbTWmNP3g9c5Rsqk4OnjyAKi6QZkYs/w:1920/sm:1/enc/ddxNpfOg2wM0vbCZ/KbYcpJcJSI7bJAWY/AwBNIWLlZra4Tvgd/sPK3koVaI99gTmJH/q2gv7pAIvlklBMpO/5iq8sLoO_PPhWnAv/Sd4Sgtu7C3fXDINl/Yj956LUr_-WesoFJ/5IR22pgz8fNnZQVP/n3oeg7XqfRSDditn/KG6p4VSNqgeZRbCE/IPSJcpYuQ-TnafMQ/vjLwd58SFEfLAEve/YmcKqFX1oewydiZt/ekLDMYgURbU",
+    amazonUrl: null, directUrl: "https://crap-app-shop.fourthwall.com/collections/crap-app-hoodies", freeShipping: true },
+  { emoji: "👕", name: "Crap App™ T-Shirt", price: "$28", stars: "★★★★★", reviews: 124, badge: "NEW", bg: "#2C2C2C", cat: "merch",
+    photo: "https://imgproxy.fourthwall.com/xUYvfQcgwYFYuJDaYMlnBZCJowuXl7qN1oCqHhc4uSE/w:1920/sm:1/enc/OfW2_JAnwj7z-BM9/oNYn65GLvT9V7JXe/WjF4qF9XROOaRojF/8pZQMMOaFT6q_b6P/oBxe0V7PCdoggtu-/_6ROD-PxHcJ5Tok6/X3fr-Yn3q0o2ydaU/5mdbGtVHoKVHDT12/dBAmlXrWBgur4Stq/kZfKL2MWGj5FJaGN/Rc0_UZ5iKqTvYySY/5bvrEBcY8_hsSNMR/8IWXnvupGEeQFDyo/RmTyDTrGUVf9QtlL/75dRT21W1HE",
+    amazonUrl: null, directUrl: "https://crap-app-shop.fourthwall.com/collections/crap-app-ts", freeShipping: true },
   { emoji: "💨", name: "Poo-Pourri Original Citrus Spray", price: "$12", stars: "★★★★★", reviews: 3421, badge: "HOT", bg: "#E8F5E9", cat: "scents",
     photo: "https://m.media-amazon.com/images/I/61jmse3La5L._AC_SL1024_.jpg",
     amazonUrl: "https://www.amazon.com/s?k=poo+pourri+original+citrus&tag=YOURTAG-20" },
@@ -2604,7 +2608,15 @@ const products = [
     photo: "https://m.media-amazon.com/images/I/61d+pI7KG9L._AC_SL1500_.jpg",
     amazonUrl: "https://www.amazon.com/s?k=toilet+phone+holder+mount&tag=YOURTAG-20" },
   { emoji: "💩", name: "Crap App™ Enamel Pin Set", price: "$18", stars: "★★★★½", reviews: 344, badge: null, bg: "#FCE4EC", cat: "merch",
-    photo: null, amazonUrl: null, directUrl: "https://yourcrapappstore.fourthwall.com/pins", freeShipping: true },
+    photo: null, amazonUrl: null, directUrl: "https://crap-app-shop.fourthwall.com/collections/miscellaneous-crap", freeShipping: true },
+  { emoji: "🧢", name: "Crap App™ Cap", price: "$30", stars: "★★★★★", reviews: 89, badge: "NEW", bg: "#3d1f0a", cat: "merch",
+    photo: null, amazonUrl: null, directUrl: "https://crap-app-shop.fourthwall.com/collections/crap-app-caps", freeShipping: true },
+  { emoji: "🫘", name: "Crap App™ Beanie", price: "$25", stars: "★★★★★", reviews: 62, badge: "NEW", bg: "#3d1f0a", cat: "merch",
+    photo: null, amazonUrl: null, directUrl: "https://crap-app-shop.fourthwall.com/collections/crap-app-caps", freeShipping: true },
+  { emoji: "☕", name: "Crap App™ Drinkware", price: "$22", stars: "★★★★★", reviews: 47, badge: "NEW", bg: "#3d1f0a", cat: "merch",
+    photo: null, amazonUrl: null, directUrl: "https://crap-app-shop.fourthwall.com/collections/crap-app-drinkware", freeShipping: true },
+  { emoji: "🎨", name: "Crap App™ Art", price: "$20", stars: "★★★★★", reviews: 31, badge: "NEW", bg: "#1a0a04", cat: "merch",
+    photo: null, amazonUrl: null, directUrl: "https://crap-app-shop.fourthwall.com/collections/crap-app-art", freeShipping: true },
   { emoji: "🏆", name: "Squatty Potty Elite Edition", price: "$65", stars: "★★★★★", reviews: 8902, badge: "TOP RATED", bg: "#E8EAF6", cat: "gadgets",
     photo: "https://m.media-amazon.com/images/I/71APmdld-EL._AC_SL1500_.jpg",
     amazonUrl: "https://www.amazon.com/s?k=squatty+potty&tag=YOURTAG-20" },
@@ -2647,6 +2659,14 @@ const productDetails = [
     ]
   },
   {
+    desc: `The world's first and finest shitting companion — now in wearable form. The Crap App™ T-Shirt is a soft, comfortable statement piece for the person who gives a shit about where they go, what they read on the throne, and what they wear while doing it. Available in multiple colors. Unisex sizing. Pre-shrunk. The design will outlast your excuses for not talking about it at parties.`,
+    reviews: [
+      { emoji: "🛋️", name: "CouchPhilosopher99", stars: "★★★★★", text: "Wore this to my sister's wedding after party. Three people downloaded the app on the spot. This shirt is doing more marketing than most companies' entire budgets.", verified: true },
+      { emoji: "🏃", name: "JoggerJanice_PDX", stars: "★★★★★", text: "I run in this. People honk at me. I think it's a compliment.", verified: true },
+      { emoji: "🧑‍🏫", name: "SubstituteMrKaplan", stars: "★★★☆☆", text: "Three stars because I was told not to wear this to school again. Five stars for the conversation it started.", verified: false },
+    ]
+  },
+  {
     desc: `Before you go. That's the whole pitch. Poo-Pourri Original Citrus is the spray that started a bathroom revolution — a few spritzes in the bowl creates a barrier that traps odors before they can escape into the atmosphere, your dignity, or your relationship. This is the original, the legend, the one your coworker uses and refuses to name. Pocket-sized. Citrus-scented. Devastatingly effective. Keep one at home, one at the office, one in your bag. This is not optional.`,
     reviews: [
       { emoji: "🕵️", name: "DiscreetDwight", stars: "★★★★★", text: "I have had guests over seventeen times this year. Zero suspicions. This product is a marvel of modern chemistry.", verified: true },
@@ -2684,6 +2704,38 @@ const productDetails = [
       { emoji: "✈️", name: "FrequentFlyerFiona", stars: "★★★★☆", text: "I travel for work three weeks a month. This goes everywhere. Hotel bathrooms. Airport stalls. A Greyhound bus one time I don't want to talk about.", verified: true },
       { emoji: "💅", name: "UpscaleUrsula", stars: "★★★★★", text: "I use the Lavender Vanilla at dinner parties. My guests think I have a scented candle in the powder room. I do not.", verified: true },
       { emoji: "🏡", name: "NormalNathaniel", stars: "★★★★☆", text: "Works great. I feel slightly less like myself every time I use it, but in a good way.", verified: true },
+    ]
+  },
+  {
+    desc: `A cap that says what everyone is thinking but only the brave will wear. The Crap App™ Cap sits comfortably on your head and uncomfortably on the conscience of anyone who reads it in line at the grocery store. Structured front, adjustable back, available in multiple colors. One size fits most thrones. Whether you're running errands, hiking, or just living your best life on the way to a public restroom, this cap has you covered. Literally.`,
+    reviews: [
+      { emoji: "⛷️", name: "SlopesideSteve", stars: "★★★★★", text: "Wore this on the chairlift. Three people asked about the app before we got to the top. Best ride of the season.", verified: true },
+      { emoji: "🧑‍🌾", name: "FarmersMarketFred", stars: "★★★★★", text: "People at the farmers market thought it was a statement about sustainable agriculture. I let them believe that.", verified: true },
+      { emoji: "🎣", name: "FishingPhilOhio", stars: "★★★★☆", text: "Four stars because I lost it on a boat. I am buying another one immediately.", verified: false },
+    ]
+  },
+  {
+    desc: `Cold ears are the enemy of a good morning. The Crap App™ Beanie keeps your head warm and your personality visible — a rare combination in knitwear. Soft, stretchy, one-size-fits-all. The kind of beanie you wear on a ski lift, a cold morning walk, or anytime you want to silently communicate your values to strangers without saying a word. Available in multiple colors. Pom or no pom depending on your commitment level.`,
+    reviews: [
+      { emoji: "🏂", name: "SnowboarderKev", stars: "★★★★★", text: "Wore this at the mountain. A ski patrol guy gave me a thumbs up. We are connected now.", verified: true },
+      { emoji: "☕", name: "MorningWalkerMeg", stars: "★★★★★", text: "I wear this every day from October through April. It has started more conversations than my personality.", verified: true },
+      { emoji: "🐕", name: "DogWalkerDanDenver", stars: "★★★★★", text: "My dog doesn't care what it says. Everyone else does. Five stars.", verified: false },
+    ]
+  },
+  {
+    desc: `Because every throne deserves proper drinkware. The Crap App™ collection of mugs, tumblers, and cups brings the brand to your beverage of choice — coffee, tea, or whatever you're drinking while reading this description on the toilet right now. We don't judge. We just make good drinkware. Microwave and dishwasher safe depending on the specific product. Visit the shop for the full lineup.`,
+    reviews: [
+      { emoji: "☕", name: "MorningRoutineMarcus", stars: "★★★★★", text: "I use this mug every single morning. My coworkers have started calling the bathroom 'the Crap App office.' I consider this a win.", verified: true },
+      { emoji: "🍵", name: "TeaTimeTeresa", stars: "★★★★★", text: "The mug holds exactly the right amount of tea for a standard throne session. This cannot be a coincidence.", verified: true },
+      { emoji: "🥤", name: "HydrationHank", stars: "★★★★☆", text: "Great tumbler. Keeps things cold for hours. I bring it everywhere. My dentist has questions.", verified: false },
+    ]
+  },
+  {
+    desc: `For the aesthete who gives a shit. The Crap App™ Art collection features original prints, posters, and wall art that bring the brand into your home, office, or bathroom — the most appropriate room of all. Each piece is printed on premium materials and ships ready to frame or hang. A conversation starter in any room. An absolute statement in the bathroom. Because why shouldn't your walls reflect your values?`,
+    reviews: [
+      { emoji: "🎨", name: "InteriorDesignerIrene", stars: "★★★★★", text: "Hung this in my powder room. Every single guest has commented on it. It is the most discussed piece of art in my home and I own actual art.", verified: true },
+      { emoji: "🖼️", name: "GalleryGuyGreg", stars: "★★★★★", text: "I work in a gallery. This is more honest than 80% of what we show. Five stars, no notes.", verified: true },
+      { emoji: "🏠", name: "NewHomeownerNadia", stars: "★★★★★", text: "First thing I hung in my new place. It sets the tone immediately. The tone is correct.", verified: false },
     ]
   },
 ];
