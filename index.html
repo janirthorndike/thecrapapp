@@ -460,8 +460,180 @@
     font-size: 12px; font-weight: 800;
   }
 
-  /* ── URINAL GAME (existing, keep) ── */
-  .ug-body { padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
+  /* ── DAILY DUMP TRIVIA ── */
+  .ddt-card {
+    background: white; border-radius: 20px;
+    padding: 24px 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .ddt-streak {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; margin-bottom: 20px;
+  }
+  .ddt-streak-num {
+    font-family: 'Fredoka One', cursive;
+    font-size: 48px; color: var(--gold);
+    line-height: 1;
+  }
+  .ddt-streak-label { font-size: 12px; font-weight: 800; color: #aaa; letter-spacing: 1px; text-transform: uppercase; }
+  .ddt-question {
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px; color: var(--dark);
+    line-height: 1.3; margin-bottom: 20px; text-align: center;
+  }
+  .ddt-options { display: flex; flex-direction: column; gap: 10px; }
+  .ddt-option {
+    background: #f8f6f3; border: 2px solid transparent;
+    border-radius: 14px; padding: 14px 18px;
+    font-size: 14px; font-weight: 700; color: var(--dark);
+    cursor: pointer; transition: all 0.15s; text-align: left;
+  }
+  .ddt-option:hover { border-color: var(--gold); background: #fffde7; }
+  .ddt-option.correct { border-color: #4CAF50; background: #e8f5e9; color: #2E7D32; }
+  .ddt-option.wrong { border-color: #F44336; background: #ffebee; color: #C62828; }
+  .ddt-result {
+    margin-top: 16px; padding: 14px 16px;
+    border-radius: 14px; font-size: 13px; font-weight: 700;
+    line-height: 1.55; display: none;
+  }
+  .ddt-result.show { display: block; }
+  .ddt-result.correct { background: #e8f5e9; color: #2E7D32; }
+  .ddt-result.wrong { background: #ffebee; color: #C62828; }
+  .ddt-done {
+    text-align: center; padding: 30px 20px;
+    background: white; border-radius: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .ddt-come-back {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px; color: var(--dark); margin-bottom: 8px;
+  }
+
+  /* ── CODE BROWN SIMULATOR ── */
+  .cbs-scene {
+    background: white; border-radius: 20px;
+    padding: 24px 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .cbs-dignity {
+    margin-bottom: 18px;
+  }
+  .cbs-dignity-label {
+    display: flex; justify-content: space-between;
+    font-size: 11px; font-weight: 800; color: #aaa;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .cbs-dignity-bar {
+    height: 10px; background: #f0f0f0; border-radius: 50px; overflow: hidden;
+  }
+  .cbs-dignity-fill {
+    height: 100%; border-radius: 50px;
+    transition: width 0.5s ease, background 0.5s ease;
+  }
+  .cbs-scenario-label {
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px;
+    color: #aaa; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .cbs-situation {
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px; color: var(--dark);
+    line-height: 1.3; margin-bottom: 6px;
+  }
+  .cbs-detail {
+    font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 20px;
+  }
+  .cbs-choices { display: flex; flex-direction: column; gap: 10px; }
+  .cbs-choice {
+    background: #f8f6f3; border: 2px solid transparent;
+    border-radius: 14px; padding: 13px 16px;
+    font-size: 13px; font-weight: 700; color: var(--dark);
+    cursor: pointer; transition: all 0.15s; text-align: left;
+    line-height: 1.4;
+  }
+  .cbs-choice:hover { border-color: var(--brown); background: #fdf6ec; }
+  .cbs-outcome {
+    margin-top: 14px; padding: 12px 14px;
+    border-radius: 12px; font-size: 13px;
+    font-weight: 700; line-height: 1.55;
+    display: none;
+  }
+  .cbs-outcome.show { display: block; background: #f8f6f3; color: #555; }
+  .cbs-ending {
+    text-align: center; padding: 30px 20px;
+    background: white; border-radius: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .cbs-ending-emoji { font-size: 64px; margin-bottom: 12px; }
+  .cbs-ending-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px; color: var(--dark); margin-bottom: 8px;
+  }
+  .cbs-ending-desc { font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 20px; }
+
+  /* ── STALL WALL ── */
+  .sw-wall {
+    background: #d4c9b8;
+    border-radius: 16px; padding: 20px;
+    margin-bottom: 16px;
+    min-height: 320px;
+    position: relative;
+    background-image:
+      linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .sw-graffiti {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .sw-entry {
+    position: relative;
+    padding: 4px 0;
+  }
+  .sw-text {
+    font-size: 15px; line-height: 1.5;
+    transform: rotate(var(--rot, -1deg));
+    display: inline-block;
+  }
+  .sw-add-form {
+    background: white; border-radius: 20px;
+    padding: 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .sw-add-label {
+    font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+    color: #aaa; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .sw-presets {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+  }
+  .sw-preset {
+    background: #f8f6f3; border: 1.5px solid rgba(0,0,0,0.1);
+    border-radius: 50px; padding: 6px 14px;
+    font-size: 12px; font-weight: 700; color: #555;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .sw-preset:hover { border-color: var(--brown); color: var(--brown); background: #fdf6ec; }
+  .sw-preset.selected { background: var(--brown); color: white; border-color: var(--brown); }
+  .sw-custom-input {
+    width: 100%; border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 14px; padding: 12px 14px;
+    font-family: 'Nunito', sans-serif; font-size: 14px;
+    outline: none; margin-bottom: 12px; resize: none;
+    transition: border-color 0.2s;
+  }
+  .sw-custom-input:focus { border-color: var(--brown); }
+  .sw-color-picks {
+    display: flex; gap: 10px; margin-bottom: 14px; align-items: center;
+  }
+  .sw-color-label { font-size: 11px; font-weight: 800; color: #aaa; letter-spacing: 1px; text-transform: uppercase; }
+  .sw-color {
+    width: 28px; height: 28px; border-radius: 50%;
+    cursor: pointer; border: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .sw-color.selected { border-color: var(--dark); transform: scale(1.2); }
   .ug-classic-btn {
     display: flex; align-items: center; justify-content: center; gap: 10px;
     width: 100%; background: #0d3349; color: white;
@@ -726,7 +898,8 @@
   .ug-score-pip.pass { background: #4CAF50; }
   .ug-score-pip.fail { background: #F44336; }
 
-  /* ── LEGAL SCREENS ── */
+  /* ── URINAL GAME (existing, keep) ── */
+  .ug-body { padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
   .legal-screen {
     background: var(--cream);
     min-height: 100vh;
@@ -2280,7 +2453,8 @@
 
 <!-- ════ ARTICLE MODAL ════ -->
 <div class="modal-overlay" id="article-modal" onclick="closeArticleModal(event)">
-  <div class="modal" id="article-modal-content" style="max-height:92vh;">
+  <div class="modal" id="article-modal-content" style="max-height:92vh;position:relative;">
+    <button onclick="closeArticleModal()" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.08);border:none;color:#888;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;line-height:1;">✕</button>
     <div class="modal-handle"></div>
     <div id="article-detail"></div>
   </div>
@@ -3128,7 +3302,7 @@ function renderThrone(filter) {
             <div class="tc-actions">
               <button class="tc-action" onclick="event.stopPropagation();likeArticle(this, ${globalIdx})">❤️ <span class="like-count-${globalIdx}">${(c.likes/1000).toFixed(1)}k</span></button>
               <button class="tc-action" onclick="event.stopPropagation();${c.action ? c.action : `openArticle(${globalIdx})`}">
-                ${c.action ? '🎮 Play' : `💬 ${c.comments}`}
+                ${c.action ? '🎮 Play' : `👁 ${(c.comments/1000).toFixed(1)}k`}
               </button>
             </div>
           </div>
@@ -3176,7 +3350,7 @@ function openArticle(idx) {
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.08);">
       <span style="font-size:12px;color:#aaa;font-weight:700;">⏱ ${c.time}</span>
       <span style="font-size:12px;color:#aaa;font-weight:700;">❤️ ${(c.likes/1000).toFixed(1)}k</span>
-      <span style="font-size:12px;color:#aaa;font-weight:700;">💬 ${c.comments}</span>
+      <span style="font-size:12px;color:#aaa;font-weight:700;">👁 ${(c.comments/1000).toFixed(1)}k views</span>
     </div>
     <div class="article-body">${c.body}</div>
     <div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.08);display:flex;gap:10px;">
@@ -3210,7 +3384,8 @@ const REACTIONS = [
 
 function react(postIdx, reactionId, el) {
   const p = ftPostsData[postIdx];
-  if (!p.reactions) p.reactions = {};
+  // Seed reactions from votes if not already initialized
+  if (!p.reactions) p.reactions = { poop: p.votes || 0 };
   if (!p.userReacted) p.userReacted = {};
 
   const prev = p.userReacted[postIdx];
@@ -3249,10 +3424,11 @@ function react(postIdx, reactionId, el) {
 
 function buildReactionBar(postIdx) {
   const p = ftPostsData[postIdx];
-  const reactions = p.reactions || {};
+  if (!p.reactions) p.reactions = { poop: p.votes || 0 };
+  const reactions = p.reactions;
   const userReacted = (p.userReacted || {})[postIdx];
   return REACTIONS.map(r => {
-    const count = reactions[r.id] || 0;
+    const count = r.id === 'poop' ? (reactions.poop || 0) : (reactions[r.id] || 0);
     const active = userReacted === r.id;
     return `<button class="reaction-btn ${active ? 'reacted' : ''}" 
       style="${active ? `background:${r.color}22;border-color:${r.color};color:${r.color};` : ''}"
@@ -3267,7 +3443,14 @@ let currentFtFilter = 'all';
 function renderPosts(filter) {
   filter = filter || currentFtFilter;
   const el = document.getElementById('ft-posts');
-  const filtered = filter === 'all' ? ftPostsData : ftPostsData.filter(p => p.filter === filter);
+  let filtered = filter === 'all' ? [...ftPostsData] : ftPostsData.filter(p => p.filter === filter);
+
+  // Sort by reactions (most 💩 first), falling back to original order
+  filtered.sort((a, b) => {
+    const aVotes = (a.reactions && a.reactions.poop) ? a.reactions.poop : (a.votes || 0);
+    const bVotes = (b.reactions && b.reactions.poop) ? b.reactions.poop : (b.votes || 0);
+    return bVotes - aVotes;
+  });
 
   if (filtered.length === 0) {
     el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#aaa;">
@@ -3297,11 +3480,11 @@ function renderPosts(filter) {
         ${buildReactionBar(globalIdx)}
       </div>
       <div class="ft-footer" style="margin-top:10px;">
-        <button style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;" onclick="showToast('💬 Opening comments...')">
-          💬 ${p.comments} comments
+        <button style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;" onclick="showToast('💬 Comments coming in a future update!')">
+          💬 ${p.comments.toLocaleString()} comments
         </button>
-        <button style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;margin-left:auto;" onclick="showToast('🔗 Link copied!')">
-          Share
+        <button style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;margin-left:auto;" onclick="copyShareLink(this)">
+          🔗 Share
         </button>
       </div>
     </div>
@@ -3959,6 +4142,33 @@ function renderGamesHub() {
         <div class="game-card-badge" style="background:#f3e5f5;color:#6a1b9a;">Quiz</div>
       </div>
 
+      <div class="game-card" onclick="startDailyTrivia()">
+        <div class="game-card-icon" style="background:#fff8e1;">🧠</div>
+        <div class="game-card-info">
+          <div class="game-card-title">Daily Dump Trivia</div>
+          <div class="game-card-desc">One question. Every day. Build your streak. Bathroom knowledge you never knew you needed.</div>
+        </div>
+        <div class="game-card-badge" style="background:#fff8e1;color:#f57f17;">Daily</div>
+      </div>
+
+      <div class="game-card" onclick="startCodeBrownSim()">
+        <div class="game-card-icon" style="background:#ffebee;">🚨</div>
+        <div class="game-card-info">
+          <div class="game-card-title">Code Brown Simulator</div>
+          <div class="game-card-desc">You're in a meeting. Nature is calling. Hard. Make your escape without destroying your dignity.</div>
+        </div>
+        <div class="game-card-badge" style="background:#ffebee;color:#c62828;">Adventure</div>
+      </div>
+
+      <div class="game-card" onclick="startStallWall()">
+        <div class="game-card-icon" style="background:#f1f8e9;">✍️</div>
+        <div class="game-card-info">
+          <div class="game-card-title">Stall Wall</div>
+          <div class="game-card-desc">The bathroom graffiti experience. Read the wall. Add your mark. Keep the lost art alive.</div>
+        </div>
+        <div class="game-card-badge" style="background:#f1f8e9;color:#33691e;">Art</div>
+      </div>
+
       <button class="ug-classic-btn" onclick="openClassicGame()" style="margin-top:8px;">
         🕹️ Play the Original (1997 Flash) <span class="ug-classic-badge">CLASSIC</span>
       </button>
@@ -4404,6 +4614,475 @@ function ppShowResult() {
   `;
 }
 
+// ── DAILY DUMP TRIVIA ──
+const DDT_QUESTIONS = [
+  { q: "How many times per day does the average person visit the bathroom?", opts: ["2-3", "6-8", "10-12", "Once, very dramatically"], answer: 1, fact: "Most people visit the bathroom 6-8 times per day. If you're hitting 10+, you might want a chat with your doctor. Or stop drinking so much coffee." },
+  { q: "What percentage of people use their phone while on the toilet?", opts: ["28%", "52%", "75%", "100% and they're lying if they say otherwise"], answer: 2, fact: "Studies suggest around 75% of people use their phones on the toilet. The other 25% are either lying or don't own phones." },
+  { q: "Which country invented the modern flush toilet?", opts: ["USA", "France", "England", "Japan"], answer: 2, fact: "England. Sir John Harington invented a flush toilet for Queen Elizabeth I in 1596, though Thomas Crapper later popularized it. Yes, that's his real name." },
+  { q: "How long is the average bathroom visit?", opts: ["30 seconds", "2-3 minutes", "10-12 minutes", "However long the podcast is"], answer: 2, fact: "The average toilet sit is around 10-12 minutes. Anything over 15 and you're risking hemorrhoids. Consider this your public service announcement." },
+  { q: "What does Japan's \"washlet\" toilet do that most Western toilets don't?", opts: ["Plays music", "Heated seat + bidet + dryer", "Automatically flushes", "All of the above"], answer: 3, fact: "Japanese washlets do all of this — and more. Some have deodorizers, ambient noise generators, and automatic lids. Japan is simply operating at a different level." },
+  { q: "Which direction does water drain in a toilet in the Northern Hemisphere?", opts: ["Clockwise", "Counterclockwise", "It depends on the toilet", "The Coriolis effect is too weak to affect toilets"], answer: 3, fact: "The Coriolis effect is real but too weak to affect toilet flush direction — that's determined by the jet holes under the rim. The Simpsons lied to you." },
+  { q: "How much water does an older toilet use per flush?", opts: ["1 gallon", "3.5 gallons", "7 gallons", "Depends how bad it was"], answer: 1, fact: "Older toilets used up to 3.5-7 gallons per flush. Modern low-flow models use 1.28 gallons or less. A bidet uses about 1/8th of a gallon. The math speaks for itself." },
+  { q: "What is 'shy bladder syndrome' medically known as?", opts: ["Urophobia", "Paruresis", "Bladderitis", "Being too British"], answer: 1, fact: "Paruresis affects an estimated 7% of the population. It's a real anxiety disorder that makes urinating in public difficult or impossible. The urinal game was not designed with them in mind." },
+  { q: "How many bacteria per square inch does the average toilet seat have?", opts: ["50", "295", "3,200", "Unknowable. Best not to think about it."], answer: 1, fact: "About 295 bacteria per square inch — which sounds alarming until you learn your kitchen cutting board has 200x more. Toilet seats are relatively clean. Kitchen sponges are not." },
+  { q: "What is the world record for the most consecutive days spent on a toilet?", opts: ["There is no such record", "3 days", "7 days", "However long Congress is in session"], answer: 0, fact: "There is no official Guinness World Record for this, and frankly that's the correct institutional decision. Some records should not exist." },
+  { q: "In what year was toilet paper invented?", opts: ["1391", "1857", "1891", "1942 (wartime necessity)"], answer: 1, fact: "Commercial toilet paper was first sold in the US by Joseph Gayetty in 1857. Before that: corn cobs, rags, moss, newspapers, and the Sears catalog. You had it easy." },
+  { q: "What percentage of people wash their hands after using the bathroom?", opts: ["95%", "70%", "58%", "Let's not discuss this"], answer: 2, fact: "Studies show only about 58-67% of people actually wash their hands after using the bathroom. The other 33-42% know who they are." },
+  { q: "Which famous person is credited with popularizing the term 'crapper'?", opts: ["Thomas Crapper", "King Henry VIII", "Benjamin Franklin", "No one — it's a myth"], answer: 3, fact: "Thomas Crapper was real and was a plumber, but the word 'crap' predates him. The connection is likely coincidence or folk etymology. History is disappointing sometimes." },
+  { q: "How long does it take for toilet paper to decompose?", opts: ["1-3 years", "5-10 years", "50+ years", "It doesn't — it ascends"], answer: 0, fact: "Standard toilet paper decomposes in 1-3 years. Wet wipes labeled 'flushable' can take decades. This is why plumbers have boats." },
+  { q: "What's the correct term for the fear of toilets?", opts: ["Toiletphobia", "Latrinophobia", "Cacaphobia", "Tuesday"], answer: 1, fact: "Latrinophobia is the fear of toilets or public restrooms. It's more common than you'd think and often overlaps with paruresis. The Crap App was not designed for these users but we respect them." },
+];
+
+const DDT_KEY = 'crapapp_ddt';
+
+function getDDTState() {
+  try { return JSON.parse(localStorage.getItem(DDT_KEY)) || { streak: 0, lastDate: null, answered: false }; }
+  catch(e) { return { streak: 0, lastDate: null, answered: false }; }
+}
+
+function saveDDTState(state) {
+  try { localStorage.setItem(DDT_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+function getTodayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function getDailyQuestion() {
+  const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  return DDT_QUESTIONS[dayOfYear % DDT_QUESTIONS.length];
+}
+
+function startDailyTrivia() {
+  const state = getDDTState();
+  const today = getTodayStr();
+  const el = document.getElementById('ug-body');
+  const q = getDailyQuestion();
+
+  // Check if already answered today
+  if (state.lastDate === today && state.answered) {
+    el.innerHTML = `
+      <div class="ug-body" style="padding-bottom:100px;">
+        <button class="game-back-btn" onclick="renderGamesHub()">← All Games</button>
+        <div class="ddt-done">
+          <div style="font-size:64px;margin-bottom:12px;">✅</div>
+          <div class="ddt-come-back">Come Back Tomorrow</div>
+          <p style="font-size:13px;color:#888;margin-bottom:20px;">You've already taken today's dump. A new question drops at midnight.</p>
+          <div class="ug-scoreboard" style="margin-bottom:0;">
+            <div class="ug-score-item"><div class="ug-score-num">${state.streak}</div><div class="ug-score-label">Day Streak 🔥</div></div>
+            <div class="ug-score-item"><div class="ug-score-num">${state.totalCorrect || 0}</div><div class="ug-score-label">Total Correct</div></div>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // Reset streak if missed a day
+  if (state.lastDate && state.lastDate !== today) {
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    if (state.lastDate !== yesterdayStr) {
+      state.streak = 0;
+    }
+  }
+
+  el.innerHTML = `
+    <div class="ug-body" style="padding-bottom:100px;">
+      <button class="game-back-btn" onclick="renderGamesHub()">← All Games</button>
+      <div class="ug-scoreboard">
+        <div class="ug-score-item"><div class="ug-score-num">${state.streak}</div><div class="ug-score-label">Day Streak 🔥</div></div>
+        <div class="ug-score-item"><div class="ug-score-num">${state.totalCorrect || 0}</div><div class="ug-score-label">Total Correct</div></div>
+        <div class="ug-score-item"><div class="ug-score-num">${getTodayStr().slice(5)}</div><div class="ug-score-label">Today</div></div>
+      </div>
+      <div class="ddt-card">
+        <div style="font-size:10px;font-weight:800;color:#aaa;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;text-align:center;">💩 Daily Dump Trivia</div>
+        <div class="ddt-question">${q.q}</div>
+        <div class="ddt-options">
+          ${q.opts.map((opt, i) => `<div class="ddt-option" onclick="ddtAnswer(${i})" id="ddt-opt-${i}">${opt}</div>`).join('')}
+        </div>
+        <div class="ddt-result" id="ddt-result"></div>
+      </div>
+    </div>`;
+}
+
+function ddtAnswer(idx) {
+  const q = getDailyQuestion();
+  const state = getDDTState();
+  const today = getTodayStr();
+  const isCorrect = idx === q.answer;
+
+  document.querySelectorAll('.ddt-option').forEach((el, i) => {
+    el.onclick = null;
+    if (i === q.answer) el.classList.add('correct');
+    else if (i === idx && !isCorrect) el.classList.add('wrong');
+  });
+
+  const resultEl = document.getElementById('ddt-result');
+  resultEl.className = `ddt-result show ${isCorrect ? 'correct' : 'wrong'}`;
+  resultEl.textContent = (isCorrect ? '✅ Correct! ' : '❌ Wrong. ') + q.fact;
+
+  if (isCorrect) state.streak++;
+  else if (state.lastDate !== today) state.streak = 0;
+  state.totalCorrect = (state.totalCorrect || 0) + (isCorrect ? 1 : 0);
+  state.lastDate = today;
+  state.answered = true;
+  saveDDTState(state);
+
+  // Update scoreboard
+  const nums = document.querySelectorAll('.ug-score-num');
+  if (nums[0]) nums[0].textContent = state.streak;
+  if (nums[1]) nums[1].textContent = state.totalCorrect;
+}
+
+// ── CODE BROWN SIMULATOR ──
+const CBS_SCENARIOS = [
+  {
+    title: "The All-Hands Meeting",
+    setup: "You're 20 minutes into a company-wide all-hands. 200 people. Your CEO is mid-sentence. Your stomach has just issued a formal declaration of war.",
+    dignityStart: 85,
+    steps: [
+      {
+        situation: "The rumblings begin. What's your opening move?",
+        detail: "You feel the first warning shot. The meeting has 40 minutes remaining. The nearest bathroom is one floor down.",
+        choices: [
+          { text: "Quietly slip out now — 'just grabbing water'", outcome: "Smart. Early exit. Low suspicion. You're in the elevator before anyone notices.", dignityDelta: 0, next: 1 },
+          { text: "Clench and hold. You can last 40 minutes.", outcome: "Bold. Possibly delusional. Your body disagrees with this assessment.", dignityDelta: -5, next: 2 },
+          { text: "Send a Slack message: 'Having connection issues, will rejoin'", outcome: "Technically you're not lying. Your connection to dignity is definitely having issues.", dignityDelta: -5, next: 1 },
+        ]
+      },
+      {
+        situation: "You're almost to the bathroom. A colleague intercepts you in the hall.",
+        detail: "'Hey! Did you catch what the CEO just said about Q4? Wild right?' They look like they want to chat.",
+        choices: [
+          { text: "Walk and talk. Keep moving toward the bathroom.", outcome: "Masterful. You're already halfway down the hall. They'll catch up.", dignityDelta: 5, next: 3 },
+          { text: "Stop and engage. Be a team player.", outcome: "This was a mistake. 90 seconds later you deeply regret this.", dignityDelta: -15, next: 3 },
+          { text: "'I'll catch up — bathroom emergency.'", outcome: "Honest. Slightly revealing. They nod knowingly. They've been here.", dignityDelta: 0, next: 3 },
+        ]
+      },
+      {
+        situation: "The clenching is failing. 20 minutes remain in the meeting.",
+        detail: "Your original strategy of holding is no longer viable. You're in the meeting room. 199 people around you.",
+        choices: [
+          { text: "Silent but urgent walk to the door. No eye contact.", outcome: "The walk of purpose. Dignified in its urgency.", dignityDelta: 5, next: 3 },
+          { text: "Raise your hand and ask a question to buy time.", outcome: "You've now spoken in front of 200 people while in this condition. Remarkable composure.", dignityDelta: -10, next: 3 },
+          { text: "Just go. Immediately. Do not hesitate.", outcome: "Correct instinct. Late, but correct.", dignityDelta: -5, next: 3 },
+        ]
+      },
+      {
+        situation: "You've reached the bathroom. One stall. Occupied.",
+        detail: "The light is on. The gap under the door reveals dress shoes. Whoever is in there is comfortable. They are not leaving.",
+        choices: [
+          { text: "Wait. Cross your legs. This is your only option.", outcome: "The wait. The eternal wait. They flush after 4 minutes. You win.", dignityDelta: 0, end: true, ending: "survivor" },
+          { text: "Try the other floor immediately.", outcome: "The sprint. You make it. Just barely.", dignityDelta: -10, end: true, ending: "survivor" },
+          { text: "Knock on the stall door. Once. Lightly.", outcome: "The knock was heard. The door opened after 30 seconds. This works but you will remember it forever.", dignityDelta: -20, end: true, ending: "survivor" },
+        ]
+      }
+    ]
+  },
+  {
+    title: "The First Date",
+    setup: "It's going well. Really well. You're at a nice restaurant. They're funny. You're funny. The pasta was apparently a mistake.",
+    dignityStart: 100,
+    steps: [
+      {
+        situation: "45 minutes in. The pasta makes its presence known.",
+        detail: "Your stomach has chosen this moment. The restaurant bathroom is visible from your table. This is a problem.",
+        choices: [
+          { text: "'Excuse me for a moment' — confident, no explanation.", outcome: "Smooth. Mysterious. You return 4 minutes later. They haven't checked their phone once.", dignityDelta: 0, next: 1 },
+          { text: "Order another round of drinks first. Buy time.", outcome: "This buys you 8 minutes. You spend 7 of them reconsidering all your life choices.", dignityDelta: -5, next: 1 },
+          { text: "Tell them you need to call your mom. Real quick.", outcome: "They know. They've always known. But they're kind about it.", dignityDelta: -15, next: 1 },
+        ]
+      },
+      {
+        situation: "The restaurant bathroom has one toilet. No fan. The acoustics are operatic.",
+        detail: "You've locked the door. This is happening. The walls are thin. The evening is young.",
+        choices: [
+          { text: "Turn on the tap. Full blast.", outcome: "Classic technique. Plausible deniability. The sound of water is universal.", dignityDelta: 5, next: 2 },
+          { text: "Phone out. Find a loud ambient noise. Play it.", outcome: "You played 'coffee shop background noise' at medium volume. It helped more than expected.", dignityDelta: 5, next: 2 },
+          { text: "Just go. Life is short. They either like you or they don't.", outcome: "Philosophical. Possibly correct. You return to the table with the energy of someone who has accepted their nature.", dignityDelta: -5, next: 2 },
+        ]
+      },
+      {
+        situation: "You return to the table.",
+        detail: "They look up. They're smiling. You smile back. The pasta situation is behind you.",
+        choices: [
+          { text: "Smoothly pick up the conversation where you left off.",outcome: "Flawless re-entry. A professional.", dignityDelta: 10, end: true, ending: "hero" },
+          { text: "'Sorry about that. Pasta.'", outcome: "Disarmingly honest. They laugh. A real laugh. You like them even more.", dignityDelta: 5, end: true, ending: "hero" },
+          { text: "Ask for the check immediately. Cut your losses.", outcome: "A tactical retreat. You text them later. It goes fine actually.", dignityDelta: -20, end: true, ending: "survivor" },
+        ]
+      }
+    ]
+  },
+];
+
+const CBS_ENDINGS = {
+  hero: { emoji: "🏆", title: "Dignified Exit", desc: "You navigated a genuine crisis with composure, timing, and an almost suspicious level of competence. You give a shit — about many things, apparently." },
+  survivor: { emoji: "😅", title: "Lived to Tell the Tale", desc: "It wasn't pretty. There were moments. But you survived. And survival is its own kind of dignity. Welcome to the club." },
+  disaster: { emoji: "💀", title: "Total Code Brown", desc: "This was not your best performance. The good news is no one reads this screen but you. The bad news is you know what happened." },
+};
+
+let cbsState = {};
+
+function startCodeBrownSim() {
+  const scenarioIdx = Math.floor(Math.random() * CBS_SCENARIOS.length);
+  cbsState = {
+    scenarioIdx,
+    stepIdx: 0,
+    dignity: CBS_SCENARIOS[scenarioIdx].dignityStart,
+    answered: false,
+  };
+  renderCBSStep();
+}
+
+function renderCBSStep() {
+  const el = document.getElementById('ug-body');
+  const scenario = CBS_SCENARIOS[cbsState.scenarioIdx];
+  const step = scenario.steps[cbsState.stepIdx];
+  const dignityColor = cbsState.dignity >= 70 ? '#4CAF50' : cbsState.dignity >= 40 ? '#FFC107' : '#F44336';
+
+  el.innerHTML = `
+    <div class="ug-body" style="padding-bottom:100px;">
+      <button class="game-back-btn" onclick="renderGamesHub()">← All Games</button>
+      <div class="cbs-scene">
+        <div class="cbs-dignity">
+          <div class="cbs-dignity-label">
+            <span>Dignity Meter</span>
+            <span>${cbsState.dignity}%</span>
+          </div>
+          <div class="cbs-dignity-bar">
+            <div class="cbs-dignity-fill" style="width:${cbsState.dignity}%;background:${dignityColor};"></div>
+          </div>
+        </div>
+        <div class="cbs-scenario-label">📍 ${scenario.title}</div>
+        <div class="cbs-situation">${step.situation}</div>
+        <div class="cbs-detail">${step.detail}</div>
+        <div class="cbs-choices">
+          ${step.choices.map((c, i) => `<div class="cbs-choice" onclick="cbsChoose(${i})" id="cbs-choice-${i}">${c.text}</div>`).join('')}
+        </div>
+        <div class="cbs-outcome" id="cbs-outcome"></div>
+        <button class="ug-next-btn" id="cbs-next-btn" onclick="cbsNext()" style="display:none;margin-top:12px;">Continue →</button>
+      </div>
+    </div>`;
+}
+
+function cbsChoose(idx) {
+  if (cbsState.answered) return;
+  cbsState.answered = true;
+
+  const scenario = CBS_SCENARIOS[cbsState.scenarioIdx];
+  const step = scenario.steps[cbsState.stepIdx];
+  const choice = step.choices[idx];
+
+  cbsState.dignity = Math.max(0, Math.min(100, cbsState.dignity + choice.dignityDelta));
+
+  document.querySelectorAll('.cbs-choice').forEach(el => { el.onclick = null; el.style.opacity = '0.5'; });
+  document.getElementById('cbs-choice-' + idx).style.opacity = '1';
+  document.getElementById('cbs-choice-' + idx).style.borderColor = 'var(--brown)';
+  document.getElementById('cbs-choice-' + idx).style.background = '#fdf6ec';
+
+  const outcomeEl = document.getElementById('cbs-outcome');
+  outcomeEl.className = 'cbs-outcome show';
+  outcomeEl.textContent = choice.outcome;
+
+  const nextBtn = document.getElementById('cbs-next-btn');
+  nextBtn.style.display = 'block';
+
+  if (choice.end) {
+    let endingKey = choice.ending;
+    if (cbsState.dignity < 30) endingKey = 'disaster';
+    nextBtn.textContent = '🏁 See Results';
+    nextBtn.onclick = () => cbsShowEnding(endingKey);
+  } else {
+    cbsState.stepIdx = choice.next;
+    nextBtn.onclick = () => { cbsState.answered = false; renderCBSStep(); };
+  }
+}
+
+function cbsShowEnding(endingKey) {
+  const el = document.getElementById('ug-body');
+  const ending = CBS_ENDINGS[endingKey];
+  const scenario = CBS_SCENARIOS[cbsState.scenarioIdx];
+  el.innerHTML = `
+    <div class="ug-body" style="padding-bottom:100px;">
+      <div class="cbs-ending">
+        <div class="cbs-ending-emoji">${ending.emoji}</div>
+        <div class="cbs-ending-title">${ending.title}</div>
+        <div class="cbs-ending-desc">${ending.desc}</div>
+        <div class="ug-scoreboard" style="margin-bottom:24px;">
+          <div class="ug-score-item"><div class="ug-score-num">${cbsState.dignity}%</div><div class="ug-score-label">Final Dignity</div></div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn-primary" onclick="startCodeBrownSim()">🔄 Try Again</button>
+          <button class="btn-teal" onclick="renderGamesHub()">← All Games</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── STALL WALL ──
+const SW_KEY = 'crapapp_stallwall';
+const SW_COLORS = ['#1a0a04','#c0392b','#2980b9','#16a085','#8e44ad','#d35400'];
+const SW_FONTS = ['cursive','fantasy','monospace'];
+
+const SW_PREWRITTEN = [
+  { text: "I came in here to think. I'm still thinking.", color: '#1a0a04', font: 'cursive', rot: -2 },
+  { text: "For a good time call: literally anyone else", color: '#c0392b', font: 'cursive', rot: 1 },
+  { text: "This too shall pass\n(unlike the burrito)", color: '#2980b9', font: 'fantasy', rot: -1 },
+  { text: "You are enough.\nAlso, wash your hands.", color: '#16a085', font: 'cursive', rot: 2 },
+  { text: "The WiFi password is\nnot in here. Sorry.", color: '#8e44ad', font: 'fantasy', rot: -1 },
+  { text: "\"I think, therefore I am\"\n— some guy who never used this bathroom", color: '#1a0a04', font: 'cursive', rot: 1 },
+  { text: "Whoever smelt it\ndelt it", color: '#c0392b', font: 'cursive', rot: -3 },
+  { text: "Abandon hope,\nall ye who enter here", color: '#2980b9', font: 'fantasy', rot: 2 },
+  { text: "Gone in 60 seconds\n(optimistic)", color: '#d35400', font: 'cursive', rot: -1 },
+  { text: "In this economy?", color: '#8e44ad', font: 'cursive', rot: 1 },
+  { text: "The cake is a lie.\nSo is the ventilation.", color: '#16a085', font: 'fantasy', rot: -2 },
+  { text: "Still a better love story\nthan what's going on out there", color: '#1a0a04', font: 'cursive', rot: 2 },
+];
+
+const SW_PRESET_OPTIONS = [
+  "Was here 💩",
+  "This stall has seen things",
+  "Better in here than out there",
+  "Trust no one",
+  "The acoustics are great",
+  "Abandon all dignity ye who enter",
+  "I solved everything in here",
+  "Still thinking...",
+  "No thoughts, just vibes",
+  "Send help",
+];
+
+let swSelectedColor = SW_COLORS[0];
+let swSelectedPreset = null;
+
+function getSWEntries() {
+  try { return JSON.parse(localStorage.getItem(SW_KEY)) || []; }
+  catch(e) { return []; }
+}
+
+function saveSWEntry(entry) {
+  try {
+    const entries = getSWEntries();
+    entries.unshift(entry);
+    localStorage.setItem(SW_KEY, JSON.stringify(entries.slice(0, 50)));
+  } catch(e) {}
+}
+
+function startStallWall() {
+  const el = document.getElementById('ug-body');
+  const userEntries = getSWEntries();
+  const allEntries = [...SW_PREWRITTEN, ...userEntries.map(e => ({ ...e, isUser: true }))];
+
+  el.innerHTML = `
+    <div class="ug-body" style="padding-bottom:100px;">
+      <button class="game-back-btn" onclick="renderGamesHub()">← All Games</button>
+
+      <div style="font-family:'Fredoka One',cursive;font-size:22px;color:var(--dark);margin-bottom:4px;">🚻 Stall Wall</div>
+      <div style="font-size:13px;color:#888;margin-bottom:16px;">The lost art of bathroom graffiti. Read the wall. Add your mark.</div>
+
+      <div class="sw-wall">
+        <div class="sw-graffiti">
+          ${allEntries.map((e, i) => `
+            <div class="sw-entry" style="--rot:${e.rot || (Math.random()*4-2).toFixed(1)}deg;">
+              <div class="sw-text" style="color:${e.color};font-family:${e.font || 'cursive'};font-size:${e.isUser ? '14px' : '15px'};">${e.text.replace(/\n/g,'<br>')}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="sw-add-form">
+        <div class="sw-add-label">✍️ Add Your Mark</div>
+
+        <div class="sw-presets" id="sw-presets">
+          ${SW_PRESET_OPTIONS.map((p, i) => `<div class="sw-preset" onclick="swSelectPreset(${i}, this)">${p}</div>`).join('')}
+        </div>
+
+        <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:6px;">OR WRITE YOUR OWN</div>
+        <textarea class="sw-custom-input" id="sw-custom" placeholder="Leave your mark..." rows="2" maxlength="80"></textarea>
+
+        <div class="sw-color-picks">
+          <div class="sw-color-label">Color</div>
+          ${SW_COLORS.map((c, i) => `<div class="sw-color ${i===0?'selected':''}" style="background:${c};" onclick="swSelectColor('${c}', this)"></div>`).join('')}
+        </div>
+
+        <button class="btn-primary" style="width:100%;justify-content:center;" onclick="swSubmit()">
+          ✍️ Write it on the Wall
+        </button>
+      </div>
+    </div>`;
+}
+
+function swSelectPreset(idx, el) {
+  document.querySelectorAll('.sw-preset').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  swSelectedPreset = SW_PRESET_OPTIONS[idx];
+  document.getElementById('sw-custom').value = '';
+}
+
+function swSelectColor(color, el) {
+  document.querySelectorAll('.sw-color').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  swSelectedColor = color;
+}
+
+async function swSubmit() {
+  const custom = document.getElementById('sw-custom').value.trim();
+  const text = custom || swSelectedPreset;
+  if (!text) { showToast('✍️ Pick something to write first!'); return; }
+
+  // Disable button and show checking state
+  const btn = document.querySelector('.sw-add-form .btn-primary');
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '🔍 Checking...';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 10,
+        messages: [{
+          role: 'user',
+          content: `You are moderating bathroom graffiti submissions for a humor app called CrapApp. The app is adult humor — toilet jokes, bathroom philosophy, mild vulgarity is fine and expected. Reject only: hate speech, slurs targeting protected groups, explicit sexual content, threats, or content sexualizing minors. Reply with only YES (acceptable) or NO (reject).\n\nSubmission: "${text}"`
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const verdict = data.content?.[0]?.text?.trim().toUpperCase();
+
+    if (verdict === 'YES') {
+      const entry = {
+        text,
+        color: swSelectedColor,
+        font: SW_FONTS[Math.floor(Math.random() * SW_FONTS.length)],
+        rot: (Math.random() * 4 - 2).toFixed(1),
+      };
+      saveSWEntry(entry);
+      showToast('✍️ Your mark has been left on the wall.');
+      swSelectedPreset = null;
+      startStallWall();
+    } else {
+      showToast('🚫 Too spicy even for this wall. Keep it weird, not hateful.');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  } catch(e) {
+    // If API fails, allow submission — don't punish users for network issues
+    const entry = {
+      text,
+      color: swSelectedColor,
+      font: SW_FONTS[Math.floor(Math.random() * SW_FONTS.length)],
+      rot: (Math.random() * 4 - 2).toFixed(1),
+    };
+    saveSWEntry(entry);
+    showToast('✍️ Your mark has been left on the wall.');
+    swSelectedPreset = null;
+    startStallWall();
+  }
+}
+
 // ── UTILS ──
 let toastTimer;
 
@@ -4494,7 +5173,6 @@ function showToast(msg) {
 }
 
 // Init
-renderBathrooms();
 // Restore profile emoji in nav if already set
 const _initProfile = getProfile();
 if (_initProfile) {
