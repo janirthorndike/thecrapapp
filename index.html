@@ -1548,6 +1548,40 @@
   .ft-body { font-size: 13px; color: #555; line-height: 1.55; margin-bottom: 4px; }
   .ft-footer { display: flex; gap: 14px; align-items: center; }
   .ft-comments-count { font-size: 12px; color: #aaa; font-weight: 700; margin-left: auto; }
+  .flair-pick {
+    background: #f8f6f3; border: 1.5px solid rgba(0,0,0,0.1);
+    border-radius: 50px; padding: 6px 14px;
+    font-size: 12px; font-weight: 700; color: #555;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .flair-pick.active { background: var(--brown); color: white; border-color: var(--brown); }
+  .comment-item {
+    padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.06);
+    display: flex; gap: 10px;
+  }
+  .comment-item:last-child { border-bottom: none; }
+  .comment-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #f0ebe3; display: flex; align-items: center;
+    justify-content: center; font-size: 16px; flex-shrink: 0;
+  }
+  .comment-body-wrap { flex: 1; }
+  .comment-user { font-size: 12px; font-weight: 800; color: var(--dark); margin-bottom: 3px; }
+  .comment-text { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 6px; }
+  .comment-actions { display: flex; align-items: center; gap: 12px; }
+  .comment-vote-btn {
+    background: none; border: none; font-size: 12px; font-weight: 800;
+    color: #aaa; cursor: pointer; padding: 0; transition: color 0.15s;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .comment-vote-btn.voted { color: var(--teal); }
+  .comment-time { font-size: 11px; color: #ccc; }
+  .top-comment-badge {
+    font-size: 9px; font-weight: 800; letter-spacing: 0.5px;
+    background: #fff8e1; color: #f57f17;
+    padding: 2px 6px; border-radius: 50px;
+    border: 1px solid rgba(245,127,23,0.3);
+  }
   .ft-posts { padding: 10px 16px 90px; }
 
   /* modal */
@@ -2473,12 +2507,30 @@
     <div class="modal-handle"></div>
     <h2>💩 Drop Your Story</h2>
     <p style="font-size:13px;color:#888;margin-bottom:14px;">100% anonymous. We don't even wanna know who you are.</p>
-    <input type="text" id="post-title" placeholder="Give it a headline...">
-    <textarea id="post-body" placeholder="Tell us everything. The more chaotic, the better."></textarea>
+    <input type="text" id="post-title" placeholder="Give it a headline..." maxlength="120">
+    <textarea id="post-body" placeholder="Tell us everything. The more chaotic, the better." maxlength="800"></textarea>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:8px;">CATEGORY</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="flair-picker">
+        <div class="flair-pick active" data-flair="CONFESSION" data-filter="confessions" data-bg="#FFF9C4" data-color="#F57F17" onclick="pickFlair(this)">🤫 Confession</div>
+        <div class="flair-pick" data-flair="DISASTER" data-filter="disasters" data-bg="#FFEBEE" data-color="#C62828" onclick="pickFlair(this)">💥 Disaster</div>
+        <div class="flair-pick" data-flair="PHILOSOPHY" data-filter="philosophy" data-bg="#EDE7F6" data-color="#4527A0" onclick="pickFlair(this)">🧘 Philosophy</div>
+        <div class="flair-pick" data-flair="ADVICE" data-filter="advice" data-bg="#E8F5E9" data-color="#2E7D32" onclick="pickFlair(this)">💡 Advice</div>
+      </div>
+    </div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="document.getElementById('post-modal').classList.remove('open')">Cancel</button>
-      <button class="btn-teal" onclick="submitPost()">🚽 Flush It</button>
+      <button class="btn-teal" id="flush-btn" onclick="submitPost()">🚽 Flush It</button>
     </div>
+  </div>
+</div>
+
+<!-- ════ COMMENTS MODAL ════ -->
+<div class="modal-overlay" id="comments-modal" onclick="closeCommentsModal(event)">
+  <div class="modal" id="comments-modal-content" style="max-height:92vh;position:relative;">
+    <button onclick="closeCommentsModal()" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.08);border:none;color:#888;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;">✕</button>
+    <div class="modal-handle"></div>
+    <div id="comments-content"></div>
   </div>
 </div>
 
@@ -2943,7 +2995,7 @@ function goTo(page) {
     setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 100);
   }
   if (page === 'throneroom') renderThrone();
-  if (page === 'flushandtell') renderPosts();
+  if (page === 'flushandtell') loadSupaPosts();
   if (page === 'crapstore') renderStore();
   if (page === 'thronecard') renderThroneCard();
   if (page === 'urinalgame') initUrinalGame();
@@ -3438,7 +3490,77 @@ function buildReactionBar(postIdx) {
   }).join('');
 }
 
+// ── SUPABASE CONFIG ──
+const SUPA_URL = 'https://mkudehvokfjdtahrkrep.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rdWRlaHZva2ZqZHRhaHJrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjAxODMsImV4cCI6MjA5MDc5NjE4M30.eKixgGmfk-FaC6_5gRs7225CUBOApH-P037GN391MzU';
+
+async function supaFetch(path, options = {}) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${path}`, {
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...options.headers
+    },
+    ...options
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
 let currentFtFilter = 'all';
+let selectedFlair = { flair: 'CONFESSION', filter: 'confessions', bg: '#FFF9C4', color: '#F57F17' };
+let currentPostId = null;
+let votedComments = JSON.parse(localStorage.getItem('crapapp_voted_comments') || '{}');
+let votedPosts = JSON.parse(localStorage.getItem('crapapp_voted_posts') || '{}');
+
+function pickFlair(el) {
+  document.querySelectorAll('.flair-pick').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  selectedFlair = {
+    flair: el.dataset.flair,
+    filter: el.dataset.filter,
+    bg: el.dataset.bg,
+    color: el.dataset.color
+  };
+}
+
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h/24)}d ago`;
+}
+
+async function loadSupaPosts() {
+  try {
+    const posts = await supaFetch('posts?order=votes.desc,created_at.desc&limit=50');
+    if (posts && posts.length > 0) {
+      const suPosts = posts.map(p => ({
+        avatar: p.user_emoji || '💩',
+        color: '#E8EAF6',
+        user: p.user_handle,
+        time: timeAgo(p.created_at),
+        flair: p.flair,
+        flairBg: p.flair_bg,
+        flairColor: p.flair_color,
+        filter: p.filter,
+        title: p.title,
+        body: p.body,
+        votes: p.votes || 0,
+        supabaseId: p.id,
+        reactions: { poop: p.votes || 0 }
+      }));
+      ftPostsData.unshift(...suPosts);
+    }
+  } catch(e) { /* use seeded data only */ }
+  renderPosts('all');
+}
 
 function renderPosts(filter) {
   filter = filter || currentFtFilter;
@@ -3480,8 +3602,8 @@ function renderPosts(filter) {
         ${buildReactionBar(globalIdx)}
       </div>
       <div class="ft-footer" style="margin-top:10px;">
-        <button style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;" onclick="showToast('💬 Comments coming in a future update!')">
-          💬 ${p.comments.toLocaleString()} comments
+        <button style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;" onclick="openComments('${p.supabaseId || ''}', ${globalIdx})">
+          💬 Comments
         </button>
         <button style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;margin-left:auto;" onclick="copyShareLink(this)">
           🔗 Share
@@ -3503,40 +3625,217 @@ function openPostModal() {
 }
 
 function closePostModal(e) {
-  if (e.target === document.getElementById('post-modal')) {
+  if (!e || e.target === document.getElementById('post-modal')) {
     document.getElementById('post-modal').classList.remove('open');
   }
 }
 
-function submitPost() {
+async function submitPost() {
   const title = document.getElementById('post-title').value.trim();
   const body = document.getElementById('post-body').value.trim();
-  if (!title || !body) { showToast('⚠️ Give it a title and a story!'); return; }
-  document.getElementById('post-modal').classList.remove('open');
-  document.getElementById('post-title').value = '';
-  document.getElementById('post-body').value = '';
+  if (!title || !body) { showToast('\u26a0\ufe0f Give it a title and a story!'); return; }
+
+  const btn = document.getElementById('flush-btn');
+  btn.disabled = true;
+  btn.textContent = '\U0001f50d Checking...';
+
+  try {
+    const modRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 10,
+        messages: [{ role: 'user', content: `You moderate a humor bathroom confessions app. Allow: bathroom stories, toilet humor, workplace confessions, mild vulgarity, embarrassing moments. Reject: hate speech, slurs, explicit sexual content, threats. Reply YES or NO only.\n\nTitle: ${title}\nBody: ${body}` }]
+      })
+    });
+    const modData = await modRes.json();
+    const verdict = modData.content?.[0]?.text?.trim().toUpperCase();
+    if (verdict !== 'YES') {
+      showToast('\U0001f6ab Story rejected. Keep it weird, not harmful.');
+      btn.disabled = false;
+      btn.innerHTML = '\U0001f6bd Flush It';
+      return;
+    }
+  } catch(e) { /* allow through if moderation fails */ }
 
   const profile = getProfile();
-  const newPost = {
-    avatar: profile ? profile.emoji : '🎭',
-    color: '#E8EAF6',
-    user: profile ? profile.handle : 'Anonymous' + Math.floor(Math.random()*9999),
-    time: 'just now', flair: 'FRESH', flairBg: '#E0F2F1', flairColor: '#006064',
-    filter: 'all', title, body, votes: 1, comments: 0, isOwn: !!profile
+  const post = {
+    user_handle: profile ? profile.handle : 'Anonymous' + Math.floor(Math.random()*9999),
+    user_emoji: profile ? profile.emoji : '\U0001f3ad',
+    flair: selectedFlair.flair,
+    flair_bg: selectedFlair.bg,
+    flair_color: selectedFlair.color,
+    title, body,
+    filter: selectedFlair.filter,
+    votes: 0
   };
-  ftPostsData.unshift(newPost);
-  if (profile) {
-    profile.posts = (profile.posts || 0) + 1;
-    profile.myPosts = profile.myPosts || [];
-    profile.myPosts.unshift({ title, body, time: 'just now' });
-    saveProfileData(profile);
-    checkBadgeUnlocks(profile);
+
+  try {
+    btn.textContent = '\U0001f6bd Posting...';
+    const result = await supaFetch('posts', { method: 'POST', body: JSON.stringify(post) });
+    const newPost = {
+      avatar: post.user_emoji, color: '#E8EAF6',
+      user: post.user_handle, time: 'just now',
+      flair: post.flair, flairBg: post.flair_bg, flairColor: post.flair_color,
+      filter: post.filter, title: post.title, body: post.body,
+      votes: 0, supabaseId: result?.[0]?.id, isOwn: true
+    };
+    ftPostsData.unshift(newPost);
+    if (profile) {
+      profile.posts = (profile.posts || 0) + 1;
+      profile.myPosts = profile.myPosts || [];
+      profile.myPosts.unshift({ title, body, time: 'just now' });
+      saveProfileData(profile);
+      checkBadgeUnlocks(profile);
+    }
+    document.getElementById('post-modal').classList.remove('open');
+    document.getElementById('post-title').value = '';
+    document.getElementById('post-body').value = '';
+    currentFtFilter = 'all';
+    document.querySelectorAll('.ft-filter').forEach(f => f.classList.remove('active'));
+    document.querySelector('.ft-filter').classList.add('active');
+    renderPosts('all');
+    showToast('\U0001f6bd Flushed! Story posted.');
+  } catch(e) {
+    showToast('\u26a0\ufe0f Could not post right now. Try again.');
   }
-  currentFtFilter = 'all';
-  document.querySelectorAll('.ft-filter').forEach(f => f.classList.remove('active'));
-  document.querySelector('.ft-filter').classList.add('active');
-  renderPosts('all');
-  showToast('🚽 Flushed! Story posted.');
+  btn.disabled = false;
+  btn.innerHTML = '\U0001f6bd Flush It';
+}
+
+async function upvotePost(postIdx) {
+  const p = ftPostsData[postIdx];
+  if (!p.supabaseId || votedPosts[p.supabaseId]) return;
+  votedPosts[p.supabaseId] = true;
+  localStorage.setItem('crapapp_voted_posts', JSON.stringify(votedPosts));
+  p.votes = (p.votes || 0) + 1;
+  if (!p.reactions) p.reactions = {};
+  p.reactions.poop = (p.reactions.poop || 0) + 1;
+  try {
+    await supaFetch(`posts?id=eq.${p.supabaseId}`, {
+      method: 'PATCH', body: JSON.stringify({ votes: p.votes })
+    });
+  } catch(e) {}
+}
+
+async function openComments(supabaseId, postIdx) {
+  const p = ftPostsData[postIdx];
+  currentPostId = supabaseId;
+  const modal = document.getElementById('comments-modal');
+  const content = document.getElementById('comments-content');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  content.innerHTML = `
+    <h2 style="font-family:'Fredoka One',cursive;font-size:20px;margin-bottom:4px;padding-right:40px;">${p.title}</h2>
+    <p style="font-size:12px;color:#aaa;margin-bottom:16px;">\U0001f4ac Comments</p>
+    <div id="comments-list" style="min-height:60px;"><div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">Loading...</div></div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.08);">
+      <textarea id="comment-input" placeholder="Add your comment..." style="width:100%;border:2px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px;font-family:'Nunito',sans-serif;font-size:13px;outline:none;resize:none;margin-bottom:10px;box-sizing:border-box;" rows="2" maxlength="300"></textarea>
+      <button class="btn-teal" id="comment-submit-btn" style="width:100%;justify-content:center;" onclick="submitComment('${supabaseId}', ${postIdx})">\U0001f4ac Post Comment</button>
+    </div>`;
+
+  if (!supabaseId) {
+    document.getElementById('comments-list').innerHTML = `<div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">Comments available on community-submitted stories.</div>`;
+    return;
+  }
+  await loadComments(supabaseId);
+}
+
+async function loadComments(postId) {
+  try {
+    const comments = await supaFetch(`comments?post_id=eq.${postId}&order=votes.desc,created_at.asc`);
+    const list = document.getElementById('comments-list');
+    if (!list) return;
+    if (!comments || comments.length === 0) {
+      list.innerHTML = `<div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">No comments yet. Be the first.</div>`;
+      return;
+    }
+    list.innerHTML = comments.map((c, i) => `
+      <div class="comment-item">
+        <div class="comment-avatar">${c.user_emoji || '\U0001f4a9'}</div>
+        <div class="comment-body-wrap">
+          <div class="comment-user">${c.user_handle} ${i === 0 && c.votes > 0 ? '<span class="top-comment-badge">\u2b50 Top Comment</span>' : ''}</div>
+          <div class="comment-text">${c.body}</div>
+          <div class="comment-actions">
+            <button class="comment-vote-btn ${votedComments[c.id] ? 'voted' : ''}" onclick="upvoteComment('${c.id}','${postId}',this)">\U0001f44d ${c.votes || 0}</button>
+            <span class="comment-time">${timeAgo(c.created_at)}</span>
+          </div>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    const list = document.getElementById('comments-list');
+    if (list) list.innerHTML = `<div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">Couldn't load comments right now.</div>`;
+  }
+}
+
+async function submitComment(postId, postIdx) {
+  const input = document.getElementById('comment-input');
+  const body = input.value.trim();
+  if (!body) { showToast('\u26a0\ufe0f Write something first!'); return; }
+  const btn = document.getElementById('comment-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '\U0001f50d Checking...';
+  try {
+    const modRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 10,
+        messages: [{ role: 'user', content: `Moderate this bathroom humor app comment. Allow: bathroom humor, mild vulgarity, relatable reactions, jokes. Reject: hate speech, slurs, threats. Reply YES or NO only.\n\nComment: ${body}` }]
+      })
+    });
+    const modData = await modRes.json();
+    if (modData.content?.[0]?.text?.trim().toUpperCase() !== 'YES') {
+      showToast('\U0001f6ab Comment rejected. Keep it civil-ish.');
+      btn.disabled = false;
+      btn.textContent = '\U0001f4ac Post Comment';
+      return;
+    }
+  } catch(e) {}
+  const profile = getProfile();
+  const comment = {
+    post_id: postId,
+    user_handle: profile ? profile.handle : 'Anonymous' + Math.floor(Math.random()*9999),
+    user_emoji: profile ? profile.emoji : '\U0001f3ad',
+    body, votes: 0
+  };
+  try {
+    btn.textContent = '\U0001f4ac Posting...';
+    await supaFetch('comments', { method: 'POST', body: JSON.stringify(comment) });
+    input.value = '';
+    await loadComments(postId);
+    showToast('\U0001f4ac Comment posted!');
+  } catch(e) {
+    showToast('\u26a0\ufe0f Could not post comment. Try again.');
+  }
+  btn.disabled = false;
+  btn.textContent = '\U0001f4ac Post Comment';
+}
+
+async function upvoteComment(commentId, postId, btn) {
+  if (votedComments[commentId]) return;
+  votedComments[commentId] = true;
+  localStorage.setItem('crapapp_voted_comments', JSON.stringify(votedComments));
+  btn.classList.add('voted');
+  const current = parseInt(btn.textContent.replace('\U0001f44d ', '')) || 0;
+  btn.textContent = `\U0001f44d ${current + 1}`;
+  try {
+    await supaFetch(`comments?id=eq.${commentId}`, {
+      method: 'PATCH', body: JSON.stringify({ votes: current + 1 })
+    });
+    setTimeout(() => loadComments(postId), 500);
+  } catch(e) {}
+}
+
+function closeCommentsModal(e) {
+  if (!e || e.target === document.getElementById('comments-modal')) {
+    document.getElementById('comments-modal').classList.remove('open');
+    document.body.style.overflow = '';
+    currentPostId = null;
+  }
 }
 
 // ── THRONE CARD / PROFILE ──
