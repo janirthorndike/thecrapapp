@@ -3722,7 +3722,8 @@ async function upvotePost(postIdx) {
 
 async function openComments(supabaseId, postIdx) {
   const p = ftPostsData[postIdx];
-  currentPostId = supabaseId;
+  const isReal = supabaseId && supabaseId.length > 10;
+  currentPostId = isReal ? supabaseId : null;
   const modal = document.getElementById('comments-modal');
   const content = document.getElementById('comments-content');
   modal.classList.add('open');
@@ -3730,15 +3731,19 @@ async function openComments(supabaseId, postIdx) {
 
   content.innerHTML = `
     <h2 style="font-family:'Fredoka One',cursive;font-size:20px;margin-bottom:4px;padding-right:40px;">${p.title}</h2>
-    <p style="font-size:12px;color:#aaa;margin-bottom:16px;">\U0001f4ac Comments</p>
+    <p style="font-size:12px;color:#aaa;margin-bottom:16px;">💬 Comments</p>
     <div id="comments-list" style="min-height:60px;"><div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">Loading...</div></div>
+    ${isReal ? `
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.08);">
       <textarea id="comment-input" placeholder="Add your comment..." style="width:100%;border:2px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px;font-family:'Nunito',sans-serif;font-size:13px;outline:none;resize:none;margin-bottom:10px;box-sizing:border-box;" rows="2" maxlength="300"></textarea>
-      <button class="btn-teal" id="comment-submit-btn" style="width:100%;justify-content:center;" onclick="submitComment('${supabaseId}', ${postIdx})">\U0001f4ac Post Comment</button>
-    </div>`;
+      <button class="btn-teal" id="comment-submit-btn" style="width:100%;justify-content:center;" onclick="submitComment('${supabaseId}', ${postIdx})">💬 Post Comment</button>
+    </div>` : ''}`;
 
-  if (!supabaseId) {
-    document.getElementById('comments-list').innerHTML = `<div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">Comments available on community-submitted stories.</div>`;
+  if (!isReal) {
+    document.getElementById('comments-list').innerHTML = `<div style="text-align:center;padding:30px 20px;color:#aaa;font-size:13px;">
+      <div style="font-size:36px;margin-bottom:10px;">💬</div>
+      Comments are available on community-submitted stories.<br>Be the first — tap <strong>Share Your Story</strong> above!
+    </div>`;
     return;
   }
   await loadComments(supabaseId);
