@@ -3673,7 +3673,9 @@ async function submitPost() {
 
   try {
     btn.textContent = '\U0001f6bd Posting...';
+    console.log('Posting to Supabase:', post);
     const result = await supaFetch('posts', { method: 'POST', body: JSON.stringify(post) });
+    console.log('Post result:', result);
     const newPost = {
       avatar: post.user_emoji, color: '#E8EAF6',
       user: post.user_handle, time: 'just now',
@@ -3804,12 +3806,14 @@ async function submitComment(postId, postIdx) {
   };
   try {
     btn.textContent = '\U0001f4ac Posting...';
-    await supaFetch('comments', { method: 'POST', body: JSON.stringify(comment) });
+    const result = await supaFetch('comments', { method: 'POST', body: JSON.stringify(comment) });
+    console.log('Comment result:', result);
     input.value = '';
     await loadComments(postId);
     showToast('\U0001f4ac Comment posted!');
   } catch(e) {
-    showToast('\u26a0\ufe0f Could not post comment. Try again.');
+    console.error('Comment error:', e.message, e);
+    showToast('\u26a0\ufe0f Error: ' + e.message.slice(0, 80));
   }
   btn.disabled = false;
   btn.textContent = '\U0001f4ac Post Comment';
