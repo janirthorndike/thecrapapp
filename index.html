@@ -3491,6 +3491,18 @@ function buildReactionBar(postIdx) {
 }
 
 // ── SUPABASE CONFIG ──
+// ── CONTENT MODERATION (client-side) ──
+const BLOCKED_TERMS = [
+  'nigger','nigga','faggot','chink','spic','kike','wetback','tranny',
+  'retard','cunt','rape','lynch','nazi','genocide','kill yourself',
+  'kys','go die','shoot up','bomb','terrorist','molest','pedophile','cp'
+];
+function moderateText(text) {
+  const lower = text.toLowerCase();
+  return !BLOCKED_TERMS.some(term => lower.includes(term));
+}
+
+
 const SUPA_URL = 'https://mkudehvokfjdtahrkrep.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rdWRlaHZva2ZqZHRhaHJrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjAxODMsImV4cCI6MjA5MDc5NjE4M30.eKixgGmfk-FaC6_5gRs7225CUBOApH-P037GN391MzU';
 
@@ -3639,25 +3651,12 @@ async function submitPost() {
   btn.disabled = true;
   btn.textContent = '\U0001f50d Checking...';
 
-  try {
-    const modRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 10,
-        messages: [{ role: 'user', content: `You moderate a humor bathroom confessions app. Allow: bathroom stories, toilet humor, workplace confessions, mild vulgarity, embarrassing moments. Reject: hate speech, slurs, explicit sexual content, threats. Reply YES or NO only.\n\nTitle: ${title}\nBody: ${body}` }]
-      })
-    });
-    const modData = await modRes.json();
-    const verdict = modData.content?.[0]?.text?.trim().toUpperCase();
-    if (verdict !== 'YES') {
-      showToast('\U0001f6ab Story rejected. Keep it weird, not harmful.');
-      btn.disabled = false;
-      btn.innerHTML = '\U0001f6bd Flush It';
-      return;
-    }
-  } catch(e) { /* allow through if moderation fails */ }
+  if (!moderateText(title + ' ' + body)) {
+    showToast('\U0001f6ab Story rejected. Keep it weird, not hateful.');
+    btn.disabled = false;
+    btn.innerHTML = '\U0001f6bd Flush It';
+    return;
+  }
 
   const profile = getProfile();
   const post = {
@@ -3779,24 +3778,12 @@ async function submitComment(postId, postIdx) {
   const btn = document.getElementById('comment-submit-btn');
   btn.disabled = true;
   btn.textContent = '\U0001f50d Checking...';
-  try {
-    const modRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 10,
-        messages: [{ role: 'user', content: `Moderate this bathroom humor app comment. Allow: bathroom humor, mild vulgarity, relatable reactions, jokes. Reject: hate speech, slurs, threats. Reply YES or NO only.\n\nComment: ${body}` }]
-      })
-    });
-    const modData = await modRes.json();
-    if (modData.content?.[0]?.text?.trim().toUpperCase() !== 'YES') {
-      showToast('\U0001f6ab Comment rejected. Keep it civil-ish.');
-      btn.disabled = false;
-      btn.textContent = '\U0001f4ac Post Comment';
-      return;
-    }
-  } catch(e) {}
+  if (!moderateText(body)) {
+    showToast('\U0001f6ab Comment rejected. Keep it civil-ish.');
+    btn.disabled = false;
+    btn.textContent = '\U0001f4ac Post Comment';
+    return;
+  }
   const profile = getProfile();
   const comment = {
     post_id: postId,
@@ -5332,58 +5319,21 @@ async function swSubmit() {
   const text = custom || swSelectedPreset;
   if (!text) { showToast('✍️ Pick something to write first!'); return; }
 
-  // Disable button and show checking state
-  const btn = document.querySelector('.sw-add-form .btn-primary');
-  const originalText = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = '🔍 Checking...';
-
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 10,
-        messages: [{
-          role: 'user',
-          content: `You are moderating bathroom graffiti submissions for a humor app called CrapApp. The app is adult humor — toilet jokes, bathroom philosophy, mild vulgarity is fine and expected. Reject only: hate speech, slurs targeting protected groups, explicit sexual content, threats, or content sexualizing minors. Reply with only YES (acceptable) or NO (reject).\n\nSubmission: "${text}"`
-        }]
-      })
-    });
-
-    const data = await response.json();
-    const verdict = data.content?.[0]?.text?.trim().toUpperCase();
-
-    if (verdict === 'YES') {
-      const entry = {
-        text,
-        color: swSelectedColor,
-        font: SW_FONTS[Math.floor(Math.random() * SW_FONTS.length)],
-        rot: (Math.random() * 4 - 2).toFixed(1),
-      };
-      saveSWEntry(entry);
-      showToast('✍️ Your mark has been left on the wall.');
-      swSelectedPreset = null;
-      startStallWall();
-    } else {
-      showToast('🚫 Too spicy even for this wall. Keep it weird, not hateful.');
-      btn.disabled = false;
-      btn.innerHTML = originalText;
-    }
-  } catch(e) {
-    // If API fails, allow submission — don't punish users for network issues
-    const entry = {
-      text,
-      color: swSelectedColor,
-      font: SW_FONTS[Math.floor(Math.random() * SW_FONTS.length)],
-      rot: (Math.random() * 4 - 2).toFixed(1),
-    };
-    saveSWEntry(entry);
-    showToast('✍️ Your mark has been left on the wall.');
-    swSelectedPreset = null;
-    startStallWall();
+  if (!moderateText(text)) {
+    showToast('🚫 Too spicy even for this wall. Keep it weird, not hateful.');
+    return;
   }
+
+  const entry = {
+    text,
+    color: swSelectedColor,
+    font: SW_FONTS[Math.floor(Math.random() * SW_FONTS.length)],
+    rot: (Math.random() * 4 - 2).toFixed(1),
+  };
+  saveSWEntry(entry);
+  showToast('✍️ Your mark has been left on the wall.');
+  swSelectedPreset = null;
+  startStallWall();
 }
 
 // ── UTILS ──
