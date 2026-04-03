@@ -3614,8 +3614,8 @@ function renderPosts(filter) {
         ${buildReactionBar(globalIdx)}
       </div>
       <div class="ft-footer" style="margin-top:10px;">
-        <button style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;" onclick="openComments('${p.supabaseId || ''}', ${globalIdx})">
-          💬 Comments
+        <button id="comments-btn-${globalIdx}" style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;" onclick="openComments('${p.supabaseId || ''}', ${globalIdx})">
+          💬 ${p.commentCount ? p.commentCount + ' comment' + (p.commentCount !== 1 ? 's' : '') : 'Comments'}
         </button>
         <button style="background:none;border:none;font-size:13px;font-weight:700;color:#aaa;cursor:pointer;margin-left:auto;" onclick="copyShareLink(this)">
           🔗 Share
@@ -3746,26 +3746,37 @@ async function openComments(supabaseId, postIdx) {
     </div>`;
     return;
   }
-  await loadComments(supabaseId);
+  await loadComments(supabaseId, postIdx);
 }
 
-async function loadComments(postId) {
+async function loadComments(postId, postIdx) {
   try {
     const comments = await supaFetch(`comments?post_id=eq.${postId}&order=votes.desc,created_at.asc`);
     const list = document.getElementById('comments-list');
     if (!list) return;
+
+    // Update count in feed if we know the postIdx
+    if (postIdx !== undefined && comments) {
+      const p = ftPostsData[postIdx];
+      if (p) {
+        p.commentCount = comments.length;
+        const btn = document.getElementById(`comments-btn-${postIdx}`);
+        if (btn) btn.innerHTML = `💬 ${comments.length} comment${comments.length !== 1 ? 's' : ''}`;
+      }
+    }
+
     if (!comments || comments.length === 0) {
       list.innerHTML = `<div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">No comments yet. Be the first.</div>`;
       return;
     }
     list.innerHTML = comments.map((c, i) => `
       <div class="comment-item">
-        <div class="comment-avatar">${c.user_emoji || '\U0001f4a9'}</div>
+        <div class="comment-avatar">${c.user_emoji || '💩'}</div>
         <div class="comment-body-wrap">
-          <div class="comment-user">${c.user_handle} ${i === 0 && c.votes > 0 ? '<span class="top-comment-badge">\u2b50 Top Comment</span>' : ''}</div>
+          <div class="comment-user">${c.user_handle} ${i === 0 && c.votes > 0 ? '<span class="top-comment-badge">⭐ Top Comment</span>' : ''}</div>
           <div class="comment-text">${c.body}</div>
           <div class="comment-actions">
-            <button class="comment-vote-btn ${votedComments[c.id] ? 'voted' : ''}" onclick="upvoteComment('${c.id}','${postId}',this)">\U0001f44d ${c.votes || 0}</button>
+            <button class="comment-vote-btn ${votedComments[c.id] ? 'voted' : ''}" onclick="upvoteComment('${c.id}','${postId}',this)">👍 ${c.votes || 0}</button>
             <span class="comment-time">${timeAgo(c.created_at)}</span>
           </div>
         </div>
@@ -3801,8 +3812,17 @@ async function submitComment(postId, postIdx) {
     const result = await supaFetch('comments', { method: 'POST', body: JSON.stringify(comment) });
     console.log('Comment result:', result);
     input.value = '';
-    await loadComments(postId);
-    showToast('\U0001f4ac Comment posted!');
+    await loadComments(postId, postIdx);
+    // Update comment count in feed
+    try {
+      const countRes = await supaFetch(`comments?post_id=eq.${postId}&select=id`);
+      const count = countRes ? countRes.length : 0;
+      const p = ftPostsData[postIdx];
+      p.commentCount = count;
+      const btn = document.getElementById(`comments-btn-${postIdx}`);
+      if (btn) btn.innerHTML = `💬 ${count} comment${count !== 1 ? 's' : ''}`;
+    } catch(e) {}
+    showToast('💬 Comment posted!');
   } catch(e) {
     console.error('Comment error:', e.message, e);
     showToast('\u26a0\ufe0f Error: ' + e.message.slice(0, 80));
