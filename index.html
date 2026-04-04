@@ -2800,7 +2800,7 @@ const throneContent = [
   { type: "trivia", tab: "trivia", q: "Which country has the highest bidet ownership rate?", opts: ["Japan (80%)", "Italy (97%)", "South Korea (65%)", "France (42%)"], answer: 1, color: "#2d1b4e" },
 ];
 
-const ftPostsData = [
+let ftPostsData = [
   // Seeded posts now live in Supabase — loaded via loadSupaPosts()
 ];
 
@@ -3543,8 +3543,10 @@ function timeAgo(dateStr) {
 }
 
 async function loadSupaPosts() {
+  // Clear any previously loaded Supabase posts to prevent duplicates on re-navigation
+  ftPostsData = ftPostsData.filter(p => p._source !== 'supabase');
   try {
-    const posts = await supaFetch('posts?order=votes.desc,created_at.desc&limit=50');
+    const posts = await supaFetch('posts?order=created_at.desc&limit=50');
     if (posts && posts.length > 0) {
       const suPosts = posts.map(p => ({
         avatar: p.user_emoji || '💩',
@@ -3559,11 +3561,12 @@ async function loadSupaPosts() {
         body: p.body,
         votes: p.votes || 0,
         supabaseId: p.id,
-        reactions: { poop: p.votes || 0 }
+        reactions: { poop: p.votes || 0 },
+        _source: 'supabase'
       }));
-      ftPostsData.unshift(...suPosts);
+      ftPostsData = [...suPosts];
     }
-  } catch(e) { /* use seeded data only */ }
+  } catch(e) { /* use empty feed */ }
   renderPosts('all');
 }
 
@@ -3572,11 +3575,19 @@ function renderPosts(filter) {
   const el = document.getElementById('ft-posts');
   let filtered = filter === 'all' ? [...ftPostsData] : ftPostsData.filter(p => p.filter === filter);
 
-  // Sort by reactions (most 💩 first), falling back to original order
+  // Sort: newest community posts first, using created_at if available, then votes as tiebreaker
   filtered.sort((a, b) => {
-    const aVotes = (a.reactions && a.reactions.poop) ? a.reactions.poop : (a.votes || 0);
-    const bVotes = (b.reactions && b.reactions.poop) ? b.reactions.poop : (b.votes || 0);
-    return bVotes - aVotes;
+    // Prioritize real community posts (lower seeded vote counts) mixed chronologically
+    const aIsSeeded = a.votes > 1000;
+    const bIsSeeded = b.votes > 1000;
+    // Both same type — sort by votes desc
+    if (aIsSeeded === bIsSeeded) {
+      const aVotes = (a.reactions && a.reactions.poop) ? a.reactions.poop : (a.votes || 0);
+      const bVotes = (b.reactions && b.reactions.poop) ? b.reactions.poop : (b.votes || 0);
+      return bVotes - aVotes;
+    }
+    // Community posts (non-seeded) float to top
+    return aIsSeeded ? 1 : -1;
   });
 
   if (filtered.length === 0) {
@@ -3588,9 +3599,21 @@ function renderPosts(filter) {
     return;
   }
 
+  const BODY_LIMIT = 200;
+
   el.innerHTML = filtered.map((p) => {
     const globalIdx = ftPostsData.indexOf(p);
-    if (!p.reactions) p.reactions = { poop: p.votes || 1 };
+    // Restore reaction count from localStorage if user previously reacted
+    if (!p.reactions) p.reactions = { poop: p.votes || 0 };
+    const savedReaction = (p.userReacted || {})[globalIdx];
+    if (savedReaction && p.reactions[savedReaction] === 0) {
+      p.reactions[savedReaction] = 1;
+    }
+
+    // Truncate long bodies
+    const isLong = p.body.length > BODY_LIMIT;
+    const displayBody = isLong ? p.body.slice(0, BODY_LIMIT).trimEnd() + '...' : p.body;
+
     return `
     <div class="ft-post">
       <div class="ft-post-header">
@@ -3602,7 +3625,8 @@ function renderPosts(filter) {
         <div class="ft-flair" style="background:${p.flairBg};color:${p.flairColor}">${p.flair}</div>
       </div>
       <div class="ft-title">${p.title}</div>
-      <div class="ft-body">${p.body}</div>
+      <div class="ft-body" id="ft-body-${globalIdx}">${displayBody}</div>
+      ${isLong ? `<button onclick="expandPost(${globalIdx})" style="background:none;border:none;font-size:13px;font-weight:800;color:var(--teal);cursor:pointer;padding:4px 0 8px;display:block;">Read more →</button>` : ''}
       <div class="ft-reactions" id="reactions-${globalIdx}">
         ${buildReactionBar(globalIdx)}
       </div>
@@ -3616,6 +3640,17 @@ function renderPosts(filter) {
       </div>
     </div>
   `}).join('');
+}
+
+function expandPost(globalIdx) {
+  const p = ftPostsData[globalIdx];
+  const bodyEl = document.getElementById(`ft-body-${globalIdx}`);
+  if (bodyEl) {
+    bodyEl.textContent = p.body;
+    // Remove the Read more button
+    const btn = bodyEl.nextElementSibling;
+    if (btn && btn.textContent.includes('Read more')) btn.remove();
+  }
 }
 
 function ftFilter(el, filter) {
