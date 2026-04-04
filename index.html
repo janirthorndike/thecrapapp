@@ -2313,6 +2313,11 @@
   </div>
 
   <div class="bathroom-list" id="bathroom-list"></div>
+  <div style="padding:0 16px 16px;text-align:center;">
+    <button onclick="openSuggestModal()" style="background:none;border:2px dashed rgba(0,0,0,0.15);border-radius:14px;padding:12px 20px;font-size:13px;font-weight:800;color:#aaa;cursor:pointer;width:100%;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--brown)';this.style.color='var(--brown)'" onmouseout="this.style.borderColor='rgba(0,0,0,0.15)';this.style.color='#aaa'">
+      📍 Know a great bathroom? Suggest a location →
+    </button>
+  </div>
  </div>
 </div>
 
@@ -2496,7 +2501,8 @@
 
 <!-- ════ MODALS ════ -->
 <div class="modal-overlay" id="bathroom-modal" onclick="closeBathroomModal(event)">
-  <div class="modal" id="bathroom-modal-content">
+  <div class="modal" id="bathroom-modal-content" style="position:relative;">
+    <button onclick="closeBathroomModal()" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.08);border:none;color:#888;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;">✕</button>
     <div class="modal-handle"></div>
     <div id="bathroom-detail"></div>
   </div>
@@ -2534,19 +2540,71 @@
   </div>
 </div>
 
+<!-- ════ SUGGEST LOCATION MODAL ════ -->
+<div class="modal-overlay" id="suggest-modal" onclick="closeSuggestModal(event)">
+  <div class="modal" style="position:relative;max-height:92vh;overflow-y:auto;">
+    <button onclick="closeSuggestModal()" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.08);border:none;color:#888;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;">✕</button>
+    <div class="modal-handle"></div>
+    <h2>📍 Suggest a Location</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:16px;">Found a great bathroom? Tell us about it. We review every suggestion before adding it to the map.</p>
+
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:6px;">PLACE NAME *</div>
+      <input type="text" id="suggest-name" placeholder="e.g. Whole Foods Market" maxlength="100" style="width:100%;border:2px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px;font-family:'Nunito',sans-serif;font-size:14px;outline:none;box-sizing:border-box;">
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:6px;">ADDRESS *</div>
+      <input type="text" id="suggest-addr" placeholder="e.g. 1825 Central Park Dr, Denver, CO" maxlength="200" style="width:100%;border:2px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px;font-family:'Nunito',sans-serif;font-size:14px;outline:none;box-sizing:border-box;">
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:6px;">CRAP SCORE (1-10) *</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="suggest-score-picker">
+        ${[...Array(10)].map((_, i) => `
+          <div onclick="suggestPickScore(${i+1}, this)" style="width:40px;height:40px;border-radius:10px;background:#f8f6f3;border:2px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;cursor:pointer;transition:all 0.15s;" id="suggest-score-${i+1}">${i+1}</div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:8px;">TAGS (optional — select all that apply)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;" id="suggest-tag-picker">
+        ${TAG_CATEGORIES.map(cat => cat.tags.map(tag => `
+          <div class="tag-chip" id="stag-${tag.id}" onclick="toggleSuggestTag('${tag.id}', this)" style="font-size:11px;padding:5px 10px;">
+            ${tag.label}
+          </div>`).join('')).join('')}
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:6px;">ANYTHING ELSE? (optional)</div>
+      <textarea id="suggest-notes" placeholder="Hidden gem? Special access code? Bring your own TP?" maxlength="300" rows="2" style="width:100%;border:2px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px;font-family:'Nunito',sans-serif;font-size:13px;outline:none;resize:none;box-sizing:border-box;"></textarea>
+    </div>
+
+    <button class="btn-primary" id="suggest-submit-btn" style="width:100%;justify-content:center;" onclick="submitSuggestion()">
+      📍 Submit for Review
+    </button>
+    <p style="font-size:11px;color:#ccc;text-align:center;margin-top:10px;">Suggestions are reviewed before appearing on the map. Thanks for contributing!</p>
+  </div>
+</div>
+
 <!-- ════ CODE BROWN ALERT ════ -->
 <div class="code-brown-alert" id="code-brown-alert">
   <button onclick="document.getElementById('code-brown-alert').classList.remove('open')" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:white;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
   <div class="cba-title">🚨 CODE BROWN 🚨</div>
   <div class="cba-sub">Nearest acceptable bathroom found</div>
-  <div class="cba-nearest">
-    <h3>Whole Foods Market</h3>
-    <p>742 Evergreen Terrace • Score: 9.4/10</p>
-    <div class="cba-dist">0.2 miles away</div>
-    <div style="font-size:12px;color:#4CAF50;font-weight:700;margin-top:4px;">✓ Clean · ✓ Private stall · ✓ TP stocked</div>
+  <div class="cba-nearest" id="cba-nearest-content">
+    <h3 id="cba-name">Finding nearest bathroom...</h3>
+    <p id="cba-addr"></p>
+    <div class="cba-dist" id="cba-dist"></div>
+    <div id="cba-tags" style="font-size:12px;color:#4CAF50;font-weight:700;margin-top:4px;"></div>
   </div>
-  <button class="cba-dismiss" onclick="document.getElementById('code-brown-alert').classList.remove('open')">
+  <button class="cba-dismiss" id="cba-directions-btn" onclick="document.getElementById('code-brown-alert').classList.remove('open')" style="margin-bottom:8px;">
     🏃 I'm Running — Thanks!
+  </button>
+  <button id="cba-directions-link" style="background:rgba(255,255,255,0.15);border:none;color:white;font-size:14px;font-weight:800;padding:10px 20px;border-radius:50px;cursor:pointer;display:none;margin-bottom:8px;" onclick="openCBADirections()">
+    🗺️ Get Directions
   </button>
 </div>
 
@@ -2633,6 +2691,7 @@ const TAG_CATEGORIES = [
       { id: "bidet", label: "🚿 Bidet Present", desc: "Elevated experience. Join us." },
       { id: "paper_towels", label: "📄 Paper Towels", desc: "Old reliable. Actually dries your hands." },
       { id: "electric_dryer", label: "💨 Electric Dryer", desc: "Stand there for 45 seconds. Hands still damp." },
+      { id: "power_flush", label: "💪 Power Flush", desc: "Compressor-assisted. Nothing survives. Respect it." },
     ]
   },
   {
@@ -3197,19 +3256,50 @@ function renderBathrooms() {
   `).join('');
 }
 
+let cbaBest = null;
+
 function codeBrown() {
-  // Find highest-scoring bathroom (nearest/best)
-  const best = bathrooms.reduce((a, b) => b.score > a.score ? b : a);
+  // Find highest-scoring bathroom
+  cbaBest = bathrooms.reduce((a, b) => b.score > a.score ? b : a);
+  
+  // Populate alert with real data
+  const nameEl = document.getElementById('cba-name');
+  const addrEl = document.getElementById('cba-addr');
+  const distEl = document.getElementById('cba-dist');
+  const tagsEl = document.getElementById('cba-tags');
+  const dirBtn = document.getElementById('cba-directions-link');
+  
+  if (nameEl) nameEl.textContent = cbaBest.name;
+  if (addrEl) addrEl.textContent = '📍 ' + cbaBest.addr + ' · Score: ' + cbaBest.score + '/10';
+  if (distEl) distEl.textContent = cbaBest.dist + ' away';
+  if (tagsEl) {
+    const goodTags = cbaBest.tags.slice(0,3).map(id => {
+      const t = ALL_TAGS.find(t => t.id === id);
+      return t ? t.label : id;
+    }).join(' · ');
+    tagsEl.textContent = goodTags;
+  }
+  if (dirBtn) dirBtn.style.display = 'block';
+
   document.getElementById('code-brown-alert').classList.add('open');
-  // Fly map to best bathroom
-  if (leafletMap) leafletMap.flyTo([best.lat, best.lng], 16, { duration: 1.5 });
-  // Track in profile
+  if (leafletMap) leafletMap.flyTo([cbaBest.lat, cbaBest.lng], 16, { duration: 1.5 });
+
   const profile = getProfile();
   if (profile) {
     profile.codeBrowns = (profile.codeBrowns || 0) + 1;
     saveProfileData(profile);
     checkBadgeUnlocks(profile);
   }
+}
+
+function openCBADirections() {
+  if (cbaBest) openDirections(cbaBest.lat, cbaBest.lng, cbaBest.name);
+}
+
+function openDirections(lat, lng, name) {
+  // Opens Google Maps directions from current location to bathroom
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_name=${encodeURIComponent(name)}`;
+  window.open(url, '_blank');
 }
 
 let selectedNewTags = [];
@@ -3275,7 +3365,7 @@ function showBathroom(i) {
     </div>
 
     <div style="display:flex;gap:8px;">
-      <button class="btn-primary" style="flex:1;justify-content:center;" onclick="showToast('🗺️ Opening directions...');closeBathroomModal()">🗺️ Directions</button>
+      <button class="btn-primary" style="flex:1;justify-content:center;" onclick="openDirections(${b.lat}, ${b.lng}, '${b.name.replace(/'/g, "\\'")}')">🗺️ Directions</button>
       <button class="btn-teal" style="flex:1;justify-content:center;" onclick="showToast('⭐ Thanks for rating!');closeBathroomModal()">⭐ Rate It</button>
     </div>
   `;
@@ -5387,6 +5477,98 @@ async function swSubmit() {
   showToast('✍️ Your mark has been left on the wall.');
   swSelectedPreset = null;
   startStallWall();
+}
+
+// ── SUGGEST LOCATION ──
+let suggestSelectedScore = null;
+let suggestSelectedTags = [];
+
+function openSuggestModal() {
+  suggestSelectedScore = null;
+  suggestSelectedTags = [];
+  document.getElementById('suggest-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // Reset score picker
+  for (let i = 1; i <= 10; i++) {
+    const el = document.getElementById(`suggest-score-${i}`);
+    if (el) { el.style.background = '#f8f6f3'; el.style.color = 'var(--dark)'; el.style.borderColor = 'rgba(0,0,0,0.08)'; }
+  }
+  // Reset tags
+  document.querySelectorAll('[id^="stag-"]').forEach(el => el.classList.remove('selected'));
+  // Reset fields
+  ['suggest-name','suggest-addr','suggest-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+function closeSuggestModal(e) {
+  if (!e || e.target === document.getElementById('suggest-modal')) {
+    document.getElementById('suggest-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+function suggestPickScore(score, el) {
+  suggestSelectedScore = score;
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.getElementById(`suggest-score-${i}`);
+    if (!btn) continue;
+    const isSelected = i <= score;
+    const color = score >= 8 ? '#4CAF50' : score >= 5 ? '#FFC107' : '#F44336';
+    btn.style.background = isSelected ? color : '#f8f6f3';
+    btn.style.color = isSelected ? 'white' : 'var(--dark)';
+    btn.style.borderColor = isSelected ? color : 'rgba(0,0,0,0.08)';
+  }
+}
+
+function toggleSuggestTag(tagId, el) {
+  if (suggestSelectedTags.includes(tagId)) {
+    suggestSelectedTags = suggestSelectedTags.filter(t => t !== tagId);
+    el.classList.remove('selected');
+  } else {
+    suggestSelectedTags.push(tagId);
+    el.classList.add('selected');
+  }
+}
+
+async function submitSuggestion() {
+  const name = document.getElementById('suggest-name').value.trim();
+  const addr = document.getElementById('suggest-addr').value.trim();
+  const notes = document.getElementById('suggest-notes').value.trim();
+
+  if (!name) { showToast('⚠️ Give it a name!'); return; }
+  if (!addr) { showToast('⚠️ Need an address!'); return; }
+  if (!suggestSelectedScore) { showToast('⚠️ Give it a Crap Score!'); return; }
+
+  const btn = document.getElementById('suggest-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '📍 Submitting...';
+
+  const suggestion = {
+    name,
+    address: addr,
+    score: suggestSelectedScore,
+    tags: suggestSelectedTags,
+    notes: notes || null,
+    status: 'pending'
+  };
+
+  try {
+    await supaFetch('suggested_locations', {
+      method: 'POST',
+      body: JSON.stringify(suggestion)
+    });
+    document.getElementById('suggest-modal').classList.remove('open');
+    document.body.style.overflow = '';
+    showToast('✅ Suggestion submitted! We\'ll review it soon.');
+  } catch(e) {
+    console.error('Suggest error:', e.message);
+    showToast('⚠️ Could not submit. Try again.');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '📍 Submit for Review';
 }
 
 // ── UTILS ──
