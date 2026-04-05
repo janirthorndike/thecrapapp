@@ -5480,13 +5480,29 @@ function openSuggestModal() {
   suggestSelectedTags = [];
   document.getElementById('suggest-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
-  // Reset score picker
-  for (let i = 1; i <= 10; i++) {
-    const el = document.getElementById(`suggest-score-${i}`);
-    if (el) { el.style.background = '#f8f6f3'; el.style.color = 'var(--dark)'; el.style.borderColor = 'rgba(0,0,0,0.08)'; }
+
+  // Build score picker dynamically
+  const scorePicker = document.getElementById('suggest-score-picker');
+  if (scorePicker) {
+    scorePicker.innerHTML = [...Array(10)].map((_, i) => `
+      <div onclick="suggestPickScore(${i+1}, this)"
+        id="suggest-score-${i+1}"
+        style="width:40px;height:40px;border-radius:10px;background:#f8f6f3;border:2px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;cursor:pointer;transition:all 0.15s;">
+        ${i+1}
+      </div>`).join('');
   }
-  // Reset tags
-  document.querySelectorAll('[id^="stag-"]').forEach(el => el.classList.remove('selected'));
+
+  // Build tag picker dynamically
+  const tagPicker = document.getElementById('suggest-tag-picker');
+  if (tagPicker) {
+    tagPicker.innerHTML = TAG_CATEGORIES.map(cat =>
+      cat.tags.map(tag => `
+        <div class="tag-chip" id="stag-${tag.id}" onclick="toggleSuggestTag('${tag.id}', this)" style="font-size:11px;padding:5px 10px;">
+          ${tag.label}
+        </div>`).join('')
+    ).join('');
+  }
+
   // Reset fields
   ['suggest-name','suggest-addr','suggest-notes'].forEach(id => {
     const el = document.getElementById(id);
