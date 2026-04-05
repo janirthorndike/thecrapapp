@@ -1299,7 +1299,7 @@
   /* ══════════════════════════════
      THRONE ROOM
   ══════════════════════════════ */
-  #throneroom .page-header { background: var(--dark); position: sticky; top: 0; z-index: 51; }
+  #throneroom .page-header { background: var(--dark); }
 
   .throne-tabs {
     display: flex; gap: 6px;
@@ -1308,9 +1308,6 @@
     border-bottom: 1px solid rgba(255,255,255,0.08);
     overflow-x: auto;
     scrollbar-width: none;
-    position: sticky;
-    top: 0;
-    z-index: 50;
   }
   .throne-tabs::-webkit-scrollbar { display: none; }
   .throne-tab {
@@ -2333,6 +2330,7 @@
 <!-- ════ THRONE ROOM ════ -->
 <div id="throneroom" class="screen">
  <div class="app-shell">
+  <div style="position:sticky;top:0;z-index:51;background:var(--dark);">
   <div class="page-header" style="background:var(--dark);">
     <div class="page-header-top">
       <h1>👑 Throne Room</h1>
@@ -2344,6 +2342,7 @@
     <div class="throne-tab active" onclick="throneTab(this,'all')">All</div>
     <div class="throne-tab" onclick="throneTab(this,'articles')">📖 Articles</div>
     <div class="throne-tab" onclick="throneTab(this,'trivia')">🧠 Trivia</div>
+  </div>
   </div>
   <div class="throne-feed" id="throne-feed"></div>
  </div>
