@@ -2446,7 +2446,7 @@
   <div class="modal" style="padding:28px 24px 36px;position:relative;">
     <button onclick="document.getElementById('onboarding-modal').classList.remove('open')" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.08);border:none;color:#888;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>
     <div style="text-align:center;margin-bottom:20px;">
-      <div style="font-size:64px;margin-bottom:8px;" id="ob-avatar-preview">💩</div>
+      <div style="margin-bottom:8px;display:flex;justify-content:center;" id="ob-avatar-preview"></div>
       <h2 style="font-family:'Fredoka One',cursive;font-size:24px;color:var(--dark);">Claim Your Throne</h2>
       <p style="font-size:13px;color:#888;margin-top:4px;">Pick your handle and emoji. You're anonymous — but you're <em>you</em>.</p>
     </div>
@@ -2460,7 +2460,7 @@
     </div>
 
     <div style="margin-bottom:20px;">
-      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:8px;">YOUR EMOJI</div>
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:8px;">YOUR AVATAR</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;" id="ob-emoji-grid"></div>
     </div>
 
@@ -3980,7 +3980,54 @@ const PROFILE_KEY = 'crapapp_profile';
 
 const HANDLE_PREFIXES = ['Silent','Midnight','Phantom','Stealth','Royal','Rogue','Covert','Humble','Mighty','Mystery','Brave','Lone','Golden','Cunning'];
 const HANDLE_SUFFIXES = ['Flusher','Staller','Throner','Squatter','Hoverer','Philosopher','Plunger','Depositor','Rusher','Lingerer','Contemplator','Reliever'];
-const PROFILE_EMOJIS = ['🦝','🐸','🦦','🐺','🐊','🦉','🦊','🐻','🦁','🐯','🦅','🐙','🦋','🐉','🦄','🐨','🦖','🦩','🐝','🦔'];
+// ── POOP AVATARS ──
+const POOP_AVATARS = [
+  { id: 'classic',    label: 'Classic',       hat: '',           face: '😊', accent: '' },
+  { id: 'royal',      label: 'Royal',         hat: '👑',         face: '😌', accent: '' },
+  { id: 'cowboy',     label: 'Cowboy',        hat: '🤠',         face: '😏', accent: '' },
+  { id: 'cool',       label: 'Cool',          hat: '',           face: '😎', accent: '' },
+  { id: 'sleepy',     label: 'Sleepy',        hat: '',           face: '😴', accent: '' },
+  { id: 'academic',   label: 'Academic',      hat: '🎓',         face: '🧐', accent: '' },
+  { id: 'buff',       label: 'Buff',          hat: '',           face: '💪', accent: '' },
+  { id: 'detective',  label: 'Detective',     hat: '🕵️',         face: '🤔', accent: '' },
+  { id: 'party',      label: 'Party',         hat: '🎉',         face: '🥳', accent: '' },
+  { id: 'ninja',      label: 'Ninja',         hat: '',           face: '🥷', accent: '' },
+  { id: 'viking',     label: 'Viking',        hat: '⛵',         face: '😤', accent: '' },
+  { id: 'angel',      label: 'Angel',         hat: '😇',         face: '😇', accent: '' },
+  { id: 'devil',      label: 'Devil',         hat: '😈',         face: '😈', accent: '' },
+  { id: 'alien',      label: 'Alien',         hat: '',           face: '👽', accent: '' },
+  { id: 'robot',      label: 'Robot',         hat: '',           face: '🤖', accent: '' },
+  { id: 'clown',      label: 'Clown',         hat: '🤡',         face: '🤡', accent: '' },
+  { id: 'pirate',     label: 'Pirate',        hat: '🏴‍☠️',        face: '🫡', accent: '' },
+  { id: 'chef',       label: 'Chef',          hat: '👨‍🍳',         face: '😋', accent: '' },
+  { id: 'astronaut',  label: 'Astronaut',     hat: '👨‍🚀',         face: '🚀', accent: '' },
+  { id: 'ghost',      label: 'Ghost',         hat: '',           face: '👻', accent: '' },
+];
+
+// Legacy - keep for any old references
+const PROFILE_EMOJIS = POOP_AVATARS.map(a => a.id);
+
+function renderPoopAvatar(avatarId, size) {
+  size = size || 64;
+  const avatar = POOP_AVATARS.find(function(a) { return a.id === avatarId; }) || POOP_AVATARS[0];
+  const s = size;
+  const fs = Math.round(s * 0.45);
+  const hatFs = Math.round(s * 0.32);
+  const hatHtml = avatar.hat
+    ? '<div style="position:absolute;top:-4px;left:50%;transform:translateX(-50%);font-size:' + hatFs + 'px;line-height:1;">' + avatar.hat + '</div>'
+    : '';
+  return '<div style="position:relative;width:' + s + 'px;height:' + s + 'px;display:inline-flex;align-items:center;justify-content:center;">' +
+    '<svg width="' + s + '" height="' + s + '" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' +
+      '<ellipse cx="32" cy="44" rx="20" ry="14" fill="#5D3317"/>' +
+      '<ellipse cx="32" cy="36" rx="16" ry="12" fill="#6B3D1E"/>' +
+      '<ellipse cx="32" cy="28" rx="12" ry="10" fill="#7A4522"/>' +
+      '<ellipse cx="32" cy="22" rx="8" ry="8" fill="#8B5230"/>' +
+      '<ellipse cx="26" cy="18" rx="2.5" ry="2" fill="rgba(255,255,255,0.25)"/>' +
+    '</svg>' +
+    '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-20%);font-size:' + fs + 'px;line-height:1;">' + avatar.face + '</div>' +
+    hatHtml +
+  '</div>';
+}
 
 const BADGES = [
   // Tier 1 — Getting Started
@@ -4021,28 +4068,33 @@ function randomHandle() {
 }
 
 function buildOnboarding() {
-  // Populate emoji grid
   const grid = document.getElementById('ob-emoji-grid');
-  let selectedEmoji = PROFILE_EMOJIS[0];
-  grid.innerHTML = PROFILE_EMOJIS.map(e => `
-    <div class="tag-chip ${e === selectedEmoji ? 'selected' : ''}" 
-      style="font-size:22px;padding:8px 10px;min-width:48px;justify-content:center;"
-      onclick="selectEmoji(this,'${e}')">${e}</div>
+  grid.innerHTML = POOP_AVATARS.map((a, i) => `
+    <div class="${i === 0 ? 'tag-chip selected' : 'tag-chip'}"
+      style="padding:6px;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:64px;"
+      data-avatar="${a.id}" onclick="selectAvatar(this,'${a.id}')">
+      ${renderPoopAvatar(a.id, 44)}
+      <span style="font-size:9px;font-weight:800;color:inherit;">${a.label}</span>
+    </div>
   `).join('');
+  // Set initial preview
+  const previewEl = document.getElementById('ob-avatar-preview');
+  if (previewEl) previewEl.innerHTML = renderPoopAvatar(POOP_AVATARS[0].id, 80);
   randomHandle();
 }
 
-function selectEmoji(el, emoji) {
+function selectAvatar(el, avatarId) {
   document.querySelectorAll('#ob-emoji-grid .tag-chip').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
-  document.getElementById('ob-avatar-preview').textContent = emoji;
+  const previewEl = document.getElementById('ob-avatar-preview');
+  if (previewEl) previewEl.innerHTML = renderPoopAvatar(avatarId, 80);
 }
 
 function saveProfile() {
   const handle = document.getElementById('ob-handle').value.trim();
   if (!handle) { showToast('⚠️ Pick a handle first!'); return; }
   const selectedEl = document.querySelector('#ob-emoji-grid .tag-chip.selected');
-  const emoji = selectedEl ? selectedEl.textContent.trim() : '💩';
+  const emoji = selectedEl ? (selectedEl.dataset.avatar || 'classic') : 'classic';
   const profile = {
     handle, emoji,
     since: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
@@ -4051,7 +4103,7 @@ function saveProfile() {
   };
   saveProfileData(profile);
   document.getElementById('onboarding-modal').classList.remove('open');
-  document.getElementById('nav-profile-emoji').textContent = emoji;
+  document.getElementById('nav-profile-emoji').innerHTML = renderPoopAvatar(emoji, 22);
   renderThroneCard();
   showToast(`👑 Welcome to the throne, ${handle}!`);
   // Fire badge check — Early Adopter should unlock immediately
@@ -4074,7 +4126,7 @@ function renderThroneCard() {
   }
 
   // Update nav emoji
-  document.getElementById('nav-profile-emoji').textContent = profile.emoji;
+  document.getElementById('nav-profile-emoji').innerHTML = renderPoopAvatar(profile.emoji || 'classic', 22);
 
   // Compute badges
   const TIER_LABELS = { 1: '🌱 Tier 1 — Getting Started', 2: '💪 Tier 2 — Getting Comfortable', 3: '🔥 Tier 3 — Committed', 4: '⭐ Legendary' };
@@ -4120,7 +4172,7 @@ function renderThroneCard() {
     <div class="throne-card-hero">
       <button class="edit-profile-btn" onclick="showOnboarding()">✏️ Edit</button>
       <div class="tc-hero-top">
-        <div class="tc-avatar-big">${profile.emoji}</div>
+        <div class="tc-avatar-big" style="font-size:unset;">${renderPoopAvatar(profile.emoji || 'classic', 72)}</div>
         <div>
           <div class="tc-name">${profile.handle}</div>
           <div class="tc-since">On the throne since ${profile.since}</div>
@@ -4192,11 +4244,12 @@ function showOnboarding() {
   const profile = getProfile();
   if (profile) {
     document.getElementById('ob-handle').value = profile.handle;
-    document.getElementById('ob-avatar-preview').textContent = profile.emoji;
-    // Pre-select current emoji
+    const previewEl = document.getElementById('ob-avatar-preview');
+    if (previewEl) previewEl.innerHTML = renderPoopAvatar(profile.emoji || 'classic', 80);
+    // Pre-select current avatar
     setTimeout(() => {
       document.querySelectorAll('#ob-emoji-grid .tag-chip').forEach(el => {
-        if (el.textContent.trim() === profile.emoji) el.classList.add('selected');
+        if (el.dataset.avatar === profile.emoji) el.classList.add('selected');
         else el.classList.remove('selected');
       });
     }, 50);
@@ -5689,7 +5742,7 @@ function showToast(msg) {
 // Restore profile emoji in nav if already set
 const _initProfile = getProfile();
 if (_initProfile) {
-  document.getElementById('nav-profile-emoji').textContent = _initProfile.emoji;
+  document.getElementById('nav-profile-emoji').innerHTML = renderPoopAvatar(_initProfile.emoji || 'classic', 22);
 }
 </script>
 </body>
