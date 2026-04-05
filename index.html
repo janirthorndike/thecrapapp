@@ -29,7 +29,7 @@
 <meta name="twitter:title" content="Crap App™ — We Give A Shit™">
 <meta name="twitter:description" content="Find clean bathrooms near you, read throne room content, share legendary stories, and shop premium bathroom gear.">
 <meta name="twitter:image" content="https://thecrapapp.app/og-image.png">
-<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Fredoka+One&family=Nunito:wght@400;600;700;800&family=Caveat:wght@400;700&family=Permanent+Marker&family=Rock+Salt&family=Reenie+Beanie&family=Special+Elite&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
@@ -572,30 +572,64 @@
 
   /* ── STALL WALL ── */
   .sw-wall {
-    background: #d4c9b8;
-    border-radius: 16px; padding: 20px;
+    background: #c8bfb0;
+    border-radius: 12px; padding: 20px 16px;
     margin-bottom: 16px;
-    min-height: 320px;
+    min-height: 360px;
     position: relative;
     background-image:
-      linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.1);
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 38px,
+        rgba(0,0,0,0.06) 38px,
+        rgba(0,0,0,0.06) 40px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 38px,
+        rgba(0,0,0,0.04) 38px,
+        rgba(0,0,0,0.04) 40px
+      );
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.15), inset 2px 2px 8px rgba(0,0,0,0.1);
     overflow: hidden;
   }
+  .sw-wall::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    border-radius: 12px;
+  }
   .sw-graffiti {
-    display: flex; flex-direction: column; gap: 14px;
+    position: relative;
+    min-height: 320px;
   }
   .sw-entry {
     position: relative;
-    padding: 4px 0;
+    margin-bottom: 8px;
+    display: block;
   }
   .sw-text {
-    font-size: 15px; line-height: 1.5;
-    transform: rotate(var(--rot, -1deg));
     display: inline-block;
+    line-height: 1.4;
+    transform: rotate(var(--rot, -1deg));
+    transform-origin: left center;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.15);
+    max-width: 85%;
   }
+  .sw-font-picks {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+  }
+  .sw-font-pick {
+    background: #f8f6f3; border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 10px; padding: 8px 14px;
+    cursor: pointer; transition: all 0.15s;
+    font-size: 15px; color: #333;
+  }
+  .sw-font-pick.selected { border-color: var(--brown); background: #fdf6ec; }
   .sw-add-form {
     background: white; border-radius: 20px;
     padding: 20px; margin-bottom: 16px;
@@ -5612,21 +5646,32 @@ function cbsShowEnding(endingKey) {
 // ── STALL WALL ──
 const SW_KEY = 'crapapp_stallwall';
 const SW_COLORS = ['#1a0a04','#c0392b','#2980b9','#16a085','#8e44ad','#d35400'];
-const SW_FONTS = ['cursive','fantasy','monospace'];
+const SW_FONTS = [
+  { id: 'caveat',    label: 'Scrawly',  family: "'Caveat', cursive" },
+  { id: 'marker',   label: 'Marker',   family: "'Permanent Marker', cursive" },
+  { id: 'rocky',    label: 'Rough',    family: "'Rock Salt', cursive" },
+  { id: 'reenie',   label: 'Messy',    family: "'Reenie Beanie', cursive" },
+  { id: 'elite',    label: 'Typed',    family: "'Special Elite', cursive" },
+];
+function swFontFamily(fontId) {
+  const f = SW_FONTS.find(f => f.id === fontId);
+  return f ? f.family : SW_FONTS[0].family;
+}
+let swSelectedFont = SW_FONTS[0].id;
 
 const SW_PREWRITTEN = [
-  { text: "I came in here to think. I'm still thinking.", color: '#1a0a04', font: 'cursive', rot: -2 },
-  { text: "For a good time call: literally anyone else", color: '#c0392b', font: 'cursive', rot: 1 },
-  { text: "This too shall pass\n(unlike the burrito)", color: '#2980b9', font: 'fantasy', rot: -1 },
-  { text: "You are enough.\nAlso, wash your hands.", color: '#16a085', font: 'cursive', rot: 2 },
-  { text: "The WiFi password is\nnot in here. Sorry.", color: '#8e44ad', font: 'fantasy', rot: -1 },
-  { text: "\"I think, therefore I am\"\n— some guy who never used this bathroom", color: '#1a0a04', font: 'cursive', rot: 1 },
-  { text: "Whoever smelt it\ndelt it", color: '#c0392b', font: 'cursive', rot: -3 },
-  { text: "Abandon hope,\nall ye who enter here", color: '#2980b9', font: 'fantasy', rot: 2 },
-  { text: "Gone in 60 seconds\n(optimistic)", color: '#d35400', font: 'cursive', rot: -1 },
-  { text: "In this economy?", color: '#8e44ad', font: 'cursive', rot: 1 },
-  { text: "The cake is a lie.\nSo is the ventilation.", color: '#16a085', font: 'fantasy', rot: -2 },
-  { text: "Still a better love story\nthan what's going on out there", color: '#1a0a04', font: 'cursive', rot: 2 },
+  { text: "I came in here to think. I'm still thinking.", color: '#1a0a04', font: 'caveat', rot: -2.5, size: 17, indent: 5 },
+  { text: "For a good time call: literally anyone else", color: '#c0392b', font: 'marker', rot: 1.5, size: 15, indent: 15 },
+  { text: "This too shall pass\n(unlike the burrito)", color: '#2980b9', font: 'reenie', rot: -3, size: 19, indent: 0 },
+  { text: "You are enough.\nAlso, wash your hands.", color: '#16a085', font: 'caveat', rot: 2, size: 16, indent: 20 },
+  { text: "The WiFi password is\nnot in here. Sorry.", color: '#8e44ad', font: 'elite', rot: -1, size: 13, indent: 8 },
+  { text: "\"I think, therefore I am\"\n— some guy who never used this bathroom", color: '#1a0a04', font: 'reenie', rot: 1.5, size: 18, indent: 0 },
+  { text: "Whoever smelt it\ndelt it", color: '#c0392b', font: 'rocky', rot: -2, size: 14, indent: 25 },
+  { text: "Abandon hope,\nall ye who enter here", color: '#2980b9', font: 'marker', rot: 3, size: 15, indent: 5 },
+  { text: "Gone in 60 seconds\n(optimistic)", color: '#d35400', font: 'caveat', rot: -1.5, size: 16, indent: 18 },
+  { text: "In this economy?", color: '#8e44ad', font: 'reenie', rot: 2.5, size: 22, indent: 10 },
+  { text: "The cake is a lie.\nSo is the ventilation.", color: '#16a085', font: 'elite', rot: -2, size: 13, indent: 0 },
+  { text: "Still a better love story\nthan what's going on out there", color: '#1a0a04', font: 'caveat', rot: 1, size: 17, indent: 12 },
 ];
 
 const SW_PRESET_OPTIONS = [
@@ -5663,6 +5708,17 @@ function startStallWall() {
   const userEntries = getSWEntries();
   const allEntries = [...SW_PREWRITTEN, ...userEntries.map(e => ({ ...e, isUser: true }))];
 
+  // Build wall entries with scattered layout
+  const wallHTML = allEntries.map((e, i) => {
+    const rot = e.rot !== undefined ? e.rot : (Math.random() * 6 - 3).toFixed(1);
+    const indent = e.indent !== undefined ? e.indent : Math.floor(Math.random() * 30);
+    const size = e.size || (e.isUser ? 15 : 16);
+    const fontFamily = swFontFamily(e.font);
+    return `<div class="sw-entry" style="margin-left:${indent}px;">
+      <div class="sw-text" style="--rot:${rot}deg;color:${e.color};font-family:${fontFamily};font-size:${size}px;">${e.text.replace(/\n/g,'<br>')}</div>
+    </div>`;
+  }).join('');
+
   el.innerHTML = `
     <div class="ug-body" style="padding-bottom:100px;">
       <button class="game-back-btn" onclick="renderGamesHub()">← All Games</button>
@@ -5670,14 +5726,7 @@ function startStallWall() {
       <div style="font-family:'Fredoka One',cursive;font-size:22px;color:var(--dark);margin-bottom:4px;">🚻 Stall Wall</div>
       <div style="font-size:13px;color:#888;margin-bottom:16px;">The lost art of bathroom graffiti. Read the wall. Add your mark.</div>
 
-      <div class="sw-wall">
-        <div class="sw-graffiti">
-          ${allEntries.map((e, i) => `
-            <div class="sw-entry" style="--rot:${e.rot || (Math.random()*4-2).toFixed(1)}deg;">
-              <div class="sw-text" style="color:${e.color};font-family:${e.font || 'cursive'};font-size:${e.isUser ? '14px' : '15px'};">${e.text.replace(/\n/g,'<br>')}</div>
-            </div>`).join('')}
-        </div>
-      </div>
+      <div class="sw-wall">${wallHTML}</div>
 
       <div class="sw-add-form">
         <div class="sw-add-label">✍️ Add Your Mark</div>
@@ -5689,6 +5738,16 @@ function startStallWall() {
         <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:6px;">OR WRITE YOUR OWN</div>
         <textarea class="sw-custom-input" id="sw-custom" placeholder="Leave your mark..." rows="2" maxlength="80"></textarea>
 
+        <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:8px;">STYLE</div>
+        <div class="sw-font-picks" id="sw-font-picks">
+          ${SW_FONTS.map((f, i) => `
+            <div class="sw-font-pick ${i===0?'selected':''}"
+              onclick="swSelectFont('${f.id}', this)"
+              style="font-family:${f.family};">
+              ${f.label}
+            </div>`).join('')}
+        </div>
+
         <div class="sw-color-picks">
           <div class="sw-color-label">Color</div>
           ${SW_COLORS.map((c, i) => `<div class="sw-color ${i===0?'selected':''}" style="background:${c};" onclick="swSelectColor('${c}', this)"></div>`).join('')}
@@ -5699,6 +5758,12 @@ function startStallWall() {
         </button>
       </div>
     </div>`;
+}
+
+function swSelectFont(fontId, el) {
+  document.querySelectorAll('.sw-font-pick').forEach(f => f.classList.remove('selected'));
+  el.classList.add('selected');
+  swSelectedFont = fontId;
 }
 
 function swSelectPreset(idx, el) {
@@ -5727,7 +5792,7 @@ async function swSubmit() {
   const entry = {
     text,
     color: swSelectedColor,
-    font: SW_FONTS[Math.floor(Math.random() * SW_FONTS.length)],
+    font: swSelectedFont,
     rot: (Math.random() * 4 - 2).toFixed(1),
   };
   saveSWEntry(entry);
