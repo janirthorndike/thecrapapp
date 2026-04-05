@@ -2150,7 +2150,7 @@
     <div class="hero-footer-links">
       <a onclick="showLegal('privacy')">Privacy Policy</a>
       <a onclick="showLegal('terms')">Terms of Service</a>
-      <a href="/cdn-cgi/l/email-protection#39515c555556794d515c5a4b584958494917584949"><span class="__cf_email__" data-cfemail="86eee3eaeae9c6f2eee3e5f4e7f6e7f6f6a8e7f6f6">[email&#160;protected]</span></a>
+      <a href="/cdn-cgi/l/email-protection#49212c252526093d212c2a3b283928393967283939"><span class="__cf_email__" data-cfemail="e8808d848487a89c808d8b9a8998899898c6899898">[email&#160;protected]</span></a>
     </div>
     <div class="hero-footer-copy">© 2025 CrapApp. We give a shit.</div>
   </div>
@@ -2210,13 +2210,13 @@
       <p>CrapApp™ is intended for users 13 years of age and older. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us and we will delete it promptly.</p>
 
       <h2>Data Retention & Deletion</h2>
-      <p>Email addresses collected for launch notifications are retained until you unsubscribe or request deletion. To request removal of your data, email us at <a href="/cdn-cgi/l/email-protection#a7cfc2cbcbc8e7d3cfc2c4d5c6d7c6d7d789c6d7d7"><span class="__cf_email__" data-cfemail="80e8e5ececefc0f4e8e5e3f2e1f0e1f0f0aee1f0f0">[email&#160;protected]</span></a> and we will respond within 30 days.</p>
+      <p>Email addresses collected for launch notifications are retained until you unsubscribe or request deletion. To request removal of your data, email us at <a href="/cdn-cgi/l/email-protection#4d25282121220d3925282e3f2c3d2c3d3d632c3d3d"><span class="__cf_email__" data-cfemail="38505d545457784c505d5b4a594859484816594848">[email&#160;protected]</span></a> and we will respond within 30 days.</p>
 
       <h2>Changes to This Policy</h2>
       <p>We may update this Privacy Policy from time to time. When we do, we'll update the effective date above. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
 
       <h2>Contact</h2>
-      <p>Questions about this Privacy Policy? Reach us at <a href="/cdn-cgi/l/email-protection#d7bfb2bbbbb897a3bfb2b4a5b6a7b6a7a7f9b6a7a7"><span class="__cf_email__" data-cfemail="4b232e2727240b3f232e28392a3b2a3b3b652a3b3b">[email&#160;protected]</span></a>.</p>
+      <p>Questions about this Privacy Policy? Reach us at <a href="/cdn-cgi/l/email-protection#f59d9099999ab5819d9096879485948585db948585"><span class="__cf_email__" data-cfemail="2149444d4d4e61554944425340514051510f405151">[email&#160;protected]</span></a>.</p>
     </div>
   </div>
 </div>
@@ -2283,7 +2283,7 @@
       <p>We may update these Terms from time to time. The effective date at the top of this page will reflect any changes. Continued use of CrapApp™ after changes are posted constitutes your acceptance of the updated Terms.</p>
 
       <h2>11. Contact</h2>
-      <p>Questions about these Terms? Contact us at <a href="/cdn-cgi/l/email-protection#771f121b1b1837031f121405160716070759160707"><span class="__cf_email__" data-cfemail="0169646d6d6e41756964627360716071712f607171">[email&#160;protected]</span></a>.</p>
+      <p>Questions about these Terms? Contact us at <a href="/cdn-cgi/l/email-protection#7b131e1717143b0f131e18091a0b1a0b0b551a0b0b"><span class="__cf_email__" data-cfemail="bfd7dad3d3d0ffcbd7dadccddecfdecfcf91decfcf">[email&#160;protected]</span></a>.</p>
     </div>
   </div>
 </div>
@@ -2561,12 +2561,21 @@
 
     <div style="margin-bottom:12px;">
       <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:6px;">CRAP SCORE (1-10) *</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="suggest-score-picker"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="suggest-score-picker">
+        ${[...Array(10)].map((_, i) => `
+          <div onclick="suggestPickScore(${i+1}, this)" style="width:40px;height:40px;border-radius:10px;background:#f8f6f3;border:2px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;cursor:pointer;transition:all 0.15s;" id="suggest-score-${i+1}">${i+1}</div>
+        `).join('')}
+      </div>
     </div>
 
     <div style="margin-bottom:16px;">
       <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:8px;">TAGS (optional — select all that apply)</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;" id="suggest-tag-picker"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;" id="suggest-tag-picker">
+        ${TAG_CATEGORIES.map(cat => cat.tags.map(tag => `
+          <div class="tag-chip" id="stag-${tag.id}" onclick="toggleSuggestTag('${tag.id}', this)" style="font-size:11px;padding:5px 10px;">
+            ${tag.label}
+          </div>`).join('')).join('')}
+      </div>
     </div>
 
     <div style="margin-bottom:16px;">
@@ -5480,25 +5489,13 @@ function openSuggestModal() {
   suggestSelectedTags = [];
   document.getElementById('suggest-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
-
-  // Build score picker
-  const scorePicker = document.getElementById('suggest-score-picker');
-  scorePicker.innerHTML = [...Array(10)].map((_, i) => `
-    <div onclick="suggestPickScore(${i+1}, this)"
-      id="suggest-score-${i+1}"
-      style="width:40px;height:40px;border-radius:10px;background:#f8f6f3;border:2px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;cursor:pointer;transition:all 0.15s;">
-      ${i+1}
-    </div>`).join('');
-
-  // Build tag picker
-  const tagPicker = document.getElementById('suggest-tag-picker');
-  tagPicker.innerHTML = TAG_CATEGORIES.map(cat =>
-    cat.tags.map(tag => `
-      <div class="tag-chip" id="stag-${tag.id}" onclick="toggleSuggestTag('${tag.id}', this)" style="font-size:11px;padding:5px 10px;">
-        ${tag.label}
-      </div>`).join('')
-  ).join('');
-
+  // Reset score picker
+  for (let i = 1; i <= 10; i++) {
+    const el = document.getElementById(`suggest-score-${i}`);
+    if (el) { el.style.background = '#f8f6f3'; el.style.color = 'var(--dark)'; el.style.borderColor = 'rgba(0,0,0,0.08)'; }
+  }
+  // Reset tags
+  document.querySelectorAll('[id^="stag-"]').forEach(el => el.classList.remove('selected'));
   // Reset fields
   ['suggest-name','suggest-addr','suggest-notes'].forEach(id => {
     const el = document.getElementById(id);
@@ -5648,4 +5645,28 @@ function fallbackCopy(text, btn) {
     document.execCommand('copy');
     const orig = btn.innerHTML;
     btn.innerHTML = '✓ Copied!';
-    btn.classList.add('cop
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2200);
+  } catch(e) {
+    showToast('⚠️ Copy failed — try long-pressing the link');
+  }
+  document.body.removeChild(ta);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// Init
+// Restore profile emoji in nav if already set
+const _initProfile = getProfile();
+if (_initProfile) {
+  document.getElementById('nav-profile-emoji').textContent = _initProfile.emoji;
+}
+</script>
+</body>
+</html>
