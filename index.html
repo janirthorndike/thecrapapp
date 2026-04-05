@@ -1455,19 +1455,21 @@
   }
   .ft-compose-btn {
     width: 100%;
-    background: rgba(255,255,255,0.07);
-    border: 1.5px dashed rgba(0,191,165,0.4);
+    background: var(--teal);
+    border: none;
     border-radius: 14px;
-    padding: 14px;
-    color: rgba(255,255,255,0.4);
+    padding: 14px 18px;
+    color: white;
     font-family: 'Nunito', sans-serif;
     font-size: 14px;
+    font-weight: 800;
     text-align: left;
     cursor: pointer;
     transition: all 0.2s;
     display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 3px 12px rgba(0,191,165,0.35);
   }
-  .ft-compose-btn:hover { background: rgba(0,191,165,0.1); border-color: var(--teal); color: rgba(255,255,255,0.7); }
+  .ft-compose-btn:hover { background: #00a896; transform: translateY(-1px); box-shadow: 0 5px 16px rgba(0,191,165,0.45); }
 
   .ft-filters { display: flex; gap: 8px; padding: 14px 16px 4px; overflow-x: auto; scrollbar-width: none; }
   .ft-filters::-webkit-scrollbar { display: none; }
@@ -2351,6 +2353,7 @@
 <!-- ════ FLUSH & TELL ════ -->
 <div id="flushandtell" class="screen">
  <div class="app-shell">
+  <div style="position:sticky;top:0;z-index:51;background:#1a3a4a;">
   <div class="page-header" style="background:#1a3a4a;">
     <div class="page-header-top">
       <h1>💬 Flush & Tell</h1>
@@ -2360,7 +2363,7 @@
   </div>
   <div class="ft-compose">
     <button class="ft-compose-btn" onclick="openPostModal()">
-      😳 Share your story anonymously...
+      ✍️ Got a story? Drop it here — totally anonymous
     </button>
   </div>
   <div class="ft-filters">
@@ -2369,6 +2372,7 @@
     <div class="ft-filter" onclick="ftFilter(this,'disasters')">💥 Disasters</div>
     <div class="ft-filter" onclick="ftFilter(this,'philosophy')">🧘 Philosophy</div>
     <div class="ft-filter" onclick="ftFilter(this,'advice')">💡 Advice</div>
+  </div>
   </div>
   <div class="ft-posts" id="ft-posts"></div>
  </div>
@@ -2541,7 +2545,7 @@
 
 <!-- ════ COMMENTS MODAL ════ -->
 <div class="modal-overlay" id="comments-modal" onclick="closeCommentsModal(event)">
-  <div class="modal" id="comments-modal-content" style="max-height:92vh;position:relative;">
+  <div class="modal" id="comments-modal-content" style="max-height:92vh;overflow-y:auto;overflow-x:hidden;position:relative;">
     <button onclick="closeCommentsModal()" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.08);border:none;color:#888;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;">✕</button>
     <div class="modal-handle"></div>
     <div id="comments-content"></div>
@@ -3852,7 +3856,7 @@ async function openComments(supabaseId, postIdx) {
     <div id="comments-list" style="min-height:60px;"><div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">Loading...</div></div>
     ${isReal ? `
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.08);">
-      <textarea id="comment-input" placeholder="Add your comment..." style="width:100%;border:2px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px;font-family:'Nunito',sans-serif;font-size:13px;outline:none;resize:none;margin-bottom:10px;box-sizing:border-box;" rows="2" maxlength="300"></textarea>
+      <textarea id="comment-input" placeholder="Add your comment..." style="width:100%;border:2px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px;font-family:'Nunito',sans-serif;font-size:13px;outline:none;resize:none;margin-bottom:10px;box-sizing:border-box;max-width:100%;" rows="2" maxlength="300"></textarea>
       <button class="btn-teal" id="comment-submit-btn" style="width:100%;justify-content:center;" onclick="submitComment('${supabaseId}', ${postIdx})">💬 Post Comment</button>
     </div>` : ''}`;
 
@@ -5636,16 +5640,22 @@ function submitEmail() {
 
 // ── SHARE ──
 function copyShareLink(btn) {
-  const text = 'Give a shit about where you shit. 🚽 CrapApp™ — bathroom finder, throne content & legendary stories. We Give A Shit. https://thecrapapp.app';
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(() => {
-      const orig = btn.innerHTML;
-      btn.innerHTML = '✓ Copied!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2200);
-    }).catch(() => fallbackCopy(text, btn));
+  const url = 'https://thecrapapp.app';
+  const text = 'Check out CrapApp \u2014 the world\'s first bathroom utility app \ud83d\udca9';
+  if (navigator.share) {
+    navigator.share({ title: 'Crap App™', text, url })
+      .catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => showToast('🔗 Link copied!'));
   } else {
-    fallbackCopy(text, btn);
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    showToast('🔗 Link copied!');
   }
 }
 
