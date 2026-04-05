@@ -4095,19 +4095,210 @@ function saveProfile() {
   if (!handle) { showToast('⚠️ Pick a handle first!'); return; }
   const selectedEl = document.querySelector('#ob-emoji-grid .tag-chip.selected');
   const emoji = selectedEl ? (selectedEl.dataset.avatar || 'classic') : 'classic';
+
+  const existingProfile = getProfile();
+  const passphrase = existingProfile ? existingProfile.passphrase : generatePassphrase();
+
   const profile = {
-    handle, emoji,
-    since: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-    posts: 0, tags: 0, trivia: 0, triviaCorrect: 0, streak: 1,
-    myPosts: []
+    handle, emoji, passphrase,
+    since: existingProfile ? existingProfile.since : new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+    posts: existingProfile ? existingProfile.posts : 0,
+    tags: existingProfile ? existingProfile.tags : 0,
+    trivia: existingProfile ? existingProfile.trivia : 0,
+    triviaCorrect: existingProfile ? existingProfile.triviaCorrect : 0,
+    streak: existingProfile ? existingProfile.streak : 1,
+    codeBrowns: existingProfile ? existingProfile.codeBrowns : 0,
+    myPosts: existingProfile ? existingProfile.myPosts : []
   };
+
   saveProfileData(profile);
+  saveProfileToSupabase(profile);
   document.getElementById('onboarding-modal').classList.remove('open');
   document.getElementById('nav-profile-emoji').innerHTML = renderPoopAvatar(emoji, 22);
   renderThroneCard();
-  showToast(`👑 Welcome to the throne, ${handle}!`);
-  // Fire badge check — Early Adopter should unlock immediately
-  setTimeout(() => checkBadgeUnlocks(profile), 600);
+
+  if (!existingProfile) {
+    // New profile — show passphrase
+    setTimeout(() => checkBadgeUnlocks(profile), 600);
+    showPassphraseModal(handle, passphrase);
+  } else {
+    showToast('👑 Profile updated!');
+  }
+}
+
+function showPassphraseModal(handle, passphrase) {
+  const overlay = document.createElement('div');
+  overlay.id = 'passphrase-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = `
+    <div style="background:white;border-radius:24px;padding:28px 24px;max-width:380px;width:100%;text-align:center;">
+      <div style="font-size:48px;margin-bottom:12px;">🔑</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:22px;color:#2d1b4e;margin-bottom:8px;">Set Your Passphrase</div>
+      <p style="font-size:13px;color:#888;margin-bottom:16px;line-height:1.5;">Use this to restore your throne on any device. We generated one for you — or type your own. Min 6 characters.</p>
+      <input type="text" id="passphrase-input"
+        value="${passphrase}"
+        style="width:100%;border:2px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px;font-family:monospace;font-size:15px;font-weight:700;text-align:center;outline:none;margin-bottom:6px;box-sizing:border-box;color:#2d1b4e;"
+        oninput="validatePassphrase(this)">
+      <div id="passphrase-hint" style="font-size:11px;color:#aaa;margin-bottom:16px;">Tip: make it something memorable but not obvious</div>
+      <button id="passphrase-save-btn" style="background:var(--brown);color:white;border:none;border-radius:14px;padding:14px 28px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;width:100%;margin-bottom:10px;" onclick="confirmPassphrase('${handle}')">
+        Save & Claim My Throne 👑
+      </button>
+      <button onclick="document.getElementById('passphrase-overlay').remove()" style="background:none;border:none;font-size:12px;color:#aaa;cursor:pointer;display:block;width:100%;">Skip — I'll live dangerously</button>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function validatePassphrase(input) {
+  const hint = document.getElementById('passphrase-hint');
+  const btn = document.getElementById('passphrase-save-btn');
+  if (input.value.trim().length < 6) {
+    hint.textContent = '⚠️ At least 6 characters please';
+    hint.style.color = '#F44336';
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+  } else {
+    hint.textContent = '✓ Looks good!';
+    hint.style.color = '#4CAF50';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+}
+
+function confirmPassphrase(handle) {
+  const input = document.getElementById('passphrase-input');
+  const newPassphrase = input.value.trim();
+  if (newPassphrase.length < 6) { showToast('⚠️ Passphrase needs at least 6 characters'); return; }
+
+  // Update profile with the chosen passphrase
+  const profile = getProfile();
+  if (profile) {
+    profile.passphrase = newPassphrase;
+    saveProfileData(profile);
+    saveProfileToSupabase(profile);
+  }
+
+  document.getElementById('passphrase-overlay').remove();
+  showToast('👑 Throne claimed! Passphrase saved.');
+}
+
+function copyPassphrase(passphrase, el) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(passphrase).then(() => {
+      el.querySelector('div').textContent = '✓ Copied!';
+      setTimeout(() => el.querySelector('div').textContent = 'tap to copy', 1500);
+    });
+  }
+}
+
+function showRestoreFlow() {
+  const rf = document.getElementById('restore-flow');
+  if (rf) rf.style.display = rf.style.display === 'none' ? 'block' : 'none';
+}
+
+async function attemptRestore() {
+  const handle = document.getElementById('restore-handle').value.trim();
+  const passphrase = document.getElementById('restore-passphrase').value.trim();
+  if (!handle || !passphrase) { showToast('⚠️ Enter both handle and passphrase'); return; }
+
+  const btn = document.getElementById('restore-btn');
+  btn.disabled = true;
+  btn.textContent = '🔍 Looking for your throne...';
+
+  try {
+    const profile = await restoreProfileFromSupabase(handle, passphrase);
+    if (!profile) {
+      showToast('❌ No throne found. Check your handle and passphrase.');
+      btn.disabled = false;
+      btn.textContent = '🔑 Restore My Throne';
+      return;
+    }
+    saveProfileData(profile);
+    document.getElementById('nav-profile-emoji').innerHTML = renderPoopAvatar(profile.emoji || 'classic', 22);
+    renderThroneCard();
+    showToast('👑 Welcome back, ' + profile.handle + '!');
+  } catch(e) {
+    showToast('⚠️ Could not connect. Try again.');
+    btn.disabled = false;
+    btn.textContent = '🔑 Restore My Throne';
+  }
+}
+
+// ── PASSPHRASE AUTH ──
+const PASSPHRASE_WORDS = [
+  'flush','throne','royal','brown','plunge','swirl','splash','vapor',
+  'silent','phantom','rogue','covert','golden','midnight','crispy','stealth',
+  'turbo','ninja','cosmic','brave','mighty','lone','humble','cunning',
+  'ancient','noble','swift','bold','clever','mystic','lucky','wise'
+];
+
+function generatePassphrase() {
+  const words = [];
+  const used = new Set();
+  while (words.length < 3) {
+    const w = PASSPHRASE_WORDS[Math.floor(Math.random() * PASSPHRASE_WORDS.length)];
+    if (!used.has(w)) { words.push(w); used.add(w); }
+  }
+  const num = Math.floor(Math.random() * 90) + 10;
+  return words.join('-') + '-' + num;
+}
+
+async function saveProfileToSupabase(profile) {
+  try {
+    // Check if handle already exists
+    const existing = await supaFetch('profiles?handle=eq.' + encodeURIComponent(profile.handle));
+    if (existing && existing.length > 0) {
+      // Update existing
+      await supaFetch('profiles?handle=eq.' + encodeURIComponent(profile.handle), {
+        method: 'PATCH',
+        body: JSON.stringify({
+          avatar_id: profile.emoji,
+          posts: profile.posts || 0,
+          tags: profile.tags || 0,
+          trivia_correct: profile.triviaCorrect || 0,
+          code_browns: profile.codeBrowns || 0,
+          badges: JSON.stringify(profile.badges || [])
+        })
+      });
+    } else {
+      await supaFetch('profiles', {
+        method: 'POST',
+        body: JSON.stringify({
+          handle: profile.handle,
+          passphrase: profile.passphrase,
+          avatar_id: profile.emoji,
+          since: profile.since,
+          posts: profile.posts || 0,
+          tags: profile.tags || 0,
+          trivia_correct: profile.triviaCorrect || 0,
+          code_browns: profile.codeBrowns || 0,
+          badges: JSON.stringify(profile.badges || [])
+        })
+      });
+    }
+  } catch(e) { console.log('Supabase profile save failed:', e.message); }
+}
+
+async function restoreProfileFromSupabase(handle, passphrase) {
+  const results = await supaFetch(
+    'profiles?handle=eq.' + encodeURIComponent(handle) +
+    '&passphrase=eq.' + encodeURIComponent(passphrase)
+  );
+  if (!results || results.length === 0) return null;
+  const r = results[0];
+  return {
+    handle: r.handle,
+    emoji: r.avatar_id || 'classic',
+    passphrase: r.passphrase,
+    since: r.since,
+    posts: r.posts || 0,
+    tags: r.tags || 0,
+    trivia: 0,
+    triviaCorrect: r.trivia_correct || 0,
+    codeBrowns: r.code_browns || 0,
+    streak: 1,
+    myPosts: [],
+    badges: JSON.parse(r.badges || '[]')
+  };
 }
 
 function renderThroneCard() {
@@ -4116,11 +4307,21 @@ function renderThroneCard() {
 
   if (!profile) {
     el.innerHTML = `
-      <div style="text-align:center;padding:60px 20px;">
+      <div style="text-align:center;padding:50px 20px 24px;">
         <div style="font-size:80px;margin-bottom:16px;">🚽</div>
         <div style="font-family:'Fredoka One',cursive;font-size:26px;color:var(--dark);margin-bottom:8px;">Your Throne Awaits</div>
         <p style="color:#888;font-size:14px;line-height:1.6;margin-bottom:24px;">Create your anonymous profile. Track your contributions. Earn badges. Be somebody — just not your actual somebody.</p>
-        <button class="btn-primary" style="font-size:18px;" onclick="showOnboarding()">🚽 Claim Your Throne</button>
+        <button class="btn-primary" style="width:100%;justify-content:center;font-size:16px;margin-bottom:12px;" onclick="showOnboarding()">🚽 Claim Your Throne</button>
+        <button onclick="showRestoreFlow()" style="background:none;border:none;font-size:13px;font-weight:800;color:#aaa;cursor:pointer;text-decoration:underline;">Already have a Throne? Restore it →</button>
+      </div>
+      <div id="restore-flow" style="display:none;padding:0 4px 20px;">
+        <div style="background:#f8f6f3;border-radius:20px;padding:20px;">
+          <div style="font-family:'Fredoka One',cursive;font-size:18px;color:var(--dark);margin-bottom:4px;">🔑 Restore Your Throne</div>
+          <p style="font-size:12px;color:#888;margin-bottom:14px;">Enter your handle and passphrase to restore your profile on this device.</p>
+          <input type="text" id="restore-handle" placeholder="Your handle (e.g. MidnightFlusher)" style="width:100%;border:2px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px;font-family:'Nunito',sans-serif;font-size:14px;outline:none;margin-bottom:10px;box-sizing:border-box;">
+          <input type="text" id="restore-passphrase" placeholder="Your passphrase (e.g. flush-ninja-royal-42)" style="width:100%;border:2px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px;font-family:'Nunito',sans-serif;font-size:14px;outline:none;margin-bottom:12px;box-sizing:border-box;">
+          <button class="btn-teal" id="restore-btn" style="width:100%;justify-content:center;" onclick="attemptRestore()">🔑 Restore My Throne</button>
+        </div>
       </div>`;
     return;
   }
