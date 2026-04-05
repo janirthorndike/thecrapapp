@@ -2561,21 +2561,12 @@
 
     <div style="margin-bottom:12px;">
       <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:6px;">CRAP SCORE (1-10) *</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="suggest-score-picker">
-        ${[...Array(10)].map((_, i) => `
-          <div onclick="suggestPickScore(${i+1}, this)" style="width:40px;height:40px;border-radius:10px;background:#f8f6f3;border:2px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;cursor:pointer;transition:all 0.15s;" id="suggest-score-${i+1}">${i+1}</div>
-        `).join('')}
-      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="suggest-score-picker"></div>
     </div>
 
     <div style="margin-bottom:16px;">
       <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:8px;">TAGS (optional — select all that apply)</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;" id="suggest-tag-picker">
-        ${TAG_CATEGORIES.map(cat => cat.tags.map(tag => `
-          <div class="tag-chip" id="stag-${tag.id}" onclick="toggleSuggestTag('${tag.id}', this)" style="font-size:11px;padding:5px 10px;">
-            ${tag.label}
-          </div>`).join('')).join('')}
-      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;" id="suggest-tag-picker"></div>
     </div>
 
     <div style="margin-bottom:16px;">
