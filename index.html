@@ -1299,25 +1299,33 @@
   /* ══════════════════════════════
      THRONE ROOM
   ══════════════════════════════ */
-  #throneroom .page-header { background: var(--dark); }
+  #throneroom .page-header { background: var(--dark); position: sticky; top: 0; z-index: 51; }
 
   .throne-tabs {
-    display: flex; gap: 0;
-    background: rgba(0,0,0,0.15);
-    padding: 0 16px;
+    display: flex; gap: 6px;
     background: var(--dark);
+    padding: 10px 16px;
     border-bottom: 1px solid rgba(255,255,255,0.08);
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 0;
+    z-index: 50;
   }
+  .throne-tabs::-webkit-scrollbar { display: none; }
   .throne-tab {
-    padding: 10px 18px;
-    font-size: 13px; font-weight: 700;
-    color: rgba(255,255,255,0.45);
+    padding: 7px 16px;
+    font-size: 13px; font-weight: 800;
+    color: rgba(255,255,255,0.5);
     cursor: pointer;
-    border-bottom: 2px solid transparent;
+    border-radius: 50px;
+    border: 1.5px solid rgba(255,255,255,0.15);
     transition: all 0.2s;
     white-space: nowrap;
+    background: rgba(255,255,255,0.05);
   }
-  .throne-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .throne-tab:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.3); }
+  .throne-tab.active { color: var(--dark); background: var(--gold); border-color: var(--gold); font-weight: 900; }
 
   .throne-feed { padding: 14px 16px 90px; }
   
@@ -2334,10 +2342,8 @@
   </div>
   <div class="throne-tabs">
     <div class="throne-tab active" onclick="throneTab(this,'all')">All</div>
-    <div class="throne-tab" onclick="throneTab(this,'articles')">Articles</div>
-    <div class="throne-tab" onclick="throneTab(this,'trivia')">Trivia</div>
-    <div class="throne-tab" onclick="throneTab(this,'videos')">Videos</div>
-    <div class="throne-tab" onclick="throneTab(this,'minigames')">Mini Games</div>
+    <div class="throne-tab" onclick="throneTab(this,'articles')">📖 Articles</div>
+    <div class="throne-tab" onclick="throneTab(this,'trivia')">🧠 Trivia</div>
   </div>
   <div class="throne-feed" id="throne-feed"></div>
  </div>
@@ -2493,9 +2499,11 @@
 
 <!-- ════ ARTICLE MODAL ════ -->
 <div class="modal-overlay" id="article-modal" onclick="closeArticleModal(event)">
-  <div class="modal" id="article-modal-content" style="max-height:92vh;position:relative;">
-    <button onclick="closeArticleModal()" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.08);border:none;color:#888;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;line-height:1;">✕</button>
-    <div class="modal-handle"></div>
+  <div class="modal" id="article-modal-content" style="max-height:92vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:4px;">
+      <button onclick="closeArticleModal()" style="background:rgba(0,0,0,0.08);border:none;color:#888;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+    </div>
+    <div class="modal-handle" style="margin-top:0;"></div>
     <div id="article-detail"></div>
   </div>
 </div>
