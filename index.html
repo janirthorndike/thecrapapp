@@ -2150,6 +2150,11 @@
         <div class="pc-title">Play</div>
         <div class="pc-desc">Urinal Code, Stall Selector & the 1997 classic. Plus your poop personality.</div>
       </div>
+      <div class="preview-card" onclick="goTo('thronecard')" id="home-profile-card">
+        <div class="pc-icon" id="home-profile-icon">🚽</div>
+        <div class="pc-title" id="home-profile-title">My Poop Profile</div>
+        <div class="pc-desc" id="home-profile-desc">Claim your throne. Earn badges. Get on the leaderboard.</div>
+      </div>
     </div>
   </div>
 
@@ -3087,6 +3092,7 @@ function goTo(page) {
   if (page === 'flushandtell') loadSupaPosts();
   if (page === 'crapstore') renderStore();
   if (page === 'thronecard') renderThroneCard();
+  if (page === 'hero') updateHomeProfileCard();
   if (page === 'urinalgame') initUrinalGame();
   if (page === 'urinalgame') initUrinalGame();
 
@@ -4277,11 +4283,10 @@ function generatePassphrase() {
 }
 
 async function saveProfileToSupabase(profile) {
+  const throneScore = (profile.posts * 10) + (profile.tags * 5) + (profile.triviaCorrect * 3) + ((profile.codeBrowns||0) * 2) + (profile.streak * 1);
   try {
-    // Check if handle already exists
     const existing = await supaFetch('profiles?handle=eq.' + encodeURIComponent(profile.handle));
     if (existing && existing.length > 0) {
-      // Update existing
       await supaFetch('profiles?handle=eq.' + encodeURIComponent(profile.handle), {
         method: 'PATCH',
         body: JSON.stringify({
@@ -4290,6 +4295,7 @@ async function saveProfileToSupabase(profile) {
           tags: profile.tags || 0,
           trivia_correct: profile.triviaCorrect || 0,
           code_browns: profile.codeBrowns || 0,
+          throne_score: throneScore,
           badges: JSON.stringify(profile.badges || [])
         })
       });
@@ -4305,11 +4311,68 @@ async function saveProfileToSupabase(profile) {
           tags: profile.tags || 0,
           trivia_correct: profile.triviaCorrect || 0,
           code_browns: profile.codeBrowns || 0,
+          throne_score: throneScore,
           badges: JSON.stringify(profile.badges || [])
         })
       });
     }
   } catch(e) { console.log('Supabase profile save failed:', e.message); }
+}
+
+async function loadLeaderboard(myScore, myHandle) {
+  const el = document.getElementById('leaderboard-section');
+  if (!el) return;
+  try {
+    const top = await supaFetch('profiles?order=throne_score.desc&limit=10&select=handle,avatar_id,throne_score,posts');
+    if (!top || top.length === 0) {
+      el.innerHTML = '<div style="text-align:center;color:#aaa;font-size:13px;padding:12px 0;">No rankings yet — you could be first! 👑</div>';
+      return;
+    }
+    const myRank = top.findIndex(p => p.handle === myHandle);
+    el.innerHTML = `
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:12px;">TOP 10 THRONE HOLDERS</div>
+      ${top.map((p, i) => {
+        const isMe = p.handle === myHandle;
+        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+        return `<div style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;margin-bottom:4px;background:${isMe ? 'rgba(245,197,24,0.1)' : 'transparent'};border:${isMe ? '1.5px solid rgba(245,197,24,0.3)' : '1.5px solid transparent'};">
+          <div style="width:28px;text-align:center;font-size:14px;font-weight:800;color:${i < 3 ? 'inherit' : '#aaa'};">${medal}</div>
+          <div style="width:32px;height:32px;flex-shrink:0;">${renderPoopAvatar(p.avatar_id || 'classic', 32)}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:800;color:${isMe ? 'var(--brown)' : 'var(--dark)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.handle}${isMe ? ' (you)' : ''}</div>
+            <div style="font-size:11px;color:#aaa;">${p.posts || 0} stories</div>
+          </div>
+          <div style="font-family:'Fredoka One',cursive;font-size:16px;color:var(--gold);">${p.throne_score || 0} pts</div>
+        </div>`;
+      }).join('')}
+      ${myRank === -1 && myScore > 0 ? `<div style="text-align:center;font-size:12px;color:#aaa;margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,0.06);">Keep earning points to break into the top 10! You have ${myScore} pts.</div>` : ''}
+    `;
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;color:#aaa;font-size:13px;padding:12px 0;">Leaderboard unavailable right now.</div>';
+  }
+}
+
+function openFeedback() {
+  const subject = encodeURIComponent('CrapApp Feedback');
+  const body = encodeURIComponent('Hi CrapApp team,\n\n[Your feedback here]\n\n---\nApp version: thecrapapp.app');
+  window.location.href = 'mailto:hello@thecrapapp.app?subject=' + subject + '&body=' + body;
+}
+
+function updateHomeProfileCard() {
+  const profile = getProfile();
+  const icon = document.getElementById('home-profile-icon');
+  const title = document.getElementById('home-profile-title');
+  const desc = document.getElementById('home-profile-desc');
+  if (!icon || !title || !desc) return;
+  if (profile) {
+    icon.innerHTML = renderPoopAvatar(profile.emoji || 'classic', 36);
+    title.textContent = profile.handle;
+    const throneScore = (profile.posts * 10) + (profile.tags * 5) + (profile.triviaCorrect * 3) + ((profile.codeBrowns||0) * 2) + (profile.streak * 1);
+    desc.textContent = throneScore + ' pts · ' + (profile.posts || 0) + ' stories · ' + Object.keys(JSON.parse(localStorage.getItem('crapapp_profile') ? '{}' : '{}')).length + ' badges earned';
+  } else {
+    icon.textContent = '🚽';
+    title.textContent = 'My Poop Profile';
+    desc.textContent = 'Claim your throne. Earn badges. Get on the leaderboard.';
+  }
 }
 
 async function restoreProfileFromSupabase(handle, passphrase) {
@@ -4451,6 +4514,11 @@ function renderThroneCard() {
     <div class="profile-section-title">🏆 Badges (${earned.length}/${BADGES.length} earned)</div>
     ${badgeTiersHTML}
 
+    <div class="profile-section-title">🥇 Leaderboard</div>
+    <div id="leaderboard-section" style="background:white;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:16px;">
+      <div style="text-align:center;color:#aaa;font-size:13px;padding:12px 0;">Loading...</div>
+    </div>
+
     <div class="profile-section-title">💩 My Stories (${profile.posts})</div>
     ${myPostsHTML}
 
@@ -4464,13 +4532,25 @@ function renderThroneCard() {
       </div>
     </div>
 
-    <div style="margin-top:20px;padding:16px;background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:12px;">⚙️ ACCOUNT</div>
-      <button class="btn-ghost" style="width:100%;text-align:center;color:#F44336;border-color:rgba(244,67,54,0.3);" onclick="resetProfile()">
-        🗑️ Reset Throne Card
+    <div style="margin-top:16px;padding:16px;background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:12px;">💬 FEEDBACK</div>
+      <p style="font-size:13px;color:#888;margin-bottom:12px;line-height:1.5;">Found a bug? Have an idea? Want to tell us something? We actually read these.</p>
+      <button class="btn-teal" style="width:100%;justify-content:center;" onclick="openFeedback()">
+        ✉️ Send Feedback
       </button>
     </div>
+
+    <div style="margin-top:12px;padding:16px;background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:11px;font-weight:800;color:#aaa;letter-spacing:1px;margin-bottom:12px;">⚙️ ACCOUNT</div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-teal" style="flex:1;justify-content:center;" onclick="showOnboarding()">✏️ Edit Profile</button>
+        <button class="btn-ghost" style="flex:1;text-align:center;color:#F44336;border-color:rgba(244,67,54,0.3);" onclick="resetProfile()">🗑️ Reset</button>
+      </div>
+    </div>
   `;
+
+  // Load leaderboard async
+  loadLeaderboard(throneScore, profile.handle);
 }
 
 function showOnboarding() {
@@ -6009,6 +6089,7 @@ function showToast(msg) {
 const _initProfile = getProfile();
 if (_initProfile) {
   document.getElementById('nav-profile-emoji').innerHTML = renderPoopAvatar(_initProfile.emoji || 'classic', 22);
+  updateHomeProfileCard();
 }
 </script>
 </body>
