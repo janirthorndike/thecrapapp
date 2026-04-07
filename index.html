@@ -3833,9 +3833,7 @@ async function submitPost() {
 
   try {
     btn.textContent = '\U0001f6bd Posting...';
-    console.log('Posting to Supabase:', post);
     const result = await supaFetch('posts', { method: 'POST', body: JSON.stringify(post) });
-    console.log('Post result:', result);
     const newPost = {
       avatar: post.user_emoji, color: '#E8EAF6',
       user: post.user_handle, time: 'just now',
@@ -3971,7 +3969,6 @@ async function submitComment(postId, postIdx) {
   try {
     btn.textContent = '\U0001f4ac Posting...';
     const result = await supaFetch('comments', { method: 'POST', body: JSON.stringify(comment) });
-    console.log('Comment result:', result);
     input.value = '';
     await loadComments(postId, postIdx);
     // Update comment count in feed
@@ -3985,7 +3982,6 @@ async function submitComment(postId, postIdx) {
     } catch(e) {}
     showToast('💬 Comment posted!');
   } catch(e) {
-    console.error('Comment error:', e.message, e);
     showToast('\u26a0\ufe0f Error: ' + e.message.slice(0, 80));
   }
   btn.disabled = false;
@@ -4316,7 +4312,7 @@ async function saveProfileToSupabase(profile) {
         })
       });
     }
-  } catch(e) { console.log('Supabase profile save failed:', e.message); }
+  } catch(e) { /* profile save failed silently */ }
 }
 
 async function loadLeaderboard(myScore, myHandle) {
@@ -6002,7 +5998,6 @@ async function submitSuggestion() {
     document.body.style.overflow = '';
     showToast('✅ Suggestion submitted! We\'ll review it soon.');
   } catch(e) {
-    console.error('Suggest error:', e.message);
     showToast('⚠️ Could not submit. Try again.');
   }
 
@@ -6055,13 +6050,12 @@ async function submitEmail() {
 
   // Save to Supabase
   try {
-    const result = await supaFetch('email_signups', {
+    await supaFetch('email_signups', {
       method: 'POST',
       body: JSON.stringify({ email })
     });
-    console.log('Email signup result:', result);
   } catch(e) {
-    console.error('Email signup error:', e.message);
+    // Duplicate email or network error — silent fail is fine
   }
 
   btn.textContent = '✓ You\'re on the list!';
