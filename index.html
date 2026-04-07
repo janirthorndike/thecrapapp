@@ -2196,7 +2196,7 @@
     <div class="hero-footer-links">
       <a onclick="showLegal('privacy')">Privacy Policy</a>
       <a onclick="showLegal('terms')">Terms of Service</a>
-      <a href="#" onclick="event.preventDefault();window.location.href='mailto:hello@thecrapapp.app'">hello@thecrapapp.app</a>
+      <a href="#" onclick="event.preventDefault();openEmail()">hello@thecrapapp.app</a>
     </div>
     <div class="hero-footer-copy">© 2025 CrapApp. We give a shit.</div>
   </div>
@@ -2256,13 +2256,13 @@
       <p>CrapApp™ is intended for users 13 years of age and older. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us and we will delete it promptly.</p>
 
       <h2>Data Retention & Deletion</h2>
-      <p>Email addresses collected for launch notifications are retained until you unsubscribe or request deletion. To request removal of your data, email us at <a href="#" onclick="event.preventDefault();window.location.href='mailto:hello@thecrapapp.app'">hello@thecrapapp.app</a> and we will respond within 30 days.</p>
+      <p>Email addresses collected for launch notifications are retained until you unsubscribe or request deletion. To request removal of your data, email us at <a href="#" onclick="event.preventDefault();openEmail()">hello@thecrapapp.app</a> and we will respond within 30 days.</p>
 
       <h2>Changes to This Policy</h2>
       <p>We may update this Privacy Policy from time to time. When we do, we'll update the effective date above. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
 
       <h2>Contact</h2>
-      <p>Questions about this Privacy Policy? Reach us at <a href="#" onclick="event.preventDefault();window.location.href='mailto:hello@thecrapapp.app'">hello@thecrapapp.app</a>.</p>
+      <p>Questions about this Privacy Policy? Reach us at <a href="#" onclick="event.preventDefault();openEmail()">hello@thecrapapp.app</a>.</p>
     </div>
   </div>
 </div>
@@ -2329,7 +2329,7 @@
       <p>We may update these Terms from time to time. The effective date at the top of this page will reflect any changes. Continued use of CrapApp™ after changes are posted constitutes your acceptance of the updated Terms.</p>
 
       <h2>11. Contact</h2>
-      <p>Questions about these Terms? Contact us at <a href="#" onclick="event.preventDefault();window.location.href='mailto:hello@thecrapapp.app'">hello@thecrapapp.app</a>.</p>
+      <p>Questions about these Terms? Contact us at <a href="#" onclick="event.preventDefault();openEmail()">hello@thecrapapp.app</a>.</p>
     </div>
   </div>
 </div>
@@ -4351,6 +4351,27 @@ async function loadLeaderboard(myScore, myHandle) {
   }
 }
 
+function openEmail() {
+  const email = 'hello@thecrapapp.app';
+  // Try mailto first
+  window.location.href = 'mailto:' + email;
+  // On desktop with no mail client, mailto silently fails
+  // Show a toast after a short delay so user can copy the address
+  setTimeout(() => {
+    if (document.hasFocus()) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(email).then(() => {
+          showToast('📧 ' + email + ' — copied to clipboard!');
+        }).catch(() => {
+          showToast('📧 ' + email);
+        });
+      } else {
+        showToast('📧 ' + email);
+      }
+    }
+  }, 500);
+}
+
 function openFeedback() {
   const subject = encodeURIComponent('CrapApp Feedback');
   const body = encodeURIComponent('Hi CrapApp team,\n\n[Your feedback here]\n\n---\nApp version: thecrapapp.app');
@@ -6008,7 +6029,7 @@ function hideLegal() {
 }
 
 // ── EMAIL CAPTURE ──
-function submitEmail() {
+async function submitEmail() {
   const input = document.getElementById('email-input');
   const btn = document.getElementById('email-submit');
   const email = input.value.trim();
@@ -6024,10 +6045,24 @@ function submitEmail() {
     return;
   }
 
-  // Store locally for now — swap in your email service (Mailchimp, ConvertKit, etc.) here
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  // Save to localStorage as fallback
   const signups = JSON.parse(localStorage.getItem('crapapp_signups') || '[]');
   if (!signups.includes(email)) signups.push(email);
   localStorage.setItem('crapapp_signups', JSON.stringify(signups));
+
+  // Save to Supabase
+  try {
+    await supaFetch('email_signups', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+  } catch(e) {
+    // Duplicate email (unique constraint) or network error — both fine
+    console.log('Email signup note:', e.message);
+  }
 
   btn.textContent = '✓ You\'re on the list!';
   btn.classList.add('success');
