@@ -6055,13 +6055,13 @@ async function submitEmail() {
 
   // Save to Supabase
   try {
-    await supaFetch('email_signups', {
+    const result = await supaFetch('email_signups', {
       method: 'POST',
       body: JSON.stringify({ email })
     });
+    console.log('Email signup result:', result);
   } catch(e) {
-    // Duplicate email (unique constraint) or network error — both fine
-    console.log('Email signup note:', e.message);
+    console.error('Email signup error:', e.message);
   }
 
   btn.textContent = '✓ You\'re on the list!';
